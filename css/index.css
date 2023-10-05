@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,100;1,300;1,400;1,500&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    list-style: none;
+    text-decoration: none;
+}
+
+body {
+    height: 100vh;
+    background-image: url(../img/SL.jpg);
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.container {
+    min-width: 350px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    padding: 2.75rem 2.5rem;
+    border-radius: 1rem;
+    color: aliceblue;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 40px 40px 60px -7px rgba(0, 0, 0, 0.25);
+}
+
+.container h2 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    font-style: italic;
+    color: #000;
+}
+
+.container .input-bx {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+
+.container input {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    padding: 0.6rem;
+    padding-left: 1.5rem;
+    color: #000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+    word-spacing: 5px;
+    font-style: italic;
+    font-weight: 300;
+}
+
+.container span {
+    position: absolute;
+    width: 100%;
+    height: 0.09rem;
+    bottom: 0;
+    left: 0;
+    background: #000;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+}
+
+.container input:focus + span {
+    transform: scaleX(1);
+}
+
+.input-bx label {
+    color: #000;
+    position: absolute;
+    left: 1.5rem;
+    font-size: 0.8rem;
+    word-spacing: 5px;
+    font-weight: 400;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 0;
+    transition: top 0.4s;
+}
+
+.container input:focus ~ label,
+.container input:valid ~ label 
+{
+    top: -0.3rem;
+}
+
+.container i {
+    position: absolute;
+    left: 0.2rem;
+    font-size: 0.75rem;
+    word-spacing: 5px;
+    font-weight: 400;
+    color: #000;
+}
+
+.cache-bx {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    word-spacing: 5px;
+    font-weight: 400;
+}
+
+.cache-bx a {
+    color: rgb(4, 72, 72);
+    position: relative;
+    transition: 0.3s;
+}
+
+button {
+    border: none;
+    outline: none;
+    background: #fff;
+    width: 100%;
+    margin: 1.5rem 0;
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.4s ease;
+}
+
+button:hover {
+    background: #dfdfdf;
+}
+
+.container p {
+    display: flex;
+    font-size: 0.75rem;
+    word-spacing: 5px;
+    font-weight: 400;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+}
+
+.container p a {
+    color: rgb(47, 79, 79);
+    margin-left: 0.2rem;
+    position: relative;
+    transition: 0.3s;
+}
+
+.container a:after {
+    content: '';
+    position: absolute;
+    bottom: -0.1rem;
+    left: 0;
+    transform-origin: right;
+    transform: scaleX(0);
+    width: 100%;
+    height: 1px;
+    background: #000;
+    transition: transform 0.3s;
+}
+
+.container a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+} 
+
+.back-icon {
+    margin-top: 20px;
+    margin-left: 20px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    color: #000000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    border-radius: 1rem;
+    z-index: 1;
+    background-color: turquoise;
+}
