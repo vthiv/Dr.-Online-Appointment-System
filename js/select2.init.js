@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    $('.department-name, .doctor-name, .time-during, .gender-name').select2();
+    $('.department-name, .doctor-name, .patient-name, .time-during, .gender-name').select2();
 });

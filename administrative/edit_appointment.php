@@ -10,11 +10,14 @@ if(isset($_SESSION["user"])){
     header('Location:../index.php');  // Redirecting To Home Page
 }
 
+
+$editappointment_id = null;
+
 if (isset($_POST["edit_app_btn"]) && isset($_POST["editappointment_id"])) {
     $editappointment_id = $_POST["editappointment_id"];
 
     // Add these debugging statements in your code
-    echo "Debug: Schedule ID: " . $editappointment_id . "<br>";
+    echo "Debug: Appointment ID: " . $editappointment_id . "<br>";
     echo "Debug: POST Data: " . json_encode($_POST) . "<br>";
 
     $query = "SELECT a.*, CONCAT(p.Pat_Firstname, ' ', p.Pat_Lastname) AS patient_name, d.Doctor_Name, dept.Dept_Name
@@ -31,27 +34,40 @@ if (isset($_POST["edit_app_btn"]) && isset($_POST["editappointment_id"])) {
     } else {
         $msg = "Appointment unable to found.";
     }
-} else {
-    echo "Error: editappointment_id is not set.";
 }
 
+// Handle form submission to update appointment details
 if(isset($_POST['save_appointment'])) {
 
-    $appointment_id = $_POST['Apt_ID'];
-    $patientID = $_POST['pat_id'];
-    $doctorID = $_POST['doc_id'];
-    $departmentID = $_POST['dept_id'];
-    $adminID = $_SESSION['admin_id'];
-    $app_date = $_POST['App_Date'];
-    $app_time = $_POST['App_Time'];
-    $app_message = $_POST['app_message'];
-    $app_status = $_POST['App_Status'];
+    echo "Form submitted";
+
+    $appointmentID = $_POST["editappointment_id"];
+    $patientID = $_POST["pat_id"];
+    $doctorID = $_POST["doc_id"];
+    $departmentID = $_POST["dept_id"];
+    $adminID = $_SESSION["admin_id"];
+    $app_date = $_POST["app_date"];
+    $app_time = $_POST["app_time"];
+    $app_message = $_POST["app_message"];
+    $app_status = $_POST["app_Status"];
 
     // Update the schedule data in the database
-    $update_query = mysqli_query($connection, "UPDATE `appointment` SET Apt_ID='$appointment_id', Pat_ID='$patientID', Doctor_ID='$doctorID', Dept_ID='$departmentID', App_Date='$app_date', App_Time='$app_time', App_Message='$app_message', App_Status='$app_status' WHERE App_id='$editappointment_id'");
+    $updateQuery = "UPDATE `appointment` SET 
+    `Apt_ID`='$appointmentID', 
+    `Pat_ID`='$patientID', 
+    `Doctor_ID`='$doctorID', 
+    `Dept_ID`='$departmentID', 
+    `App_Date`='$app_date', 
+    `App_Time`='$app_time', 
+    `App_Message`='$app_message', 
+    `App_Status`='$app_status' 
+    WHERE `App_id`='$editappointment_id'";
+    
+    
+    $update_result = mysqli_query($connection, $updateQuery);
 
 
-    if ($update_query) {
+    if ($update_result) {
         // Redirect back to the schedule_admin.php page after successful update
         $msg = "Appointment updated successfully";
     } else {
@@ -106,7 +122,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         <link href="../css/admin_dashboard.css" rel="stylesheet" />
         <link href="../css/simplebar.css" rel="stylesheet" />
         <link href="../css/select2.min.css" rel="stylesheet" />
-        <link href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css" rel="stylesheet">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
 
@@ -220,38 +235,33 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <form action="" method="POST">
                                 <input type="hidden" name="editappointment_id" value="<?php echo $editappointment_id; ?>" >
                                     <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Appointment ID <span class="text-danger">*</span></label>
-                                                <input class="form-control" type="text" name="appointment_id" value="<?php echo $appointment['Apt_ID']; ?>" readonly> 
+                                        <div class="col-lg-4 col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Appointment ID <span class="text-danger">*</span></label>
+                                                <input class="form-control" type="text" name="editappointment_id" value="<?php echo isset($editappointment_id) ? $editappointment_id : ''; ?>" readonly>
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Admin Name <span class="text-danger">*</span></label>
+                                        <div class="col-lg-4 col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Admin Name <span class="text-danger">*</span></label>
                                                 <input name="admin_id" id="admin_id" type="text" class="form-control" placeholder="Admin Name:" value="<?php echo $adminName; ?>" readonly /> 
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-12">
+                                        <div class="col-lg-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Patient Name <span class="text-danger">*</span></label>
                                                 <select class="form-control patient-name select2input" name="pat_id" id="pat_id">
                                                     <option value="">Select Patient</option>
                                                     <?php 
                                                     // Fetch and display a list of patients from the database
-                                                        $fetch_query = mysqli_query($connection,"SELECT * FROM appointment WHERE App_ID='$editappointment_id'");
-                                                        $row = mysqli_fetch_array($fetch_query);
-                                                        $patient_name = explode(",", $row['patient_name']);
-                                                        $patient_name = $patient_name[0];
-
-                                                        $fetch_query = mysqli_query($connection, "SELECT Pat_ID, CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name FROM patient");
-                                                        while ($patient = mysqli_fetch_array($fetch_query)) {
-                                                            $selected = ($patient['Pat_ID'] == $appointment['Pat_ID']) ? 'selected="selected"' : '';
-                                                            echo '<option ' . $selected . ' value="' . $patient['Pat_ID'] . '">' . $patient['patient_name'] . '</option>';
-                                                            }
-                                                            ?>
+                                                    $fetch_query = mysqli_query($connection, "SELECT Pat_ID, CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name FROM patient");
+                                                    while ($patient = mysqli_fetch_array($fetch_query)) {
+                                                        $selected = ($patient['Pat_ID'] == $appointment['Pat_ID']) ? 'selected="selected"' : '';
+                                                        echo '<option ' . $selected . ' value="' . $patient['Pat_ID'] . '">' . $patient['patient_name'] . '</option>';
+                                                    }
+                                                    ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -260,8 +270,16 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             <div class="mb-3">
                                                 <label class="form-label">Department <span class="text-danger">*</span></label>
                                                 <select class="form-control department-name" name="dept_id" id="dept_id">
-                                                    <option value="<?php echo $appointment['Dept_ID']; ?>"><?php echo $appointment['Dept_Name']; ?></option>
-                                                </select>
+                                                    <option value="">Select Department</option>
+                                                    <?php
+                                                    // Fetch and display a list of departments from the database
+                                                    $dept_query = mysqli_query($connection, "SELECT `Dept_ID`, `Dept_Name` FROM `department`");
+                                                    while ($department = mysqli_fetch_array($dept_query)) {
+                                                        $selected = ($department['Dept_ID'] == $appointment['Dept_ID']) ? 'selected="selected"' : '';
+                                                        echo '<option ' . $selected . ' value="' . $department['Dept_ID'] . '">' . $department['Dept_Name'] . '</option>';
+                                                    }
+                                                    ?>
+                                            </select>
                                             </div>
                                         </div>
 
@@ -298,28 +316,28 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Appointment Date <span class="text-danger">*</span></label>
-                                                <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" value="<?php  echo $appointment['App_Date'];  ?>" required />
+                                                <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" value="<?php echo isset($appointment['App_Date']) ? $appointment['App_Date'] : ''; ?>" required />
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Appointment Time <span class="text-danger">*</span></label>
-                                                <input name="app_time" id="app_time" type="time" class="form-control timepicker" value="<?php  echo $appointment['App_Time'];  ?>" required />
+                                                <input name="app_time" id="app_time" type="time" class="form-control timepicker" value="<?php  echo isset($appointment['App_Time']);  ?>" required />
                                             </div>
                                         </div>
 
                                         <div class="col-lg-12">
                                             <div class="mb-3">
                                                 <label class="form-label">Message <span class="text-danger">*</span></label>
-                                                <textarea name="app_message" id="app_message" rows="4" class="form-control" required><?php  echo isset($appointment['App_Message']) ? $appointment['App_Message']: '' ?></textarea>
+                                                <textarea name="app_message" id="app_message" rows="4" class="form-control" placeholder="Your Message :" required><?php  echo isset($appointment['App_Message']) ? $appointment['App_Message']: '' ?></textarea>
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
-                                            <label for="status" class="display-block">Appointment Status</label>
-                                            <select class="form-control" name="status">
+                                            <label for="app_Status" class="display-block">Appointment Status</label>
+                                            <select class="form-control" name="app_Status">
                                                 <option value="1" <?php if(isset($appointment['App_Status']) && $appointment['App_Status'] == 1) echo 'selected'; ?>>Active</option>
                                                 <option value="0" <?php if(isset($appointment['App_Status']) && $appointment['App_Status'] == 0) echo 'selected'; ?>>Inactive</option>
                                             </select>
@@ -353,12 +371,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         </footer>
         <!-- ======= Footer Ends ======= -->
 
-        <!--Modal Start-->
-        <!--Add Appointment form Starts-->
-        
-        <!--Add Appointment form Ends-->
-        <!--Modal End-->
-
 
 
         
@@ -370,7 +382,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         <script src="../js/main.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-        <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script type="text/javascript">
             <?php
