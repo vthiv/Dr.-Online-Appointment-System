@@ -14,28 +14,28 @@ if (isset($_POST["edit_app_btn"]) && isset($_POST["editappointment_id"])) {
     $editappointment_id = $_POST["editappointment_id"];
 
     // Add these debugging statements in your code
-    echo "Debug: Appointment ID: " . $editappointment_id . "<br>";
+    echo "Debug: Schedule ID: " . $editappointment_id . "<br>";
     echo "Debug: POST Data: " . json_encode($_POST) . "<br>";
 
-    // Retrieve the appointment data based on the appointmentID from the database
     $query = "SELECT a.*, CONCAT(p.Pat_Firstname, ' ', p.Pat_Lastname) AS patient_name, d.Doctor_Name, dept.Dept_Name
-              FROM appointment a
-              INNER JOIN patient p ON a.Pat_ID = p.Pat_ID
-              INNER JOIN doctor d ON a.Doctor_ID = d.Doctor_ID
-              INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
-              WHERE a.App_ID = '$editappointment_id'";
-
+                FROM appointment a
+                INNER JOIN patient p ON a.Pat_ID = p.Pat_ID
+                INNER JOIN doctor d ON a.Doctor_ID = d.Doctor_ID
+                INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
+                WHERE a.App_ID = '$editappointment_id'";
+    
     $result = mysqli_query($connection, $query);
 
     if ($result) {
         $appointment = mysqli_fetch_assoc($result);
     } else {
         $msg = "Appointment unable to found.";
-    } 
-
+    }
+} else {
+    echo "Error: editappointment_id is not set.";
 }
 
-if(isset($_REQUEST['save_appointment'])) {
+if(isset($_POST['save_appointment'])) {
 
     $appointment_id = $_POST['Apt_ID'];
     $patientID = $_POST['pat_id'];
@@ -53,7 +53,7 @@ if(isset($_REQUEST['save_appointment'])) {
 
     if ($update_query) {
         // Redirect back to the schedule_admin.php page after successful update
-        header("location: appointment_admin.php");
+        $msg = "Appointment updated successfully";
     } else {
         // Handle the case where the update fails
         $msg = "Failed to update appointment details: " . mysqli_error($connection);
@@ -223,7 +223,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Appointment ID <span class="text-danger">*</span></label>
-                                                <input class="form-control" type="text" name="appointment_id" value="<?php echo $appointment['Apt_ID'] ?>"> 
+                                                <input class="form-control" type="text" name="appointment_id" value="<?php echo $appointment['Apt_ID']; ?>" readonly> 
                                             </div>
                                         </div>
 
@@ -246,11 +246,12 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                         $patient_name = explode(",", $row['patient_name']);
                                                         $patient_name = $patient_name[0];
 
-                                                        $fetch_query = mysqli_query($connection, "SELECT CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name FROM patient");
-                                                        while ($rows = mysqli_fetch_array($fetch_query)) {
+                                                        $fetch_query = mysqli_query($connection, "SELECT Pat_ID, CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name FROM patient");
+                                                        while ($patient = mysqli_fetch_array($fetch_query)) {
+                                                            $selected = ($patient['Pat_ID'] == $appointment['Pat_ID']) ? 'selected="selected"' : '';
+                                                            echo '<option ' . $selected . ' value="' . $patient['Pat_ID'] . '">' . $patient['patient_name'] . '</option>';
+                                                            }
                                                             ?>
-                                                            <option <?php if($rows['patient_name'] == $patient_name) { ?> selected="selected"; <?php } ?>><?php echo $rows['patient_name']; ?></option>
-                                                            <?php } ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -272,7 +273,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                     <?php
                                                     $fetch_query = mysqli_query($connection, "SELECT `Doctor_ID`, `Doctor_Name` FROM `doctor`");
                                                     while ($doctor = mysqli_fetch_array($fetch_query)) {
-                                                        $selected = ($doctor['Doctor_ID'] == $schedule['Doctor_ID']) ? 'selected="selected"' : '';
+                                                        $selected = ($doctor['Doctor_ID'] == $appointment['Doctor_ID']) ? 'selected="selected"' : '';
                                                         echo '<option ' . $selected . ' value="' . $doctor['Doctor_ID'] . '">' . $doctor['Doctor_Name'] . '</option>';
                                                     }
                                                     ?>
@@ -283,55 +284,53 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                                                <input name="email" id="email" type="email" class="form-control" placeholder="Email :" />
+                                                <input name="email" id="email" type="email" class="form-control" value="" />
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                                <input name="phone" id="phone" type="tel" class="form-control" placeholder="Phone Number :" />
+                                                <input name="phone" id="phone" type="tel" class="form-control" value="" />
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Appointment Date <span class="text-danger">*</span></label>
-                                                <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" value="<?php  echo $row['app_date'];  ?>" />
+                                                <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" value="<?php  echo $appointment['App_Date'];  ?>" required />
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">Appointment Time <span class="text-danger">*</span></label>
-                                                <input name="app_time" id="app_time" type="time" class="form-control timepicker" value="<?php  echo $row['app_time'];  ?>" />
+                                                <input name="app_time" id="app_time" type="time" class="form-control timepicker" value="<?php  echo $appointment['App_Time'];  ?>" required />
                                             </div>
                                         </div>
 
                                         <div class="col-lg-12">
                                             <div class="mb-3">
                                                 <label class="form-label">Message <span class="text-danger">*</span></label>
-                                                <textarea name="app_message" id="app_message" rows="4" class="form-control" required><?php  echo $row['app_message'];  ?></textarea>
+                                                <textarea name="app_message" id="app_message" rows="4" class="form-control" required><?php  echo isset($appointment['App_Message']) ? $appointment['App_Message']: '' ?></textarea>
                                             </div>
                                         </div>
 
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
-                                                <label class="display-block">Appointment Status <span class="text-danger">*</span></label><br>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="app_status" id="product_active" value="1" <?php if($row['app_status']==1) { echo 'checked' ; } ?> />
-                                                    <label class="form-check-label" for="product_active">Active</label>
-                                                </div>
-                                                <div class="form-check form-check-inline">
-                                                    <input class="form-check-input" type="radio" name="app_status" id="product_inactive" value="0" <?php if($row['app_status']==0) { echo 'checked' ; } ?>>
-                                                    <label class="form-check-label" for="product_inactive">Inactive</label>
-                                                </div>
+                                            <label for="status" class="display-block">Appointment Status</label>
+                                            <select class="form-control" name="status">
+                                                <option value="1" <?php if(isset($appointment['App_Status']) && $appointment['App_Status'] == 1) echo 'selected'; ?>>Active</option>
+                                                <option value="0" <?php if(isset($appointment['App_Status']) && $appointment['App_Status'] == 0) echo 'selected'; ?>>Inactive</option>
+                                            </select>
                                             </div>
                                         </div>
 
                                         <div class="col-lg-12">
                                             <div class="d-grid">
-                                                <button name="save_appointment" class="btn btn-outline-primary  submit-btn" type="submit" >UPDATE Appointment</button>
+                                                <button name="save_appointment" class="btn btn-outline-primary  submit-btn" type="submit" >UPDATE APPOINTMENT</button>
+                                                <BR>
+                                                <a href="appointment_admin.php" class="btn btn-soft-primary">CANCEL</a>
                                             </div>
                                         </div>
                                     </div>

@@ -258,7 +258,7 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                                     // Execute SQL query to get appointment data
                                                     $queryAppointmentsData = "SELECT
                                                         appointment.App_ID,
-                                                        patient.Pat_Firstname,
+                                                        CONCAT(patient.Pat_Firstname, ' ', patient.Pat_Lastname) AS patient_name,
                                                         doctor.Doctor_Name,
                                                         appointment.App_Date,
                                                         appointment.App_Time,
@@ -279,7 +279,7 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                                         while ($row = mysqli_fetch_assoc($resultAppointmentsData)) {
                                                             echo '<tr>';
                                                             echo '<td>' . $row['App_ID'] . '</td>';
-                                                            echo '<td>' . $row['Pat_Firstname'] . ' ' . $row['Pat_Lastname'] . '</td>';
+                                                            echo '<td>' . $row['patient_name'] . '</td>';
                                                             echo '<td>' . $row['Doctor_Name'] . '</td>';
                                                             echo '<td>' . $row['App_Date'] . '</td>';
                                                             echo '<td>' . $row['App_Time'] . '</td>';
