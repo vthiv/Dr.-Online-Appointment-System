@@ -38,6 +38,18 @@ if(isset($_REQUEST['add-department']))
         }
     }
 
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"];
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+
 ?>
 
 
@@ -111,7 +123,7 @@ if(isset($_REQUEST['add-department']))
                 <div class="avatar-profile">
                     <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-2 border-0">
                         <img src="../img/admin.jpg" class="rounded-circle shadow-md avatar avatar-md-md" />
-                        <h5 class="mt-3 mb-1">Kensey Barbar</h5>
+                        <h5 class="mt-3 mb-1"><?php echo $adminName; ?></h5>
                         <p class="text-muted mb-0">Administrator</p>
                     </div>
                 </div>
