@@ -22,6 +22,64 @@ if ($result && mysqli_num_rows($result) > 0) {
 } else {
     $adminName = "Admin"; // Default name if not found
 }
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $employee_id = $_POST['employee_id'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['pwd'];
+    $dob = $_POST['dob'];
+    $phone = $_POST['phonenumber'];
+    $joining_date = $_POST['joining_date'];
+    $department_id = $_POST['department']; // Make sure to capture the department ID from the form
+    $gender = $_POST['gender'];
+    $address = $_POST['address'];
+    $bio = $_POST['comments'];
+    $status = $_POST['status'];
+
+    // Handle file upload
+    $uploadDir = "../img/doctors/"; // Specify the directory where you want to store the uploaded images
+    $profileImage = $_FILES['profile_image']['name'];
+
+    // Check if a file was uploaded
+    if (!empty($profileImage)) {
+        $uploadPath = $uploadDir . basename($profileImage);
+
+        // Move the uploaded file to the specified directory
+        if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadPath)) {
+            echo "Image uploaded successfully!";
+        } else {
+            echo "Error uploading image.";
+        }
+    }
+
+    // Insert the file path into the database
+    $profileImagePath = $uploadDir . $profileImage;
+
+    // Insert data into 'WEBUSER' table
+    $sql_webuser = "INSERT INTO webuser (email, usertype) VALUES ('$email', '2')"; // Assuming '2' represents the doctor usertype
+    if (mysqli_query($connection, $sql_webuser)) {
+        // Get the last inserted ID for the 'webuser' record
+        $webuser_id = mysqli_insert_id($connection);
+
+        // Insert data into 'DOCTOR' table
+        $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$employee_id', '$department_id', '$name', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$profileImagePath', '$status')";
+        if (mysqli_query($connection, $sql_doctor)) {
+            echo "Doctor registration successful!";
+        } else {
+            echo "Error inserting data into DOCTOR table: " . mysqli_error($connection);
+        }
+    } else {
+        echo "Error inserting data into WEBUSER table: " . mysqli_error($connection);
+    }
+
+    // Close the database connection
+    mysqli_close($connection);
+} else {
+    echo "Invalid request.";
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -163,23 +221,27 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <div class="row">
                     <div class="col-lg-8 mt-4">
                         <div class="card border-0 p-4 rounded shadow">
-                            <div class="row align-items-center">
-                                <div class="col-lg-2 col-md-4">
-                                    <img src="../img/doctors/doctors-1.jpg" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
-                                </div>
+                            <form method="POST" enctype="multipart/form-data">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-2 col-md-4">
+                                        <img src=" " class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
+                                    </div>
 
-                                <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
-                                    <h5 class="">Upload your picture</h5>
-                                    <p class="text-muted mb-0">For best results, use an image at least 600px by 600px in either .jpg or .png format</p>
-                                </div>
+                                    <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
+                                        <h5 class="">Upload your picture</h5>
+                                        <p class="text-muted mb-0">For best results, use an image at least 600px by 600px in either .jpg or .png format</p>
+                                    </div>
 
-                                <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
-                                    <a href="#" class="btn btn-primary" style="margin-left: 10px;">Upload</a>
-                                    <a href="#" class="btn btn-soft-primary ms-2">Remove</a>
+                                    <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
+                                        <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" />
+                                        <label for="profile_image" class="btn btn-primary" style="margin-left: 10px;">Upload</label>
+                                        <a href="#" class="btn btn-soft-primary ms-2">Remove</a>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
+                            
 
-                            <form class="POST mt-4">
+                            <form class="mt-4" method="POST">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
@@ -284,7 +346,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     </div>
                                     <button type="submit" name="add-doctor" class="btn btn-primary submit-btn">Add Doctor</button>
                                 </div>
-                                
                             </form>
                         </div>
                     </div>
