@@ -154,6 +154,10 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <div class="col-sm-4">
                         <h6 class="title">Add New Doctor</h6>
                     </div>
+
+                    <div class="col-sm-8 text-right m-b-20">
+                        <a href="doctors_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -179,29 +183,15 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label class="form-label">First Name</label>
-                                            <input name="name" id="name" type="text" class="form-control" placeholder="First Name :" required />
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-3">
-                                            <label class="form-label">Last Name</label>
-                                            <input name="name2" id="name2" type="text" class="form-control" placeholder="Last Name :" />
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-3">
                                             <label class="form-label">Employee ID </label>
-                                            <input class="form-control" type="text" name="employee_id" required>
+                                            <input class="form-control" type="text" name="employee_id" placeholder="Employee ID :" required>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label class="form-label">Username</label>
-                                            <input class="form-control" type="text" name="username" id="username" required>
+                                            <label class="form-label">Full Name</label>
+                                            <input name="name" id="name" type="text" class="form-control" placeholder="Full Name :" required />
                                         </div>
                                     </div>
 
@@ -215,21 +205,21 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Password</label>
-                                            <input class="form-control" type="password" name="pwd" id="pwd" required>
+                                            <input class="form-control" type="password" name="pwd" id="pwd" placeholder="Password" required/>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Date of Birth</label>
-                                            <input name="dob" id="dob" type="date" class="form-control flatpicker flatpicker-input " />
+                                            <input name="dob" id="dob" type="date" class="form-control flatpicker flatpicker-input" placeholder="Date of Birth" required/>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Phone Number</label>
-                                            <input name="phonenumber" id="phonenumber" type="text" class="form-control" placeholder="Phone Number :" />
+                                            <input name="phonenumber" id="phonenumber" type="text" class="form-control" placeholder="Phone Number :" required/>
                                         </div>
                                     </div>
 
@@ -237,7 +227,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <div class="form-group mb-3">
                                             <label class="form-label">Joining Date</label>
                                             <div class="cal-icon">
-                                            <input name="joining_date" id="joining_date" type="date" class="form-control flatpicker flatpicker-input " required/>
+                                            <input name="joining_date" id="joining_date" type="date" class="form-control flatpicker flatpicker-input" placeholder="Joining Date :" required/>
                                             </div>
                                         </div>
                                     </div>
@@ -262,36 +252,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                 <option value="">Male</option>
                                                 <option value="">Female</option>
                                             </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-3">
-                                            <label class="form-label">Facebook</label>
-                                            <div class="input-group flex-nowrap">
-                                                <span class="input-group-text bg-white border border-end-0 text-dark" id="fb-id"><i data-feather="facebook" class="bi bi-facebook"></i></span>
-                                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="fb-id" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-3">
-                                            <label class="form-label">Linkedin</label>
-                                            <div class="input-group flex-nowrap">
-                                                <span class="input-group-text bg-white border border-end-0 text-dark" id="linke-pro"><i data-feather="linkedin" class="bi bi-linkedin"></i></span>
-                                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="linke-pro">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group mb-3">
-                                            <label class="form-label">Twitter</label>
-                                            <div class="input-group flex-nowrap">
-                                                <span class="input-group-text bg-white border border-end-0 text-dark" id="twitter-id"><i data-feather="twitter" class="bi bi-twitter"></i></span>
-                                                <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="twitter-id">
-                                            </div>
                                         </div>
                                     </div>
 
@@ -322,9 +282,9 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             </div>
                                         </div>
                                     </div>
-
+                                    <button type="submit" name="add-doctor" class="btn btn-primary submit-btn">Add Doctor</button>
                                 </div>
-                                <button type="submit"  name="add-doctor" class="btn btn-primary submit-btn">Add Doctor</button>
+                                
                             </form>
                         </div>
                     </div>
