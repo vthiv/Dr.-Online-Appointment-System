@@ -147,11 +147,11 @@ if ($result && mysqli_num_rows($result) > 0) {
         <main id="main" class="main">
             <section class="section dashboard">
                 <div class="row">
-                <div class="pagetitle">
+                    <div class="pagetitle">
                         <h1>Doctor</h1>
                     </div>
 
-                    <div class="col-sm-4 col-3">
+                    <div class="col-sm-4">
                         <h6 class="title">Add New Doctor</h6>
                     </div>
                 </div>

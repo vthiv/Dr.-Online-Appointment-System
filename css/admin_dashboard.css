@@ -365,12 +365,11 @@ a.status-grey {
 # Page Title
 --------------------------------------------------------------*/
 .pagetitle {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .pagetitle h1 {
   font-size: 24px;
-  margin-bottom: 0;
   font-weight: 600;
   color: #012970;
 }
@@ -379,8 +378,8 @@ a.status-grey {
   color: #565656;
 	font-size: 20px;
 	font-weight: normal;
-  margin-top: 40px;
-	margin-bottom: 20px;
+  margin-top: 10px;
+	margin-bottom: 10px;
 }
 
 /*--------------------------------------------------------------
