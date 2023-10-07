@@ -1,3 +1,30 @@
+<?php
+
+session_start();
+require("../connection.php");
+
+if(isset($_SESSION["user"])){
+    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+        header("location: ../index.php");
+    }
+} else {
+    header('Location:../index.php');  // Redirecting To Home Page
+}
+
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -140,7 +167,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-1.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Calvin_Carlo.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -159,7 +186,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-2.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Cristino_Murphy.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -178,7 +205,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-3.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Toni_Taylor.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -197,7 +224,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-4.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Jennie_Bombar.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -205,7 +232,7 @@
                                 </ul>
                             </div>
                             <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Jessica McFarlane</a>
+                                <a href="#" class="title text-dark h5 d-block mb-0">Jennie Bombar</a>
                                 <small class="text-muted speciality">ENT Specialists</small>
                             </div>
                         </div>
@@ -216,7 +243,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-5.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Steven_Paul.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -235,7 +262,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-6.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Alia_Reddy.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -254,7 +281,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-7.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Charles_Hardy.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -273,7 +300,7 @@
                     <div class="col-mt-4">
                         <div class="card team border-0 rounded shadow overflow-hidden">
                             <div class="team-img position-relative">
-                                <img src="../img/doctors/doctors-8.jpg" class="img-fluid" />
+                                <img src="../img/doctors/Bertha_Magers.jpg" class="img-fluid" />
                                 <ul class="list-unstyled team-social mb-0">
                                     <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                     <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>

@@ -1,17 +1,27 @@
 <?php
+
 session_start();
-if(!isset($_SESSION['username'])|| $_SESSION['usertype']!=1)
-{
-    header("location:../index.php");
+require("../connection.php");
+
+if(isset($_SESSION["user"])){
+    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+        header("location: ../index.php");
+    }
+} else {
+    header('Location:../index.php');  // Redirecting To Home Page
 }
 
-$email = $_SESSION["email"];
-$select_sql = "SELECT webuser.email, webuser.usertype, Admin.Admin_Name, Admin.Admin_Username
-               FROM webuser
-               INNER JOIN Admin ON webuser.email = Admin.Admin_Email
-               WHERE webuser.usertype = '1'";
-$result_User = mysqli_query($connection, $select_sql);
-$row_user = mysqli_fetch_assoc($result_User);
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
 ?>
 
 <!DOCTYPE html>
@@ -165,61 +175,98 @@ $row_user = mysqli_fetch_assoc($result_User);
                                 </div>
                             </div>
 
-                            <form class="mt-4">
+                            <form class="POST mt-4">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">First Name</label>
-                                            <input name="name" id="name" type="text" class="form-control" placeholder="First Name :" />
+                                            <input name="name" id="name" type="text" class="form-control" placeholder="First Name :" required />
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Last Name</label>
-                                            <input name="name" id="name2" type="text" class="form-control" placeholder="Last Name :" />
+                                            <input name="name2" id="name2" type="text" class="form-control" placeholder="Last Name :" />
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Employee ID </label>
+                                            <input class="form-control" type="text" name="employee_id" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Username</label>
+                                            <input class="form-control" type="text" name="username" id="username" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Email</label>
-                                            <input name="email" id="email" type="email" class="form-control" placeholder="Email :" />
+                                            <input name="email" id="email" type="email" class="form-control" placeholder="Email :" required/>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Password</label>
+                                            <input class="form-control" type="password" name="pwd" id="pwd" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Date of Birth</label>
+                                            <input name="dob" id="dob" type="date" class="form-control flatpicker flatpicker-input " />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Phone Number</label>
-                                            <input name="number" id="number" type="text" class="form-control" placeholder="Phone Number :" />
+                                            <input name="phonenumber" id="phonenumber" type="text" class="form-control" placeholder="Phone Number :" />
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Joining Date</label>
+                                            <div class="cal-icon">
+                                            <input name="joining_date" id="joining_date" type="date" class="form-control flatpicker flatpicker-input " required/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Department</label>
-                                            <select class="form-control department-name select2input">
-                                                <option value="NE">Neurology (Nerve Care)</option>
-                                                <option value="OP">Ophthalmology (Eye Care)</option>
-                                                <option value="CA">Cardiology (Heart Care)</option>
-                                                <option value="EN">Endocrinology (Bone Care)</option>
-                                                <option value="OT">Otolaryngology (ENT)</option>
+                                            <select class="form-control select2input">
+                                                <option value="">Neurology (Nerve Care)</option>
+                                                <option value="">Ophthalmology (Eye Care)</option>
+                                                <option value="">Cardiology (Heart Care)</option>
+                                                <option value="">Endocrinology (Bone Care)</option>
+                                                <option value="">Otolaryngology (ENT)</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Gender</label>
-                                            <select class="form-control gender-name select2input">
-                                                <option value="EY">Male</option>
-                                                <option value="GY">Female</option>
+                                            <select class="form-control select2input">
+                                                <option value="">Male</option>
+                                                <option value="">Female</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Facebook</label>
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text bg-white border border-end-0 text-dark" id="fb-id"><i data-feather="facebook" class="bi bi-facebook"></i></span>
@@ -229,7 +276,7 @@ $row_user = mysqli_fetch_assoc($result_User);
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Linkedin</label>
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text bg-white border border-end-0 text-dark" id="linke-pro"><i data-feather="linkedin" class="bi bi-linkedin"></i></span>
@@ -239,7 +286,7 @@ $row_user = mysqli_fetch_assoc($result_User);
                                     </div>
 
                                     <div class="col-md-6">
-                                        <div class="mb-3">
+                                        <div class="form-group mb-3">
                                             <label class="form-label">Twitter</label>
                                             <div class="input-group flex-nowrap">
                                                 <span class="input-group-text bg-white border border-end-0 text-dark" id="twitter-id"><i data-feather="twitter" class="bi bi-twitter"></i></span>
@@ -249,13 +296,35 @@ $row_user = mysqli_fetch_assoc($result_User);
                                     </div>
 
                                     <div class="col-md-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Bio Here</label>
-                                            <textarea name="comments" id="comments" rows="3" class="form-control" placeholder="Bio :"></textarea>
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Address</label>
+                                            <input type="text" class="form-control" name="address" id="address" placeholder="Address: " required />
                                         </div>
                                     </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Bio Here</label>
+                                            <textarea name="comments" id="comments" rows="3" class="form-control" placeholder="Bio :" required></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label class="form-label">Doctor Status</label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="doctor_active" value="1" checked />
+                                                <label class="form-check-label" for="doctor_active">Active</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="doctor_inactive" value="0">
+                                                <label class="form-check-label" for="doctor_inactive">Inactive</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <button type="submit" class="btn btn-primary">Add Doctor</button>
+                                <button type="submit"  name="add-doctor" class="btn btn-primary submit-btn">Add Doctor</button>
                             </form>
                         </div>
                     </div>
