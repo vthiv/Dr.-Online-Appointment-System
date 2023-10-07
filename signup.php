@@ -9,11 +9,11 @@ if($_POST){
 
     $result = $connection ->query("SELECT * FROM webuser");
 
-    $firstname = $_SESSION['firstname'];
-    $lastname = $_SESSION['lastname'];
-    $phone=$_SESSION['phonenumber'];
-    $dob=$_SESSION['dob'];
-    $address=$_SESSION['address'];
+    $firstname = $_POST['firstname'];
+    $lastname = $_POST['lastname'];
+    $phone=$_POST['phonenumber'];
+    $dob=$_POST['dob'];
+    $address=$_POST['address'];
     $email= $_POST['email'];
     $newpassword=$_POST['newpassword'];
     $cpassword=$_POST['cpassword'];
