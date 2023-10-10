@@ -22,6 +22,12 @@ if ($result && mysqli_num_rows($result) > 0) {
 } else {
     $adminName = "Admin"; // Default name if not found
 }
+
+// Retrieve doctors with department details using INNER JOIN
+$doctorsQuery = "SELECT d.*, dept.Dept_Name FROM doctor d
+                 INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID";
+$doctorsResult = mysqli_query($connection, $doctorsQuery);
+
 ?>
 
 
@@ -163,157 +169,41 @@ if ($result && mysqli_num_rows($result) > 0) {
                 </div>
 
                 <div class="row row-cols-md-2 row-cols-lg-5">
-                    <!--Doctor Specialities 1 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Calvin_Carlo.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Calvin Carlo</a>
-                                <small class="text-muted speciality">Eye Care</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 1 Section Ends-->
-
-                    <!--Doctor Specialities 2 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Cristino_Murphy.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Cristino Murphy</a>
-                                <small class="text-muted speciality">Gynecology</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 2 Section Ends-->
-
-                    <!--Doctor Specialities 3 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Toni_Taylor.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Toni Taylor</a>
-                                <small class="text-muted speciality">Neurologist</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 3 Section Ends-->
-
-                    <!--Doctor Specialities 4 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Jennie_Bombar.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Jennie Bombar</a>
-                                <small class="text-muted speciality">ENT Specialists</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 4 Section Ends-->
-
-                    <!--Doctor Specialities 5 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Steven_Paul.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Steven Paul</a>
-                                <small class="text-muted speciality">Rheumatologist</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 5 Section Ends-->
-
-                    <!--Doctor Specialities 6 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Alia_Reddy.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Alia Reddy</a>
-                                <small class="text-muted speciality">Cardiologist</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 6 Section Ends-->
-
-                    <!--Doctor Specialities 7 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Charles_Hardy.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Charles Hardy</a>
-                                <small class="text-muted speciality">Ophthalmologists</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 7 Section Ends-->
-
-                    <!--Doctor Specialities 8 Section Starts-->
-                    <div class="col-mt-4">
-                        <div class="card team border-0 rounded shadow overflow-hidden">
-                            <div class="team-img position-relative">
-                                <img src="../img/doctors/Bertha_Magers.jpg" class="img-fluid" />
-                                <ul class="list-unstyled team-social mb-0">
-                                    <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                    <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                </ul>
-                            </div>
-                            <div class="card-body content text-center">
-                                <a href="#" class="title text-dark h5 d-block mb-0">Bertha Magers</a>
-                                <small class="text-muted speciality">Oncologist</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!--Doctor Specialities 8 Section Ends-->
+                    <?php
+                    if ($doctorsResult && mysqli_num_rows($doctorsResult) > 0) {
+                        while ($row = mysqli_fetch_assoc($doctorsResult)) {
+                            ?>
+                            <div class="col mt-4"> <!-- Each doctor card should be in a separate column -->
+                                <div class="card team border-0 rounded shadow overflow-hidden">
+                                    <div class="team-img position-relative">
+                                        <?php
+                                        if (!empty($row['Profile_Image'])) {
+                                            // Construct the image source directly from the profile image filename
+                                            $profileImageSrc = "../img/doctors/" . $row['Profile_Image'];
+                                            echo '<img src="' . $profileImageSrc . '" class="img-fluid" />';
+                                        } else {
+                                            // Default image if no profile image is provided
+                                            echo '<img src="/img/default-profile-image.jpg" class="img-fluid" />';
+                                        }
+                                        ?>
+                                        <ul class="list-unstyled team-social mb-0">
+                                            <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
+                                            <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
+                                            <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="card-body content text-center">
+                                        <a href="#" class="title text-dark h5 d-block mb-0"><?php echo $row['Doctor_Name']; ?></a>
+                                        <small class="text-muted department-name"><?php echo $row['Dept_Name']; ?></small>
+                                    </div>
+                                </div>
+                            </div> <!-- Close the column div for each doctor card -->
+                            <?php
+                        }
+                    } else {
+                        echo "No doctors found.";
+                    }
+                    ?>
                 </div>
             </section>
         </main>

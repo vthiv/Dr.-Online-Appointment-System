@@ -3,8 +3,8 @@
 session_start();
 require("../connection.php");
 
-if(isset($_SESSION["user"])){
-    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+if (isset($_SESSION["user"])) {
+    if ($_SESSION["user"] == "" or $_SESSION['usertype'] != '1') {
         header("location: ../index.php");
     }
 } else {
@@ -12,7 +12,7 @@ if(isset($_SESSION["user"])){
 }
 
 // Retrieve the admin's name
-$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
+$adminEmail = $_SESSION["user"];
 $query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
 $result = mysqli_query($connection, $query);
 
@@ -24,6 +24,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Retrieve other form data
     $employee_id = $_POST['employee_id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -31,46 +32,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $dob = $_POST['dob'];
     $phone = $_POST['phonenumber'];
     $joining_date = $_POST['joining_date'];
-    $department_id = $_POST['department']; // Make sure to capture the department ID from the form
+    $department_id = $_POST['dept_id'];
     $gender = $_POST['gender'];
     $address = $_POST['address'];
     $bio = $_POST['comments'];
     $status = $_POST['status'];
 
     // Handle file upload
-    $uploadDir = "../img/doctors/"; // Specify the directory where you want to store the uploaded images
-    $profileImage = $_FILES['profile_image']['name'];
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = "../img/doctors/";
+        $profileImage = $_FILES['profile_image']['name']; // Get the uploaded file name
+        //$targetFilePath = $uploadDir . $profileImage;
+        $fileType = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
 
-    // Check if a file was uploaded
-    if (!empty($profileImage)) {
-        $uploadPath = $uploadDir . basename($profileImage);
+        // Generate a unique filename based on the doctor's full name
+        $uniqueFilename = $name . '_' . uniqid() . '.' . $fileType;
+        $targetFilePath = $uploadDir . $uniqueFilename;
 
-        // Move the uploaded file to the specified directory
-        if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $uploadPath)) {
-            echo "Image uploaded successfully!";
-        } else {
-            echo "Error uploading image.";
+        // Create the directory if it doesn't exist
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true); // Create the directory with full permissions (you can adjust permissions as needed)
         }
-    }
 
-    // Insert the file path into the database
-    $profileImagePath = $uploadDir . $profileImage;
+        // Allow certain file formats
+        $allowTypes = array('jpg', 'png', 'jpeg');
+        if (in_array($fileType, $allowTypes)) {
+            // Upload file to server
+            if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetFilePath)) {
+                // Insert data into 'WEBUSER' table
+                $sql_webuser = "INSERT INTO webuser (email, usertype) VALUES ('$email', '2')";
+                if (mysqli_query($connection, $sql_webuser)) {
+                    // Get the last inserted ID for the 'webuser' record
+                    $webuser_id = mysqli_insert_id($connection);
 
-    // Insert data into 'WEBUSER' table
-    $sql_webuser = "INSERT INTO webuser (email, usertype) VALUES ('$email', '2')"; // Assuming '2' represents the doctor usertype
-    if (mysqli_query($connection, $sql_webuser)) {
-        // Get the last inserted ID for the 'webuser' record
-        $webuser_id = mysqli_insert_id($connection);
-
-        // Insert data into 'DOCTOR' table
-        $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$employee_id', '$department_id', '$name', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$profileImagePath', '$status')";
-        if (mysqli_query($connection, $sql_doctor)) {
-            echo "Doctor registration successful!";
+                    // Insert data into 'DOCTOR' table
+                    $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Doctor_Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$employee_id', '$department_id', '$name', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$uniqueFilename', '$status')";
+                    if (mysqli_query($connection, $sql_doctor)) {
+                        echo "Doctor registration successful!";
+                    } else {
+                        echo "Error inserting data into DOCTOR table: " . mysqli_error($connection);
+                    }
+                } else {
+                    echo "Error inserting data into WEBUSER table: " . mysqli_error($connection);
+                }
+            } else {
+                echo "Error uploading image.";
+            }
         } else {
-            echo "Error inserting data into DOCTOR table: " . mysqli_error($connection);
+            echo "Invalid file format. Allowed formats are jpg, png, and jpeg.";
         }
     } else {
-        echo "Error inserting data into WEBUSER table: " . mysqli_error($connection);
+        echo "Profile image is required.";
     }
 
     // Close the database connection
@@ -78,9 +90,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo "Invalid request.";
 }
-
-
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -221,10 +232,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="row">
                     <div class="col-lg-8 mt-4">
                         <div class="card border-0 p-4 rounded shadow">
-                            <form method="POST" enctype="multipart/form-data">
+                            <form class="mt-4" method="POST" enctype="multipart/form-data">
                                 <div class="row align-items-center">
                                     <div class="col-lg-2 col-md-4">
-                                        <img src=" " class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
+                                        <img src=" " id="preview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
                                     </div>
 
                                     <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
@@ -233,15 +244,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
 
                                     <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
-                                        <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" />
+                                        <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" onchange="previewImage(this);" />
                                         <label for="profile_image" class="btn btn-primary" style="margin-left: 10px;">Upload</label>
-                                        <a href="#" class="btn btn-soft-primary ms-2">Remove</a>
+                                        <a href="#" class="btn btn-soft-primary ms-2" onclick="clearImagePreview(); return false;">Remove</a>
                                     </div>
                                 </div>
-                            </form>
                             
-
-                            <form class="mt-4" method="POST">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
@@ -297,12 +305,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Department</label>
-                                            <select class="form-control select2input">
-                                                <option value="">Neurology (Nerve Care)</option>
-                                                <option value="">Ophthalmology (Eye Care)</option>
-                                                <option value="">Cardiology (Heart Care)</option>
-                                                <option value="">Endocrinology (Bone Care)</option>
-                                                <option value="">Otolaryngology (ENT)</option>
+                                            <select class="form-control" name="dept_id" id="dept_id">
+                                                <option value="">Select</option>
+                                                <?php
+                                                $departmentQuery = "SELECT `Dept_ID`, `Dept_Name` FROM `department` WHERE `Dept_Status` = 1";
+                                                $departmentResult = mysqli_query($connection, $departmentQuery);
+                                                    
+                                                if ($departmentResult && mysqli_num_rows($departmentResult) > 0) {
+                                                    while ($row = mysqli_fetch_assoc($departmentResult)) {
+                                                        echo '<option value="' . $row['Dept_ID'] . '">' . $row['Dept_Name'] . '</option>';
+                                                    }
+                                                }
+                                                ?>
                                             </select>
                                         </div>
                                     </div>
@@ -310,9 +324,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Gender</label>
-                                            <select class="form-control select2input">
-                                                <option value="">Male</option>
-                                                <option value="">Female</option>
+                                            <select class="form-control" name="gender">
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
                                             </select>
                                         </div>
                                     </div>
@@ -358,7 +372,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <ul class="list-unstyled mb-0 p-4" data-simplebar style="height: 664px;">
                                 <li class="d-md-flex align-items-center text-center text-md-start">
-                                    <img src="../img/doctors/doctors-2.jpg" class="avatar avatar-medium rounded-md shadow" />
+                                    <img src="../img/doctors/Calvin_Carlo.jpg" class="avatar avatar-medium rounded-md shadow" />
 
                                     <div class="ms-md-3 mt-4 mt-sm-0">
                                         <a href="#" class="text-dark h6">Dr. Calvin Carlo</a>
@@ -399,6 +413,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <script src="../js/main.js"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+
+        <script>
+            function previewImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#preview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            function clearImagePreview() {
+                $('#profile_image').val('');
+                $('#preview').attr('src', '');
+            }
+        </script>
         
     </body>
 </html>
