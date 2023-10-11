@@ -871,13 +871,13 @@ table.table td h2 span {
 .btn-soft-primary {
   background-color: rgba(57, 108, 240, 0.1) !important;
   border: 1px solid rgba(57, 108, 240, 0.1) !important;
-  color: #396cf0 !important;
+  color: #5280f3 !important;
   box-shadow: 0 3px 5px 0 rgba(57, 108, 240, 0.3);
 }
 
 .btn-soft-primary:hover, .btn-soft-primary:focus, .btn-soft-primary:active, .btn-soft-primary.active, .btn-soft-primary.focus {
-  background-color: #7D3C98 !important;
-  border-color: #7D3C98 !important;
+  background-color: #3a3ae5 !important;
+  border-color: #3a3ae5 !important;
   color: #ffffff !important;
 }
 
@@ -990,4 +990,95 @@ a.text-dark:hover, a.text-dark:focus {
 
 .mt-2 {
   margin-top: 0.5rem !important;
+}
+
+.bg-primary {
+  background-color: #396cf0 !important;
+}
+
+.d-flex .flex-1 {
+  flex: 1;
+}
+
+.margin-nagative.mt-n5 {
+  margin-top: -48px;
+}
+
+.shadow-md {
+  box-shadow: 0 5px 13px rgba(52, 58, 64, 0.2) !important;
+}
+
+.bg-white-50 {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.layout-specing {
+  padding: 10px 14px 14px !important;
+  min-height: calc(100vh - 56px) !important;
+  position: relative;
+}
+
+@media (max-width: 425px) {
+  .layout-specing {
+    padding: 15px 0 24px !important;
+  }
+}
+
+.nav-pills {
+  margin-bottom: 15px;
+  background: #f4f6fa;
+}
+
+.nav-pills .nav-link {
+  color: #495057 !important;
+  padding: 5px;
+  transition: all 0.5s ease;
+}
+
+.nav-pills .nav-link.nav-link-alt.active {
+  background: #beb8ef;
+  color: #ffffff !important;
+}
+
+.nav-pills .nav-link.active {
+  background: #bdd0ff;
+  color: #ffffff !important;
+}
+
+.nav-pills .nav-link.active .tab-para {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.nav-pills a .title {
+  font-size: 17px !important;
+  color: #000;
+  font-family: "Nunito", sans-serif;;
+}
+
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  color: #396cf0 !important;
+  border-color: transparent transparent #396cf0 !important;
+}
+
+.nav-tabs .nav-link:focus,
+.nav-tabs .nav-link:hover {
+  border-color: transparent;
+}
+
+.text-muted {
+  color: #58626f !important;
+}
+
+.btn-soft-danger {
+  background-color: rgba(240, 115, 90, 0.1) !important;
+  border: 1px solid rgba(240, 115, 90, 0.1) !important;
+  color: #f0735a !important;
+  box-shadow: 0 3px 5px 0 rgba(240, 115, 90, 0.3);
+}
+
+.btn-soft-danger:hover, .btn-soft-danger:focus, .btn-soft-danger:active, .btn-soft-danger.active, .btn-soft-danger.focus {
+  background-color: #f0735a !important;
+  border-color: #f0735a !important;
+  color: #ffffff !important;
 }
