@@ -193,7 +193,7 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
                                         </ul>
                                     </div>
                                     <div class="card-body content text-center">
-                                        <a href="view_doctor.php" class="title text-dark h5 d-block mb-0"><?php echo $row['Doctor_Name']; ?></a>
+                                    <?php echo '<a href="view_doctor.php?doctor_id=' . $row['Doctor_ID'] . '" class="title text-dark h5 d-block mb-0">' . $row['Doctor_Name'] . '</a>'; ?>
                                         <small class="text-muted department-name"><?php echo $row['Dept_Name']; ?></small>
                                     </div>
                                 </div>

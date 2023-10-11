@@ -1,3 +1,40 @@
+<?php
+session_start();
+require("../connection.php");
+
+if (isset($_SESSION["user"])) {
+    if ($_SESSION["user"] == "" or $_SESSION['usertype'] != '1') {
+        header("location: ../index.php");
+    }
+} else {
+    header('Location:../index.php');  // Redirecting To Home Page
+}
+
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"];
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+
+// Check if the Doctor_ID is provided in the URL
+if (isset($_GET['doctor_id'])) {
+    $selectedDoctorID = $_GET['doctor_id'];
+    // Retrieve the details of the selected doctor
+    $doctorQuery = "SELECT d.*, dept.Dept_Name FROM doctor d
+                    INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
+                    WHERE d.Doctor_ID = $selectedDoctorID";
+
+    $doctorResult = mysqli_query($connection, $doctorQuery);
+    $doctorData = mysqli_fetch_assoc($doctorResult);
+}
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -139,10 +176,10 @@
                         <div class="card bg-white rounded shadow overflow-hidden mt-4 border-0">
                             <div class="p-5 bg-primary bg-gradient"></div>
                             <div class="avatar-profile d-flex margin-nagative mt-n5 position-relative ps-3">
-                                <img src="../img/doctors/Calvin Carlo_6525710600513.jpg" class="rounded-circle shadow-md avatar avatar-medium" />
+                                <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" class="rounded-circle shadow-md avatar avatar-medium" />
                                 <div class="mt-4 ms-3 pt-3">
-                                    <h5 class="mt-3 mb-1">Dr. Calvin Carlo</h5>
-                                    <p class="text-muted mb-0">Orthopedic</p>
+                                    <h5 class="mt-3 mb-1"><?php echo $doctorData['Doctor_Name']; ?></h5>
+                                    <p class="text-muted mb-0"><?php echo $doctorData['Dept_Name']; ?></p>
                                 </div>
                             </div>
                         </div>
@@ -186,15 +223,7 @@
 
                                     <div class="tab-content mt-2" id="pills-tabContent">
                                         <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="overview-tab">
-                                            <p class="text-muted">qwertyuiop</p>
-                                            <h6 class="mb-0">Specialties: </h6>
-                                            <ul class="list-unstyled mt-4">
-                                                <li class="mt-1"><i class="bi bi-arrow-right-short"></i> Women's health services</li>
-                                                <li class="mt-1"><i class="bi bi-arrow-right-short"></i> Pregnancy care</li>
-                                                <li class="mt-1"><i class="bi bi-arrow-right-short"></i> Surgical procedures</li>
-                                                <li class="mt-1"><i class="bi bi-arrow-right-short"></i> Specialty care</li>
-                                                <li class="mt-1"><i class="bi bi-arrow-right-short"></i> Conclusion</li>
-                                            </ul>
+                                            <p class="text-muted"><?php echo $doctorData['Doctor_Bio']; ?></p>
                                         </div><!--end tab pane-->
 
                                         <div class="tab-pane fade" id="pills-experience" role="tabpanel" aria-labelledby="experience-tab">
@@ -202,33 +231,40 @@
 
                                             <div class="row row-cols-md-2 row-cols-lg-5">
                                                 <div class="col mt-4">
-                                                    <div class="card team border-0 rounded shadow overflow-hidden">
-                                                        <div class="team-person position-relative overflow-hidden">
-                                                            <img src=" " class="img-fluid" alt="">
-                                                            <ul class="list-unstyled team-like">
-                                                                <li><a href="#" class="btn btn-icon btn-pills btn-soft-danger"><i class="bi bi-heart"></i></a></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <a href="#" class="title text-dark h5 d-block mb-0">Louis Batey</a>
-                                                            <small class="text-muted speciality">M.B.B.S, Neurologist</small>
-                                                            <ul class="list-unstyled mt-2 mb-0">
-                                                                <li class="d-flex">
-                                                                    <i class="ri-map-pin-line text-primary align-middle"></i>
-                                                                    <small class="text-muted ms-2">63, PG Shustoke, UK</small>
-                                                                </li>
-                                                                <li class="d-flex mt-2">
-                                                                    <i class="ri-time-line text-primary align-middle"></i>
-                                                                    <small class="text-muted ms-2">Mon: 2:00PM - 6:00PM</small>
-                                                                </li>
-                                                            </ul>
-                                                            <ul class="list-unstyled mt-2 mb-0">
-                                                            <li class="list-inline-item"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
-                                                            <li class="list-inline-item"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
-                                                            <li class="list-inline-item"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+                                                    <?php
+                                                    // Retrieve team members from the same department
+                                                    $teamQuery = "SELECT * FROM doctor WHERE Dept_ID = {$doctorData['Dept_ID']} AND Doctor_ID != $selectedDoctorID";
+                                                    $teamResult = mysqli_query($connection, $teamQuery);
+
+                                                    if($teamResult && mysqli_num_rows($teamResult) > 0){
+                                                        while ($teamMember = mysqli_fetch_assoc($teamResult)){
+                                                            echo '<div class="card team border-0 rounded shadow overflow-hidden">';
+                                                        echo '<div class="team-person position-relative overflow-hidden">';
+                                                        echo '<img src="../img/doctors/'. $teamMember['Profile_Image']. '" class="img-fluid" alt="">';
+                                                        echo '<ul class="list-unstyled team-like">';
+                                                        echo '<li><a href="#" class="btn btn-icon btn-pills btn-soft-danger"><i class="bi bi-heart"></i></a></li>';
+                                                        echo '</ul>';
+                                                        echo '</div>';
+                                                        echo '<div class="card-body">';
+                                                        echo '<a href="#" class="title text-dark h5 d-block mb-0">' . $teamMember['Doctor_Name']. '</a>';
+                                                        echo '<small class="text-muted speciality">'.$teamMember['Doctor_Bio'].'</small>';
+                                                        echo '<ul class="list-unstyled mt-2 mb-0">';
+                                                        echo '<li class="d-flex">';
+                                                        echo '<i class="bi bi-geo-alt text-primary align-middle"></i>';
+                                                        echo '<small class="text-muted ms-2">'.$teamMember['Doctor_Address'].'</small>';
+                                                        echo '</li>';
+                                                        echo '</ul>';
+                                                        echo '<ul class="list-unstyled mt-2 mb-0">';
+                                                        echo '<li class="list-inline-item"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>';
+                                                        echo '<li class="list-inline-item"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>';
+                                                        echo '<li class="list-inline-item"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-twitter"></i></a></li>';
+                                                        echo '</ul>';
+                                                        echo '</div>';
+                                                        echo '</div>';
+                                                        }
+                                                    }
+                                                    ?>
+                                                    
                                                 </div><!--end col-->
                                             </div>
                                         </div><!--end tab pane-->
@@ -238,34 +274,28 @@
                                                 <div class="col-lg-4 col-md-12">
                                                     <div class="card border-0 p-3 rounded shadow">
                                                         <ul class="list-unstyled mb-0">
-                                                            <li class="d-flex justify-content-between">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Monday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 20.00</p>
-                                                            </li>
-                                                            <li class="d-flex justify-content-between mt-2">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Tuesday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 20.00</p>
-                                                            </li>
-                                                            <li class="d-flex justify-content-between mt-2">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Wednesday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 20.00</p>
-                                                            </li>
-                                                            <li class="d-flex justify-content-between mt-2">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Thursday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 20.00</p>
-                                                            </li>
-                                                            <li class="d-flex justify-content-between mt-2">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Friday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 20.00</p>
-                                                            </li>
-                                                            <li class="d-flex justify-content-between mt-2">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Saturday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 18.00</p>
-                                                            </li>
-                                                            <li class="d-flex justify-content-between mt-2">
-                                                                <p class="text-muted mb-0"><i class="ri-time-fill text-primary align-middle h5 mb-0"></i> Sunday</p>
-                                                                <p class="text-primary mb-0"><span class="text-dark">Time:</span> 8.00 - 14.00</p>
-                                                            </li>
+                                                        <?php
+                                                        // Check if the Doctor_ID is provided in the URL
+                                                        if (isset($_GET['doctor_id'])) {
+                                                            $selectedDoctorID = $_GET['doctor_id'];
+
+                                                            // Retrieve the schedule for the selected doctor
+                                                            $scheduleQuery = "SELECT * FROM schedule WHERE Doctor_ID = $selectedDoctorID ORDER BY Schedule_Day";
+
+                                                            $scheduleResult = mysqli_query($connection, $scheduleQuery);
+
+                                                            if ($scheduleResult && mysqli_num_rows($scheduleResult) > 0) {
+                                                                while ($schedule = mysqli_fetch_assoc($scheduleResult)) {
+                                                                    echo '<li class="d-flex justify-content-between">';
+                                                                    echo '<p class="text-muted mb-0"><i class="bi bi-clock text-primary align-middle h5 mb-0"></i> ' . $schedule['Schedule_Day'] . '</p>';
+                                                                    echo '<p class="text-primary mb-0"><span class="text-dark">Time:</span> ' . $schedule['Schedule_StartTime'] . ' - ' . $schedule['Schedule_EndTime'] . '</p>';
+                                                                    echo '</li>';
+                                                                }
+                                                            } else {
+                                                                echo '<li class="text-muted mb-0">No schedule available.</li>';
+                                                            }
+                                                        }
+                                                        ?>
                                                         </ul>
                                                     </div>
                                                 </div><!--end col-->
@@ -278,7 +308,7 @@
                                                         <div class="card-body p-0 mt-4">
                                                             <h5 class="title fw-bold">Phone</h5>
                                                             <p class="text-muted">Immediate Assistance</p>
-                                                            <a href="tel:+60123456789" class="link">0123456789</a>
+                                                            <a href="tel:+60123456789" class="link"><?php echo $doctorData['Doctor_PhoneNo']; ?></a>
                                                         </div>
                                                     </div>
                                                 </div><!--end col-->
@@ -291,7 +321,7 @@
                                 
                                                         <div class="card-body p-0 mt-4">
                                                             <h5 class="title fw-bold">Email</h5>
-                                                            <a href="mailto:contact@example.com" class="link">contact@example.com</a>
+                                                            <a href="mailto:contact@example.com" class="link"><?php echo $doctorData['Email']; ?></a>
                                                         </div>
                                                     </div>
                                                 </div><!--end col-->
