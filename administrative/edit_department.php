@@ -251,6 +251,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <script src="../js/tagsinput.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>

@@ -3,47 +3,23 @@ session_start();
 require("../connection.php");
 
 if(isset($_SESSION["user"])){
-    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='2'){
         header("location: ../index.php");
     }
 } else {
     header('Location:../index.php');  // Redirecting To Home Page
 }
 
-// SQL query to retrieve all appointment details
-$query = "SELECT 
-            A.Apt_ID AS appointment_ID,
-            CONCAT(P.Pat_Firstname, ' ', P.Pat_Lastname) AS patient_name,
-            D.Doctor_Name AS doctor_name,
-            Dept.Dept_Name AS department_name,
-            A.App_Date AS appointment_date,
-            A.App_Time AS appointment_time,
-            CASE
-                WHEN A.App_Status = 1 THEN 'Active'
-                ELSE 'Inactive'
-            END AS appointment_status
-            FROM appointment A
-            INNER JOIN patient P ON A.Pat_ID = P.Pat_ID
-            INNER JOIN doctor D ON A.Doctor_ID = D.Doctor_ID
-            INNER JOIN department Dept ON A.Dept_ID = Dept.Dept_ID";
-
-// Execute the query
-$app_result = mysqli_query($connection, $query);
-
-if (!$app_result) {
-    die("Query failed: " . mysqli_error($connection));
-}
-
 // Retrieve the admin's name
-$adminEmail = $_SESSION["user"];
-$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$doctorEmail = $_SESSION["user"]; // Assuming you store the doctor's email in the session
+$query = "SELECT `Doctor_Name` FROM `doctor` WHERE `Doctor_Email` = '$doctorEmail'";
 $result = mysqli_query($connection, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
-    $adminData = mysqli_fetch_assoc($result);
-    $adminName = $adminData['Admin_Name'];
+    $doctorData = mysqli_fetch_assoc($result);
+    $doctorName = $doctorData['Doctor_Name'];
 } else {
-    $adminName = "Admin"; // Default name if not found
+    $doctorName = "Doctor"; // Default name if not found
 }
 
 ?>
@@ -56,7 +32,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Admin | Appointment</title>
+        <title>Doctor | Patient Prescription</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -79,7 +55,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         <link href="../css/admin_dashboard.css" rel="stylesheet" />
         <link href="../css/simplebar.css" rel="stylesheet" />
         <link href="../css/select2.min.css" rel="stylesheet" />
-        <link href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css" rel="stylesheet">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
 
@@ -87,7 +62,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     </head>
 
     <body>
-
         <!-- ======= Header Starts ======= -->
         <header id="header" class="header fixed-top d-flex align-items-center">
 
@@ -119,8 +93,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <div class="avatar-profile">
                     <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-2 border-0">
                         <img src="../img/admin.jpg" class="rounded-circle shadow-md avatar avatar-md-md" />
-                        <h5 class="mt-3 mb-1"><?php echo $adminName; ?></h5>
-                        <p class="text-muted mb-0">Administrator</p>
+                        <h5 class="mt-3 mb-1"><?php echo $doctorName; ?></h5>
+                        <p class="text-muted mb-0">Doctor</p>
                     </div>
                 </div>
                 <li class="nav-item">
@@ -142,7 +116,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="appointment_admin.php">
+                    <a class="nav-link collapsed" href="appointment_admin.php">
                         <i class="bi bi-calendar-check-fill"></i>
                         <span>Appointment</span>
                     </a>
@@ -154,7 +128,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="patients_admin.php">
+                    <a class="nav-link" href="patients_admin.php">
                         <i class="bi bi-people"></i>
                         <span>Patients</span>
                     </a>
@@ -171,67 +145,89 @@ if ($result && mysqli_num_rows($result) > 0) {
 
         <!-- ======= Main Starts ======= -->
         <main id="main" class="main">
-
             <section class="section dashboard">
                 <div class="row">
                     <div class="pagetitle">
-                        <h1>Appointments</h1>
+                        <h1>Patient</h1>
                     </div>
 
                     <div class="col-sm-4 col-3">
-                        <h6 class="title">Appointments List</h6>
+                        <h6 class="title">Add Patient Prescription</h6>
                     </div>
-                    
-                    <div class="col-sm-8 col-9 text-right m-b-20">
-                        <a href="add_appointment_admin.php" class="btn btn-primary btn-rounded"><i class="bi bi-plus"></i>Add Appointment</a>
+
+                    <div class="col-sm-8 text-right m-b-20">
+                        <a href="appointment_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-stripped" id="appointmentlist" cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Appointment ID</th>
-                                <th>Patient Name</th>
-                                <th>Doctor Name</th>
-                                <th>Department</th>
-                                <th>Appointment Date</th>
-                                <th>Appointment Time</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if (isset($_GET['App_ID'])) {
-                                $id = $_GET['App_ID'];
-                            }
-                            while ($row = mysqli_fetch_array($app_result)) {
-                            ?>
-                            <tr>
-                                <td><?php echo $row['appointment_ID']; ?></td>
-                                <td><?php echo $row['patient_name']; ?></td>
-                                <td><?php echo $row['doctor_name']; ?></td>
-                                <td><?php echo $row['department_name']; ?></td>
-                                <td><?php echo $row['appointment_date']; ?></td>
-                                <td><?php echo $row['appointment_time']; ?></td>
-                                <?php if($row['appointment_status']){ ?>
-                                    <td><span class="custom-badge status-green">Active</span></td>
-                                <?php } else{ ?>
-                                    <td><span class="custom-badge status-red">Inactive</span></td>
-                                <?php  }?>
-                                <td>
-                                    <form  action="edit_appointment.php" method="POST">
-                                        <input type="hidden" name="editappointment_id" value="<?php echo $row['appointment_ID'] ?>" />
-                                        <button type="submit" name="edit_app_btn" class="btn btn-info"><i class="bi bi-pencil-square"></i></button>
-                                    </form>
-                                    <a href="view_prescription.php?App_ID=' . $row['appointment_ID'] . '" class="btn btn-light"><i class="bi bi-prescription2"></i></a>
-                                </td>
-                            </tr>
-                            <?php }
-                            ?>
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <div class="card border-0 p-4 rounded shadow">
+                            <form>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Patient Name <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="patient_name" required readonly/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Doctor Name</label>
+                                            <input class="form-control" type="text" name="doctor_name" required readonly/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Appointment ID <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="app_id" required readonly/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Appointment Date <span class="text-danger">*</span></label>
+                                            <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" readonly/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Appointment Time <span class="text-danger">*</span></label>
+                                            <input name="app_time" id="app_time" type="time" class="form-control timepicker" readonly/>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Disease<span class="text-danger">*</span></label>
+                                            <textarea name="disease" id="disease" rows="2" class="form-control" placeholder="Disease :"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Allergy<span class="text-danger">*</span></label>
+                                            <textarea name="allergy" id="allergy" rows="2" class="form-control" placeholder="Allergy :"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Prescription<span class="text-danger">*</span></label>
+                                            <textarea name="prescription" id="prescription" rows="2" class="form-control" placeholder="Disease :"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="m-t-20 text-center">
+                                    <button name="add-prescription" class="btn btn-primary submit-btn">Add Prescription</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -248,31 +244,13 @@ if ($result && mysqli_num_rows($result) > 0) {
         </footer>
         <!-- ======= Footer Ends ======= -->
 
-        
         <script src="../js/simplebar.min.js"></script>
         <script src="../js/bootstrap.bundle.min.js"></script>
-        <script src="../js/jquery.min.js"></script>
         <script src="../js/select2.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-        <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('#appointmentlist').DataTable();
-                $('.dataTables_length').addClass('bs-select');
-            });
-        </script>
-        <script>
-            require( 'datatables.net-bs5' );
-            require( 'datatables.net-buttons-bs5' );
-            require( 'datatables.net-buttons/js/buttons.html5.js' );
-            require( 'datatables.net-buttons/js/buttons.print.js' );
-            require( 'datatables.net-scroller-bs5' );
-            require( 'datatables.net-searchpanes-bs5' );
-        </script>
         
     </body>
 </html>

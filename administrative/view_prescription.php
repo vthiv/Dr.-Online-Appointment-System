@@ -2,44 +2,63 @@
 session_start();
 require("../connection.php");
 
-if(isset($_SESSION["user"])){
-    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
-        header("location: ../index.php");
+// Check if the user is logged in and is an admin
+if (isset($_SESSION["user"]) && $_SESSION['usertype'] === '1') {
+    // The user is an admin, proceed with displaying the page
+
+    // Check if the appointment ID is provided in the URL
+    if (isset($_GET['App_ID'])) {
+        $appID = $_GET['App_ID'];
+
+        // Fetch prescription details for the provided appointment ID
+        $query = "SELECT p.Pat_ID, d.Doctor_Name, a.App_Date, a.App_Time, p.Pat_Firstname, p.Pat_Lastname, pr.Disease, pr.Allergy, pr.Prescription, a.Apt_ID
+                FROM prescription pr
+                JOIN patient p ON pr.Pat_ID = p.Pat_ID
+                JOIN doctor d ON pr.Doc_ID = d.Doctor_ID
+                JOIN appointment a ON pr.App_ID = a.App_ID
+                WHERE pr.App_ID = ?";
+
+        $stmt = mysqli_prepare($connection, $query);
+
+        // Bind the parameter
+        mysqli_stmt_bind_param($stmt, "i", $appID);
+
+        // Execute the statement
+        mysqli_stmt_execute($stmt);
+
+        // Get the result
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            $prescriptionData = mysqli_fetch_assoc($result);
+
+            // Populate form fields with prescription details
+            $patientName = $prescriptionData['Pat_Firstname'] . ' ' . $prescriptionData['Pat_Lastname'];
+            $doctorName = $prescriptionData['Doctor_Name'];
+            $apt_id = $prescriptionData['Apt_ID'];
+            $appDate = $prescriptionData['App_Date'];
+            $appTime = $prescriptionData['App_Time'];
+            $disease = $prescriptionData['Disease'];
+            $allergy = $prescriptionData['Allergy'];
+            $prescription = $prescriptionData['Prescription'];
+
+        } else {
+            // Handle the case where the prescription for the provided appointment ID is not found
+            $message = "The prescription for the provided appointment ID is not found";
+        }
+    } else {
+        // Handle the case where the appointment ID is not provided in the URL
+        $message ="The appointment ID is not found";
     }
+
 } else {
-    header('Location:../index.php');  // Redirecting To Home Page
+    header("location: ../index.php"); // Redirect non-admin users to the homepage
+    exit();
 }
 
-if(isset($_REQUEST['add-department']))
-    {
-        $department_name = $_REQUEST['department_name'];
-        $description = $_REQUEST['description'];
-        $status = $_REQUEST['status'];
-
-        // Check if the department with the same name already exists
-        $check_query = mysqli_query($connection, "SELECT * FROM department WHERE Dept_Name='$department_name'");
-
-        if(mysqli_num_rows($check_query) > 0) {
-            // Department with the same name exists, update it
-            $update_query = mysqli_query($connection, "UPDATE department SET Dept_Description='$description', Dept_Status='$status' WHERE Dept_Name='$department_name'");
-
-            if($update_query) {
-                $message = "Department added successfully";
-            } else {
-                $message = "Error adding department";
-            }
-        } else {
-            $insert_query = mysqli_query($connection, "INSERT INTO department SET Dept_Name='$department_name', Dept_Description='$description', Dept_Status='$status'");
-            if($insert_query) {
-                $message = "Department created successfully";
-            } else {
-                $message = "Error!";
-            }
-        }
-    }
 
 // Retrieve the admin's name
-$adminEmail = $_SESSION["user"];
+$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
 $query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
 $result = mysqli_query($connection, $query);
 
@@ -49,7 +68,6 @@ if ($result && mysqli_num_rows($result) > 0) {
 } else {
     $adminName = "Admin"; // Default name if not found
 }
-
 ?>
 
 
@@ -61,7 +79,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Admin | Add Department</title>
+        <title>Admin | Patient Prescription</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -84,7 +102,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         <link href="../css/admin_dashboard.css" rel="stylesheet" />
         <link href="../css/simplebar.css" rel="stylesheet" />
         <link href="../css/select2.min.css" rel="stylesheet" />
-        <link href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css" rel="stylesheet">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
 
@@ -134,7 +151,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="departments_admin.php">
+                    <a class="nav-link collapsed" href="departments_admin.php">
                         <i class="bi bi-diagram-2"></i>
                         <span>Department</span>
                     </a>
@@ -158,7 +175,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="patients_admin.php">
+                    <a class="nav-link" href="patients_admin.php">
                         <i class="bi bi-people"></i>
                         <span>Patients</span>
                     </a>
@@ -178,81 +195,78 @@ if ($result && mysqli_num_rows($result) > 0) {
             <section class="section dashboard">
                 <div class="row">
                     <div class="pagetitle">
-                        <h1>Departments</h1>
+                        <h1>Patient</h1>
                     </div>
 
                     <div class="col-sm-4 col-3">
-                        <h6 class="title">Add Department</h6>
+                        <h6 class="title">Patient Prescription</h6>
                     </div>
-                    
+
                     <div class="col-sm-8 text-right m-b-20">
-                        <a href="departments_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
+                        <a href="appointment_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
-                        <div class="card border-0 p-2 rounded shadow">
+                        <div class="card border-0 p-4 rounded shadow">
                             <form>
                                 <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Department Name <span class="text-danger">*</span></label>
-                                            <input name="department_name" id="name" type="text" class="form-control" placeholder="Department Name :" />
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Patient Name <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="patient_name" value="<?= isset($patientName) ? $patientName : '' ?>" readonly/>
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label class="form-label">Department Description <span class="text-danger">*</span></label>
-                                            <textarea name="description" id="description" rows="4" class="form-control" placeholder="Department Description :"></textarea>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Doctor Name</label>
+                                            <input class="form-control" type="text" name="doctor_name" value="<?= isset($doctorName) ? $doctorName : '' ?>" readonly/>
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="mb-3">
-                                            <label class="display-block">Schedule Status <span class="text-danger">*</span></label><br>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="status" id="product_active" value="1" checked />
-                                                <label class="form-check-label" for="product_active">Active</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="status" id="product_inactive" value="0">
-                                                <label class="form-check-label" for="product_inactive">Inactive</label>
-                                            </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label>Appointment ID <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="app_id" value="<?= isset($apt_id) ? $apt_id : '' ?>" readonly/>
                                         </div>
                                     </div>
 
-                                    <div class="col-lg-12">
-                                        <div class="d-grid">
-                                            <button type="submit" class="btn btn-outline-primary" name="add-department">Add Department</button>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Appointment Date <span class="text-danger">*</span></label>
+                                            <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" value="<?= isset($appDate) ? $appDate : '' ?>" readonly/>
                                         </div>
                                     </div>
 
-                                    <script>
-                                        function addDepartment() {
-                                            var department_name = document.getElementById('name').value;
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Appointment Time <span class="text-danger">*</span></label>
+                                            <input name="app_time" id="app_time" type="time" class="form-control timepicker" value="<?= isset($appTime) ? $appTime : '' ?>"/>
+                                        </div>
+                                    </div>
 
-                                            // Check if department_name already exists
-                                            $.ajax({
-                                                url: 'check_department.php', // Create a PHP script to check if the department exists
-                                                method: 'POST',
-                                                data: {
-                                                    Dept_Name: department_name
-                                                },
-                                                success: function(response) {
-                                                    if (response === 'exists') {
-                                                        swal("Department with the same name already exists!");
-                                                    } else if (response === 'success') {
-                                                        // Submit the form if the department doesn't exist
-                                                        $('form').submit();
-                                                    } else {
-                                                        swal("Error!");
-                                                    }
-                                                }
-                                            });
-                                        }
-                                    </script>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Disease<span class="text-danger">*</span></label>
+                                            <textarea name="disease" id="disease" rows="2" class="form-control" placeholder="Disease :"><?= isset($disease) ? $disease : '' ?></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Allergy<span class="text-danger">*</span></label>
+                                            <textarea name="allergy" id="allergy" rows="2" class="form-control" placeholder="Allergy :"><?= isset($allergy) ? $allergy : '' ?></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Prescription<span class="text-danger">*</span></label>
+                                            <textarea name="prescription" id="prescription" rows="2" class="form-control" placeholder="Prescription :"><?= isset($prescription) ? $prescription : '' ?></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -275,38 +289,17 @@ if ($result && mysqli_num_rows($result) > 0) {
 
         <script src="../js/simplebar.min.js"></script>
         <script src="../js/bootstrap.bundle.min.js"></script>
-        <script src="../js/jquery.min.js"></script>
         <script src="../js/select2.min.js"></script>
-        <script src="../js/select2.init.js"></script>
-        <script src="../js/tagsinput.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-        <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('#departmentlist').DataTable();
-                $('.dataTables_length').addClass('bs-select');
-            });
-        </script>
-        <script>
-            require( 'datatables.net-bs5' );
-            require( 'datatables.net-buttons-bs5' );
-            require( 'datatables.net-buttons/js/buttons.html5.js' );
-            require( 'datatables.net-buttons/js/buttons.print.js' );
-            require( 'datatables.net-scroller-bs5' );
-            require( 'datatables.net-searchpanes-bs5' );
-        </script>
-
         <script type="text/javascript">
             <?php
-                if(isset($message)){
-                    echo 'swal("'.$message.'")';
+                if(isset($message)) {
+                    echo 'swal("' . $message . '");';
                 } 
             ?>
         </script>
-        
     </body>
 </html>

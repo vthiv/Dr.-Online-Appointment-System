@@ -1,3 +1,29 @@
+<?php
+session_start();
+require("../connection.php");
+
+if(isset($_SESSION["user"])){
+    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+        header("location: ../index.php");
+    }
+} else {
+    header('Location:../index.php');  // Redirecting To Home Page
+}
+
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -148,14 +174,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Patient Name</td>
-                                <td>Address</td>    
-                                <td>Email</td>
-                                <td>Phone</td>
-                                <td>Date of Birth</td>
-                                <td>Action</td>
-                            </tr>
+                            <?php
+                            // Fetch and display patient details
+                            $patientQuery = "SELECT * FROM `patient`";
+                            $patientResult = mysqli_query($connection, $patientQuery);
+
+                            if ($patientResult && mysqli_num_rows($patientResult) > 0) {
+                                while ($patientData = mysqli_fetch_assoc($patientResult)) {
+                                    echo '<tr>
+                                        <td>' . $patientData['Pat_Firstname'] . ' ' . $patientData['Pat_Lastname'] . '</td>
+                                        <td>' . $patientData['Pat_Address'] . '</td>
+                                        <td>' . $patientData['Pat_Email'] . '</td>
+                                        <td>' . $patientData['Pat_PhoneNo'] . '</td>
+                                        <td>' . $patientData['Pat_DOB'] . '</td>
+                                        <td>
+                                            <a href="edit_patient.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
+                                            <a href="add_prescription.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-light"><i class="bi bi-prescription2"></i></a>
+                                        </td>
+                                    </tr>';
+                                }
+                            } else {
+                                echo "No Patient records found.";
+                            }
+                            ?>
+                            
                         </tbody>
                     </table>
                 </div>
@@ -181,6 +223,7 @@
         <script src="../js/select2.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
         <script>

@@ -232,6 +232,7 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
         <script src="../js/theme.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
         <script>

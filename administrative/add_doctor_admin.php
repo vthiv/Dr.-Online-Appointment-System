@@ -411,7 +411,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <script src="../js/feather.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
-
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
 
         <script>
