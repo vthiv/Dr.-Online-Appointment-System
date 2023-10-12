@@ -124,6 +124,19 @@ h6 {
   font-weight: 500;
 }
 
+.btn-soft-primary {
+  background-color: rgba(57, 108, 240, 0.1) !important;
+  border: 1px solid rgba(57, 108, 240, 0.1) !important;
+  color: #5280f3 !important;
+  box-shadow: 0 3px 5px 0 rgba(57, 108, 240, 0.3);
+}
+
+.btn-soft-primary:hover, .btn-soft-primary:focus, .btn-soft-primary:active, .btn-soft-primary.active, .btn-soft-primary.focus {
+  background-color: #3a3ae5 !important;
+  border-color: #3a3ae5 !important;
+  color: #ffffff !important;
+}
+
 /*--------------------------------------------------------------
 # Sidebar
 --------------------------------------------------------------*/
