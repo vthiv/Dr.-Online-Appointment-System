@@ -13,15 +13,90 @@ if(isset($_SESSION["user"])){
 
 // Retrieve the admin's name
 $adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
-$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$query = "SELECT `Admin_Name`, `Admin_Bio`, `Admin_Email`, `Admin_PhoneNo` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
 $result = mysqli_query($connection, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
     $adminData = mysqli_fetch_assoc($result);
     $adminName = $adminData['Admin_Name'];
+    $adminBio = $adminData['Admin_Bio'];
+    $adminEmail = $adminData['Admin_Email'];
+    $adminPhone = $adminData['Admin_PhoneNo'];
 } else {
     $adminName = "Admin"; // Default name if not found
+    $adminPosition = "";
+    $adminEmail = "";
+    $adminPhone = "";
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Retrieve the form data
+    $adminName = $_POST['fullName'];
+    $adminBio = $_POST['about'];
+    $adminEmail = $_POST['email'];
+    $adminPhone = $_POST['phone'];
+
+    // Update the admin's details in the database
+    $query = "UPDATE `admin` SET `Admin_Name`='$adminName', `Admin_Bio`='$adminBio', `Admin_Email`='$adminEmail', `Admin_PhoneNo`='$adminPhone' WHERE `Admin_Email`='$adminEmail'";
+    $result = mysqli_query($connection, $query);
+
+    if ($result) {
+        // Redirect to the profile page or display a success message
+        header("location: profile_admin.php");
+    } else {
+        // Handle the case where the update query fails
+        echo "Error updating admin details.";
+    }
+} else {
+    // Handle the case where the request method is not POST
+    echo "Invalid request.";
+}
+
+
+if (isset($_POST["submit_new_password"])) {
+    $currentPassword = $_POST["currentpassword"];
+    $newPassword = $_POST["newpassword"];
+    $renewPassword = $_POST["renewpassword"];
+    $adminEmail = $_POST["adminEmail"];
+
+    // Verify the current password before changing
+    $query = "SELECT `Admin_Password` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+    $result = mysqli_query($connection, $query);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $adminData = mysqli_fetch_assoc($result);
+        $storedPassword = $adminData['Admin_Password'];
+
+        if (password_verify($currentPassword, $storedPassword)) {
+            // Current password is correct, update the password
+            if ($newPassword == $renewPassword) {
+                // Hash the new password before storing it in the database
+                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+                $updateQuery = "UPDATE `admin` SET `Admin_Password`='$hashedPassword' WHERE `Admin_Email`='$adminEmail'";
+                $updateResult = mysqli_query($connection, $updateQuery);
+
+                if ($updateResult) {
+                    // Password updated successfully
+                    echo "<script>alert('Password updated successfully.')</script>";
+                } else {
+                    // Handle the case where the update query fails
+                    echo "<script>alert('Error updating password: " . mysqli_error($connection) . "')</script>";
+                }
+            } else {
+                // New password and re-entered password don't match
+                echo "<script>alert('New passwords do not match.')</script>";
+            }
+        } else {
+            // Current password is incorrect
+            echo "<script>alert('Current password is incorrect.')</script>";
+        }
+    } else {
+        // Handle the case where the current password retrieval fails
+        echo "<script>alert('Error retrieving current password: " . mysqli_error($connection) . "')</script>";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -187,13 +262,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <div class="tab-content pt-2">
                                     <div class="tab-pane fade show active profile-overview" id="profile-overview">
                                         <h5 class="card-title">About</h5>
-                                        <p class="small fst-italic">I'am Admin in the Medic Hospital</p>
+                                        <p class="small fst-italic"><?php echo $adminBio; ?></p>
 
                                         <h5 class="card-title">Profile Details</h5>
 
                                         <div class="row">
                                             <div class="col-lg-3 col-md-4 label">Full Name</div>
-                                            <div class="col-lg-9 col-md-8">Kensey Barbar</div>
+                                            <div class="col-lg-9 col-md-8"><?php echo $adminName; ?></div>
                                         </div>
 
                                         <div class="row">
@@ -203,12 +278,12 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                                         <div class="row">
                                             <div class="col-lg-3 col-md-4 label">Email</div>
-                                            <div class="col-lg-9 col-md-8">b.kensey@medic.com</div>
+                                            <div class="col-lg-9 col-md-8"><?php echo $adminEmail; ?></div>
                                         </div>
 
                                         <div class="row">
                                             <div class="col-lg-3 col-md-4 label">Phone</div>
-                                            <div class="col-lg-9 col-md-8">(+60) 123456789</div>
+                                            <div class="col-lg-9 col-md-8"><?php echo $adminPhone; ?></div>
                                         </div>
                                     </div>
                                     <!-- Profile Overview Ends-->
@@ -217,7 +292,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                                         <!-- Profile Edit Form -->
-                                        <form>
+                                        <form method="post">
                                             <div class="row mb-3">
                                                 <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                                                 <div class="col-md-8 col-lg-9">
@@ -232,14 +307,14 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             <div class="row mb-3">
                                                 <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Full Name</label>
                                                 <div class="col-md-8 col-lg-9">
-                                                    <input name="fullName" type="text" class="form-control" id="fullName" value="Kensey Barbar">
+                                                    <input name="fullName" type="text" class="form-control" id="fullName" value="<?php echo $adminName; ?>">
                                                 </div>
                                             </div>
 
                                             <div class="row mb-3">
                                                 <label for="about" class="col-md-4 col-lg-3 col-form-label">About</label>
                                                 <div class="col-md-8 col-lg-9">
-                                                    <textarea name="about" class="form-control" id="about" style="height: 100px">I'm an admin in the Medic Hospital</textarea>
+                                                    <textarea name="about" class="form-control" id="about" style="height: 100px"><?php echo $adminBio; ?></textarea>
                                                 </div>
                                             </div>
 
@@ -253,35 +328,14 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             <div class="row mb-3">
                                                 <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
                                                 <div class="col-md-8 col-lg-9">
-                                                    <input name="email" type="email" class="form-control" id="Email" value="b.kensey@medic.com">
+                                                    <input name="email" type="email" class="form-control" id="Email" value="<?php echo $adminEmail; ?>">
                                                 </div>
                                             </div>
 
                                             <div class="row mb-3">
                                                 <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
                                                 <div class="col-md-8 col-lg-9">
-                                                    <input name="phone" type="text" class="form-control" id="Phone" value="(+60) 123456789">
-                                                </div>
-                                            </div>
-
-                                            <div class="row mb-3">
-                                                <label for="Twitter" class="col-md-4 col-lg-3 col-form-label">Twitter Profile</label>
-                                                <div class="col-md-8 col-lg-9">
-                                                    <input name="twitter" type="text" class="form-control" id="Twitter" value="https://twitter.com/#">
-                                                </div>
-                                            </div>
-
-                                            <div class="row mb-3">
-                                                <label for="Facebook" class="col-md-4 col-lg-3 col-form-label">Facebook Profile</label>
-                                                <div class="col-md-8 col-lg-9">
-                                                    <input name="facebook" type="text" class="form-control" id="Facebook" value="https://facebook.com/#">
-                                                </div>
-                                            </div>
-
-                                            <div class="row mb-3">
-                                                <label for="Linkedin" class="col-md-4 col-lg-3 col-form-label">Linkedin Profile</label>
-                                               <div class="col-md-8 col-lg-9">
-                                                    <input name="linkedin" type="text" class="form-control" id="Linkedin" value="https://linkedin.com/#">
+                                                    <input name="phone" type="text" class="form-control" id="Phone" value="<?php echo $adminPhone; ?>">
                                                 </div>
                                             </div>
 
@@ -295,11 +349,11 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     <!-- Profile Change Password Starts-->
                                     <div class="tab-pane fade pt-3" id="profile-change-password">
                                         <!-- Change Password Form -->
-                                        <form>
+                                        <form action="" method="post" enctype="multipart/form-data">
                                             <div class="row mb-3">
                                                 <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
                                                 <div class="col-md-8 col-lg-9">
-                                                    <input name="password" type="password" class="form-control" id="currentPassword">
+                                                    <input name="currentpassword" type="password" class="form-control" id="currentPassword">
                                                 </div>
                                             </div>
 
@@ -317,8 +371,20 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                 </div>
                                             </div>
 
+                                            <?php
+                                            if (isset($_POST['submit_new_password'])) {
+
+                                                $userNewPassword = $_POST["newpassword"];
+                                                $userRenewPassword = $_POST["renewpassword"];
+
+                                                if($userNewPassword != $userRenewPassword) {
+                                                    echo '<script>alert("*The new password and renew password does not match.")</script>';
+                                                }
+                                            }
+                                            ?>
+
                                             <div class="text-center">
-                                                <button type="submit" class="btn btn-primary">Change Password</button>
+                                                <button type="submit" name="submit_new_password" class="btn btn-primary">Change Password</button>
                                             </div>
                                         </form><!-- End Change Password Form -->
 
