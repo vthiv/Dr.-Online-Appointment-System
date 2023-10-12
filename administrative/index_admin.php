@@ -313,7 +313,7 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                     <ul class="contact-list">
                                         <?php
                                             // Execute SQL query to get doctor data (name, department, profile image)
-                                            $queryDoctorsData = "SELECT doctor.Doctor_Name, department.Dept_Name FROM doctor
+                                            $queryDoctorsData = "SELECT doctor.Doctor_Name, department.Dept_Name, doctor.Profile_Image FROM doctor
                                                                 INNER JOIN department ON doctor.Dept_ID = department.Dept_ID";
 
                                             $resultDoctorsData = mysqli_query($connection, $queryDoctorsData);
@@ -326,13 +326,13 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                                     $doctorName = $doctorData['Doctor_Name'];
                                                     $deptName = $doctorData['Dept_Name'];
                                                     // Generate the image source based on the doctor's name
-                                                    $profileImage = strtolower(str_replace(' ', '_', $doctorName)) . '.jpg'; // Assumes lowercase and underscores in filenames
+                                                    $profileImage = $doctorData['Profile_Image'];
                                                     
                                                     // Generate HTML for each doctor
                                                     echo '<li>';
                                                     echo '<div class="contact-cont d-flex align-items-center">';
                                                     echo '<div class="float-left user-img m-r-5" style="margin-right: 5px;">';
-                                                    echo '<a href="#"><img src="../img/doctors/' . $profileImage . '" class="w-40 rounded-circle" style="max-width: 40px; max-height: 40px;"/></a>';
+                                                    echo '<a href=""><img src="../img/doctors/' . $profileImage . '" class="w-40 rounded-circle" style="max-width: 40px; max-height: 40px;"/></a>';
                                                     echo '</div>';
                                                     echo '<div class="contact-info">';
                                                     echo '<span class="contact-name text-ellipsis">' . $doctorName . '</span>';

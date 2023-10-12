@@ -188,8 +188,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <td>' . $patientData['Pat_PhoneNo'] . '</td>
                                         <td>' . $patientData['Pat_DOB'] . '</td>
                                         <td>
-                                            <a href="edit_patient.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-info"><i class="bi bi-pencil-square"></i></a>
-                                            <a href="add_prescription.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-light"><i class="bi bi-prescription2"></i></a>
+                                            <a href="edit_patient.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-info"><i class="bi bi-pencil-square" ></i></a>
+                                            <a href="view_prescription.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-light"><i class="bi bi-prescription2"></i></a>
                                         </td>
                                     </tr>';
                                 }

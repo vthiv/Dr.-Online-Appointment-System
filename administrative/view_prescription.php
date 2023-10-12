@@ -211,6 +211,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <div class="col-lg-8 offset-lg-2">
                         <div class="card border-0 p-4 rounded shadow">
                             <form>
+                                <input type="hidden" name="appID" value="<?php echo $appID; ?>" >
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">

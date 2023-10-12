@@ -28,6 +28,7 @@ if(isset($_POST["edit_dept_btn"]) && isset($_POST["edit_id"])){
 
 // Handle form submission to update department details
 if(isset($_POST["update_department"])){
+
     $newDeptName = $_POST["new_dept_name"];
     $newDeptDescription = $_POST["new_dept_description"];
     $newDeptStatus = $_POST["new_dept_status"];
@@ -204,7 +205,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
                         <form method="POST" action="">
-                            <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
+                        <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
                             <div class="form-group">
                                 <label for="new_dept_name">Department Name</label>
                                 <input type="text" class="form-control" name="new_dept_name" value="<?php echo $department['Dept_Name']; ?>" required>

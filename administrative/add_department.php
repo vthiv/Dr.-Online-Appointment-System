@@ -211,7 +211,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
-                                            <label class="display-block">Schedule Status <span class="text-danger">*</span></label><br>
+                                            <label class="display-block">Department Status <span class="text-danger">*</span></label><br>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio" name="status" id="product_active" value="1" checked />
                                                 <label class="form-check-label" for="product_active">Active</label>
