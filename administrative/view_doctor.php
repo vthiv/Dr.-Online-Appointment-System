@@ -33,6 +33,34 @@ if (isset($_GET['doctor_id'])) {
     $doctorResult = mysqli_query($connection, $doctorQuery);
     $doctorData = mysqli_fetch_assoc($doctorResult);
 }
+
+// Check if the form was submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get the updated data from the form
+    $doctorID = $_POST['doctor_id']; // The doctor to update
+    $employeeID = $_POST['employee_id'];
+    $fullName = $_POST['name'];
+    $email = $_POST['email'];
+    $dob = $_POST['dob'];
+    $phoneNumber = $_POST['number'];
+    $joiningDate = $_POST['joining_date'];
+    $deptID = $_POST['dept_id'];
+    $address = $_POST['address'];
+    $bio = $_POST['bio'];
+
+    // Construct the SQL query to update the doctor's information
+    $updateQuery = "UPDATE doctor SET Employee_ID = '$employeeID', Doctor_Name = '$fullName', Email = '$email', Doctor_DOB = '$dob', Doctor_PhoneNo = '$phoneNumber', Doctor_JoiningDate = '$joiningDate', Dept_ID = '$deptID', Doctor_Address = '$address', Doctor_Bio = '$bio' WHERE Doctor_ID = $doctorID";
+
+    // Execute the update query
+    if (mysqli_query($connection, $updateQuery)) {
+        
+        $message = "Doctor data added successfully!";
+        
+    } else {
+        // Handle the case where the update query fails
+        $message = "Error: " . mysqli_error($connection);
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -340,7 +368,7 @@ if (isset($_GET['doctor_id'])) {
                                                         <div class="p-4">
                                                             <div class="row align-items-center">
                                                                 <div class="col-lg-2 col-md-4">
-                                                                    <img src=""  class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
+                                                                    <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" id="preview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
                                                                 </div><!--end col-->
 
                                                                 <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
@@ -349,73 +377,85 @@ if (isset($_GET['doctor_id'])) {
                                                                 </div><!--end col-->
 
                                                                 <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
-                                                                    <a href="#" class="btn btn-primary">Upload</a>
-                                                                    <a href="#" class="btn btn-soft-primary ms-2">Remove</a>
+                                                                <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" onchange="previewImage(this);" />
+                                                                <label for="profile_image" class="btn btn-primary" style="margin-left: 10px;">Upload</label>
+                                                                <a href="#" class="btn btn-soft-primary ms-2" onclick="restoreImage(); return false;">Remove</a>
                                                                 </div><!--end col-->
                                                             </div><!--end row-->
 
-                                                            <form class="mt-4">
+                                                            <form class="mt-4" method="POST">
+                                                                <input type="hidden" name="doctor_id" value="<?php echo $selectedDoctorID; ?>">
                                                                 <div class="row">
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Employee ID</label>
-                                                                            <input name="employee_id" id="employee_id" type="text" class="form-control" placeholder="Employee ID :">
+                                                                            <input name="employee_id" id="employee_id" type="text" class="form-control" value="<?php echo $doctorData['Employee_ID']; ?>" readonly>
                                                                         </div>
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Full Name</label>
-                                                                            <input name="name" id="name" type="text" class="form-control" placeholder="Full Name :">
+                                                                            <input name="name" id="name" type="text" class="form-control" value="<?php echo $doctorData['Doctor_Name']; ?>">
                                                                         </div>
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Your Email</label>
-                                                                            <input name="email" id="email" type="email" class="form-control" placeholder="Your email :">
+                                                                            <input name="email" id="email" type="email" class="form-control" value="<?php echo $doctorData['Email']; ?>">
                                                                         </div> 
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Date of Birth</label>
-                                                                            <input name="dob" id="dob" type="date" class="form-control" placeholder="Date of Birth :">
+                                                                            <input name="dob" id="dob" type="date" class="form-control" value="<?php echo $doctorData['Doctor_DOB']; ?>">
                                                                         </div>                                                                               
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Phone no.</label>
-                                                                            <input name="number" id="number" type="text" class="form-control" placeholder="Phone no. :">
+                                                                            <input name="number" id="number" type="text" class="form-control" value="<?php echo $doctorData['Doctor_PhoneNo']; ?>">
                                                                         </div>                                                                               
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Joining Date</label>
-                                                                            <input name="joining_date" id="joining_date" type="date" class="form-control" placeholder="Joining Date :">
+                                                                            <input name="joining_date" id="joining_date" type="date" class="form-control" value="<?php echo $doctorData['Doctor_JoiningDate']; ?>">
                                                                         </div>                                                                               
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
-                                                                            <label class="form-label">Department</label>
-                                                                            <input name="dept_id" id="dept_id" type="text" class="form-control" placeholder="Department :">
+                                                                            <label class="form-label">Department <span class="text-danger">*</span></label>
+                                                                            <select class="form-control" name="dept_id" id="dept_id">
+                                                                                <option value="">Select Department</option>
+                                                                                <?php
+                                                                                // Fetch and display a list of departments from the database
+                                                                                $dept_query = mysqli_query($connection, "SELECT `Dept_ID`, `Dept_Name` FROM `department`");
+                                                                                while ($department = mysqli_fetch_array($dept_query)) {
+                                                                                    $selected = ($department['Dept_ID'] == $doctorData['Dept_ID']) ? 'selected="selected"' : '';
+                                                                                    echo '<option ' . $selected . ' value="' . $department['Dept_ID'] . '">' . $department['Dept_Name'] . '</option>';
+                                                                                }
+                                                                                ?>
+                                                                            </select>
                                                                         </div>                                                                               
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-12">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Address</label>
-                                                                            <textarea name="address" id="address" rows="4" class="form-control" placeholder="Address :"></textarea>
+                                                                            <textarea name="address" id="address" rows="4" class="form-control" ><?php echo $doctorData['Doctor_Address']; ?></textarea>
                                                                         </div>                                                                               
                                                                     </div><!--end col-->
 
                                                                     <div class="col-md-12">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Your Bio Here</label>
-                                                                            <textarea name="comments" id="comments" rows="4" class="form-control" placeholder="Bio :"></textarea>
+                                                                            <textarea name="bio" id="bio" rows="4" class="form-control" ><?php echo $doctorData['Doctor_Bio']; ?></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div><!--end row-->
@@ -460,7 +500,37 @@ if (isset($_GET['doctor_id'])) {
         <script src="../js/feather.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+
+        <script>
+            var previousImageSrc = "<?php echo '../img/doctors/' . $doctorData['Profile_Image']; ?>";
+
+            function previewImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#preview').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            function restoreImage() {
+                $('#profile_image').val('');
+                $('#preview').attr('src', previousImageSrc);
+            }
+        </script>
+
+        <script type="text/javascript">
+            <?php
+                if(isset($message)){
+                    echo 'swal("'.$message.'").then(function() {
+                        window.location.href = "doctors_admin.php"
+                    });';
+                } 
+            ?>
+        </script>
     </body>
 </html>
