@@ -1,29 +1,3 @@
-<?php
-session_start();
-require("../connection.php");
-
-if(isset($_SESSION["user"])){
-    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='2'){
-        header("location: ../index.php");
-    }
-} else {
-    header('Location:../index.php');  // Redirecting To Home Page
-}
-
-// Retrieve the admin's name
-$doctorEmail = $_SESSION["user"]; // Assuming you store the doctor's email in the session
-$query = "SELECT `Doctor_Name` FROM `doctor` WHERE `Doctor_Email` = '$doctorEmail'";
-$result = mysqli_query($connection, $query);
-
-if ($result && mysqli_num_rows($result) > 0) {
-    $doctorData = mysqli_fetch_assoc($result);
-    $doctorName = $doctorData['Doctor_Name'];
-} else {
-    $doctorName = "Doctor"; // Default name if not found
-}
-
-?>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -32,7 +6,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Doctor | Patient Prescription</title>
+        <title>Admin | Doctors List</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -93,8 +67,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <div class="avatar-profile">
                     <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-2 border-0">
                         <img src="../img/admin.jpg" class="rounded-circle shadow-md avatar avatar-md-md" />
-                        <h5 class="mt-3 mb-1"><?php echo $doctorName; ?></h5>
-                        <p class="text-muted mb-0">Doctor</p>
+                        <h5 class="mt-3 mb-1"><?php echo $adminName; ?></h5>
+                        <p class="text-muted mb-0">Administrator</p>
                     </div>
                 </div>
                 <li class="nav-item">
@@ -152,78 +126,98 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </div>
 
                     <div class="col-sm-4 col-3">
-                        <h6 class="title">Add Patient Prescription</h6>
+                        <h6 class="title">Add Patient Details</h6>
                     </div>
 
                     <div class="col-sm-8 text-right m-b-20">
-                        <a href="appointment_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
+                        <a href="patients_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
-                        <div class="card border-0 p-4 rounded shadow">
+                        <div class="card border-0 p-2 rounded shadow">
                             <form>
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Patient Name <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="patient_name" required readonly/>
+                                            <label>First Name <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" name="first_name" required />
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Doctor Name</label>
-                                            <input class="form-control" type="text" name="doctor_name" required readonly/>
+                                            <label>Last Name</label>
+                                            <input class="form-control" type="text" name="last_name" required />
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label>Appointment ID <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="app_id" required readonly/>
+                                            <label>Email <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="email" name="email_id" required>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label class="form-label">Appointment Date <span class="text-danger">*</span></label>
-                                            <input name="app_date" id="app_date" type="date" class="flatpicker flatpicker-input form-control" readonly/>
+                                            <label>Date of Birth</label>
+                                            <div class="cal-icon">
+                                                <input type="text" class="form-control datetimepicker" name="dob" required>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label class="form-label">Appointment Time <span class="text-danger">*</span></label>
-                                            <input name="app_time" id="app_time" type="time" class="form-control timepicker" readonly/>
+                                            <label>Phone Number </label>
+                                            <input class="form-control" type="text" name="phone" required>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Disease<span class="text-danger">*</span></label>
-                                            <textarea name="disease" id="disease" rows="2" class="form-control" placeholder="Disease :"></textarea>
+                                        <div class="form-group gender-select">
+                                            <label class="gender-label">Gender :</label><br>
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" name="gender" class="form-check-input" value="Male"> Male
+                                                </label>
+                                            </div>
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" name="gender" class="form-check-input" value="Female"> Female
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="form-label">Allergy<span class="text-danger">*</span></label>
-                                            <textarea name="allergy" id="allergy" rows="2" class="form-control" placeholder="Allergy :"></textarea>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label class="form-label">Prescription<span class="text-danger">*</span></label>
-                                            <textarea name="prescription" id="prescription" rows="2" class="form-control" placeholder="Disease :"></textarea>
+                                            <label>Address</label>
+                                            <textarea name="address" id="address" rows="4" class="form-control" required></textarea>
                                         </div>
                                     </div>
                                 </div>
 
+                                <div class="form-group">
+                                    <label class="display-block">Status :</label><br>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="patient_active" value="1" checked>
+                                        <label class="form-check-label" for="patient_active">
+                                        Active
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" id="patient_inactive" value="2">
+                                        <label class="form-check-label" for="patient_inactive">
+                                        Inactive
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div class="m-t-20 text-center">
-                                    <button name="add-prescription" class="btn btn-primary submit-btn">Add Prescription</button>
+                                    <button name="add-patient" class="btn btn-primary submit-btn">Create Patient</button>
                                 </div>
                             </form>
                         </div>
@@ -249,6 +243,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <script src="../js/select2.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         

@@ -192,7 +192,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
-                        <div class="card border-0 p-2 rounded shadow">
+                        <div class="p-3 pt-4">
                             <form>
                                 <div class="row">
                                     <div class="col-lg-12">

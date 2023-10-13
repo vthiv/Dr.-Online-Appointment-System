@@ -11,89 +11,96 @@ if(isset($_SESSION["user"])){
     header('Location:../index.php');  // Redirecting To Home Page
 }
 
-// Retrieve the admin's name
-$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
-$query = "SELECT `Admin_Name`, `Admin_Bio`, `Admin_Email`, `Admin_PhoneNo` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
-$result = mysqli_query($connection, $query);
+$adminName = "Admin"; // Default name if not found
+$adminBio = "";
+$adminEmail = "";
+$adminPhone = "";
 
-if ($result && mysqli_num_rows($result) > 0) {
-    $adminData = mysqli_fetch_assoc($result);
-    $adminName = $adminData['Admin_Name'];
-    $adminBio = $adminData['Admin_Bio'];
-    $adminEmail = $adminData['Admin_Email'];
-    $adminPhone = $adminData['Admin_PhoneNo'];
-} else {
-    $adminName = "Admin"; // Default name if not found
-    $adminPosition = "";
-    $adminEmail = "";
-    $adminPhone = "";
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Retrieve the form data
-    $adminName = $_POST['fullName'];
-    $adminBio = $_POST['about'];
-    $adminEmail = $_POST['email'];
-    $adminPhone = $_POST['phone'];
-
-    // Update the admin's details in the database
-    $query = "UPDATE `admin` SET `Admin_Name`='$adminName', `Admin_Bio`='$adminBio', `Admin_Email`='$adminEmail', `Admin_PhoneNo`='$adminPhone' WHERE `Admin_Email`='$adminEmail'";
-    $result = mysqli_query($connection, $query);
-
-    if ($result) {
-        // Redirect to the profile page or display a success message
-        header("location: profile_admin.php");
-    } else {
-        // Handle the case where the update query fails
-        echo "Error updating admin details.";
-    }
-} else {
-    // Handle the case where the request method is not POST
-    echo "Invalid request.";
-}
-
-
-if (isset($_POST["submit_new_password"])) {
-    $currentPassword = $_POST["currentpassword"];
-    $newPassword = $_POST["newpassword"];
-    $renewPassword = $_POST["renewpassword"];
-    $adminEmail = $_POST["adminEmail"];
-
-    // Verify the current password before changing
-    $query = "SELECT `Admin_Password` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+if(isset($_SESSION["user"])) {
+    $adminEmail = $_SESSION["user"]; 
+    $query = "SELECT `Admin_Name`, `Admin_Bio`, `Admin_Email`, `Admin_PhoneNo` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
     $result = mysqli_query($connection, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
         $adminData = mysqli_fetch_assoc($result);
-        $storedPassword = $adminData['Admin_Password'];
+        $adminName = $adminData['Admin_Name'];
+        $adminBio = $adminData['Admin_Bio'];
+        $adminEmail = $adminData['Admin_Email'];
+        $adminPhone = $adminData['Admin_PhoneNo'];
+    }
+}
 
-        if (password_verify($currentPassword, $storedPassword)) {
-            // Current password is correct, update the password
-            if ($newPassword == $renewPassword) {
-                // Hash the new password before storing it in the database
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-                $updateQuery = "UPDATE `admin` SET `Admin_Password`='$hashedPassword' WHERE `Admin_Email`='$adminEmail'";
-                $updateResult = mysqli_query($connection, $updateQuery);
+    if (isset($_POST["submit_admin_details"])) {
+        // Retrieve the form data
+        $adminName = $_POST['fullName'];
+        $adminBio = $_POST['about'];
+        $adminEmail = $_POST['email'];
+        $adminPhone = $_POST['phone'];
+    
+        // Update the admin's details in the database
+        $query = "UPDATE `admin` SET `Admin_Name`='$adminName', `Admin_Bio`='$adminBio', `Admin_Email`='$adminEmail', `Admin_PhoneNo`='$adminPhone' WHERE `Admin_Email`='$adminEmail'";
+        $result = mysqli_query($connection, $query);
+    
+        if ($result) {
+            // Redirect to the profile page or display a success message
+            header("location: profile_admin.php");
+        } else {
+            // Handle the case where the update query fails
+            echo "Error updating admin details.";
+        }
+    } elseif (isset($_POST["submit_new_password"])) {
+        $currentPassword = $_POST["currentpassword"];
+        $newPassword = $_POST["newpassword"];
+        $renewPassword = $_POST["renewpassword"];
+        //$adminEmail = $_POST["adminEmail"];
 
-                if ($updateResult) {
-                    // Password updated successfully
-                    echo "<script>alert('Password updated successfully.')</script>";
+        // Verify the current password before changing
+        $query = "SELECT `Admin_Password` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+        $result = mysqli_query($connection, $query);
+
+        if (!$result) {
+            printf("Error: %s\n", mysqli_error($connection));
+            exit();
+        }
+
+        if ($result && mysqli_num_rows($result) > 0) {
+            $adminData = mysqli_fetch_assoc($result);
+            $storedPassword = $adminData['Admin_Password'];
+
+            if (password_verify($currentPassword, $storedPassword)) {
+                // Current password is correct, update the password
+                if ($newPassword == $renewPassword) {
+                    // Hash the new password before storing it in the database
+                    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+                    $updateQuery = "UPDATE `admin` SET `Admin_Password`='$hashedPassword' WHERE `Admin_Email`='$adminEmail'";
+                    $updateResult = mysqli_query($connection, $updateQuery);
+
+                    if ($updateResult) {
+                        // Password updated successfully
+                        echo "<script>alert('Password updated successfully.')</script>";
+                    } else {
+                        // Handle the case where the update query fails
+                        echo "<script>alert('Error updating password: " . mysqli_error($connection) . "')</script>";
+                    }
                 } else {
-                    // Handle the case where the update query fails
-                    echo "<script>alert('Error updating password: " . mysqli_error($connection) . "')</script>";
+                    // New password and re-entered password don't match
+                    echo "<script>alert('New passwords do not match.')</script>";
                 }
             } else {
-                // New password and re-entered password don't match
-                echo "<script>alert('New passwords do not match.')</script>";
+                // Current password is incorrect
+                echo "<script>alert('Current password is incorrect.')</script>";
             }
         } else {
-            // Current password is incorrect
-            echo "<script>alert('Current password is incorrect.')</script>";
+            // Handle the case where the current password retrieval fails
+            echo "<script>alert('Error retrieving current password: " . mysqli_error($connection) . "')</script>";
         }
-    } else {
-        // Handle the case where the current password retrieval fails
-        echo "<script>alert('Error retrieving current password: " . mysqli_error($connection) . "')</script>";
+    }
+     else {
+        // Handle the case where the request method is not POST
+        echo "Invalid request.";
     }
 }
 
@@ -292,7 +299,7 @@ if (isset($_POST["submit_new_password"])) {
                                     <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                                         <!-- Profile Edit Form -->
-                                        <form method="post">
+                                        <form method="POST">
                                             <div class="row mb-3">
                                                 <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                                                 <div class="col-md-8 col-lg-9">
@@ -340,7 +347,7 @@ if (isset($_POST["submit_new_password"])) {
                                             </div>
 
                                             <div class="text-center">
-                                                <button type="submit" class="btn btn-primary">Save</button>
+                                                <button type="submit" class="btn btn-primary" name="submit_admin_details">Save</button>
                                             </div>
                                         </form>
                                     </div>
@@ -349,7 +356,9 @@ if (isset($_POST["submit_new_password"])) {
                                     <!-- Profile Change Password Starts-->
                                     <div class="tab-pane fade pt-3" id="profile-change-password">
                                         <!-- Change Password Form -->
-                                        <form action="" method="post" enctype="multipart/form-data">
+                                        <form action="" method="POST" enctype="multipart/form-data">
+                                            <!-- Include the adminEmail input field -->
+                                            <input type="hidden" name="adminEmail" value="<?php echo $adminEmail; ?>">
                                             <div class="row mb-3">
                                                 <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
                                                 <div class="col-md-8 col-lg-9">

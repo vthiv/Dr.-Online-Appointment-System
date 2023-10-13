@@ -1,3 +1,30 @@
+<?php
+
+session_start();
+require("../connection.php");
+
+if (isset($_SESSION["user"])) {
+    if ($_SESSION["user"] == "" or $_SESSION['usertype'] != '1') {
+        header("location: ../index.php");
+    }
+} else {
+    header('Location:../index.php');  // Redirecting To Home Page
+}
+
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"];
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -6,7 +33,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Admin | Doctors List</title>
+        <title>Admin | Add Patient</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -136,7 +163,7 @@
 
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
-                        <div class="card border-0 p-2 rounded shadow">
+                        <div class="p-3 pt-4">
                             <form>
                                 <div class="row">
                                     <div class="col-sm-6">
