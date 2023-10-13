@@ -155,10 +155,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <div class="col-sm-4 col-3">
                         <h6 class="title">Patients List</h6>
                     </div>
-                    
-                    <div class="col-sm-8 col-9 text-right m-b-20">
-                        <a href="add_patient_admin.php" class="btn btn-primary btn-rounded"><i class="bi bi-plus"></i>Add Patient</a>
-                    </div>
                 </div>
 
                 <div class="table-responsive">

@@ -1,3 +1,79 @@
+<?php
+session_start();
+require("../connection.php");
+
+if(isset($_SESSION["user"])){
+    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+        header("location: ../index.php");
+    }
+} else {
+    header('Location:../index.php');  // Redirecting To Home Page
+}
+
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"]; // Assuming you store the admin's email in the session
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+
+// Assume you have a patient's ID that you want to display
+if(isset($_GET["pat_id"])){
+    $patientId = $_GET["pat_id"];
+
+    // Fetch the selected patient's details from the database
+    $fetch_query = mysqli_query($connection, "SELECT * FROM `patient` WHERE `Pat_ID` = '$patientId'");
+    if($fetch_query && mysqli_num_rows($fetch_query) > 0){
+        $patientData = mysqli_fetch_assoc($fetch_query);
+    } else {
+        // Set default values or handle the error as per your requirement
+        $patientData = array(
+            'Pat_Firstname' => '',
+            'Pat_Lastname' => '',
+            'Pat_Email' => '',
+            'Pat_DOB' => '',
+            'Pat_PhoneNo' => '',
+            'Pat_Address' => '',
+            'Pat_Status' => '',
+        );
+    }
+} else {
+    // Set default values or handle the error as per your requirement
+    $patientId = "";
+    $patientData = array(
+        'Pat_Firstname' => '',
+        'Pat_Lastname' => '',
+        'Pat_Email' => '',
+        'Pat_DOB' => '',
+        'Pat_PhoneNo' => '',
+        'Pat_Address' => '',
+        'Pat_Status' => '',
+    );
+}
+
+if(isset($_POST['update-patient'])) {
+    $status = $_POST['status'];
+
+    $update_query = mysqli_query($connection, "UPDATE patient SET Pat_Status='$status' WHERE Pat_ID='$patientId'");
+    
+    if ($update_query) {
+
+        $message = "Patient status updated successfully";
+        $patientData['Pat_Status'] = $status;
+
+    } else {
+
+        $message = "Failed to update patient status";
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -6,7 +82,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Admin | Doctors List</title>
+        <title>Admin | Edit Patient Status</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -126,7 +202,7 @@
                     </div>
 
                     <div class="col-sm-4 col-3">
-                        <h6 class="title">Add Patient Details</h6>
+                        <h6 class="title">Edit Patient Status</h6>
                     </div>
 
                     <div class="col-sm-8 text-right m-b-20">
@@ -137,26 +213,27 @@
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
                         <div class="card border-0 p-2 rounded shadow">
-                            <form>
+                            <form action="" method="POST">
+                            <input type="hidden" name="pat_id" value="<?php echo $patientId; ?>" >
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>First Name <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="first_name" required />
+                                            <input class="form-control" type="text" name="first_name" value="<?php echo $patientData['Pat_Firstname']; ?>" readonly/>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Last Name</label>
-                                            <input class="form-control" type="text" name="last_name" required />
+                                            <input class="form-control" type="text" name="last_name" value="<?php echo $patientData['Pat_Lastname']; ?>" required readonly/>
                                         </div>
                                     </div>
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Email <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="email" name="email_id" required>
+                                            <input class="form-control" type="email" name="email_id" value="<?php echo $patientData['Pat_Email']; ?>" readonly/>
                                         </div>
                                     </div>
 
@@ -164,7 +241,7 @@
                                         <div class="form-group">
                                             <label>Date of Birth</label>
                                             <div class="cal-icon">
-                                                <input type="text" class="form-control datetimepicker" name="dob" required>
+                                                <input type="text" class="form-control datetimepicker" name="dob" value="<?php echo $patientData['Pat_DOB']; ?>" readonly/>
                                             </div>
                                         </div>
                                     </div>
@@ -172,7 +249,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>Phone Number </label>
-                                            <input class="form-control" type="text" name="phone" required>
+                                            <input class="form-control" type="text" name="phone" value="<?php echo $patientData['Pat_PhoneNo']; ?>" readonly/>
                                         </div>
                                     </div>
 
@@ -195,7 +272,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Address</label>
-                                            <textarea name="address" id="address" rows="4" class="form-control" required></textarea>
+                                            <textarea name="address" id="address" rows="4" class="form-control" value="<?php echo $patientData['Pat_Address']; ?>" readonly></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -203,21 +280,17 @@
                                 <div class="form-group">
                                     <label class="display-block">Status :</label><br>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="patient_active" value="1" checked>
-                                        <label class="form-check-label" for="patient_active">
-                                        Active
-                                        </label>
+                                        <input class="form-check-input" type="radio" name="status" id="patient_active" value="1" <?php if($patientData['Pat_Status'] == 1) echo "checked"; ?>>
+                                        <label class="form-check-label" for="patient_active">Active</label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="status" id="patient_inactive" value="2">
-                                        <label class="form-check-label" for="patient_inactive">
-                                        Inactive
-                                        </label>
+                                        <input class="form-check-input" type="radio" name="status" id="patient_inactive" value="0" <?php if($patientData['Pat_Status'] == 0) echo "checked"; ?>>
+                                        <label class="form-check-label" for="patient_inactive">Inactive</label>
                                     </div>
                                 </div>
 
                                 <div class="m-t-20 text-center">
-                                    <button name="add-patient" class="btn btn-primary submit-btn">Create Patient</button>
+                                    <button name="update-patient" class="btn btn-primary submit-btn">Update Patient Status</button>
                                 </div>
                             </form>
                         </div>
@@ -246,6 +319,14 @@
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+
+        <script type="text/javascript">
+            <?php
+                if(isset($message)) {
+                    echo 'swal("' . $message . '");';
+                }
+            ?>
+        </script>
         
     </body>
 </html>
