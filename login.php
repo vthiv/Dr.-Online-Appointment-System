@@ -86,43 +86,45 @@
         
     </head>
     <body>
-
-        <div class="col-2 col-lg-4">
-            <img src="img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" alt="logo">
+        <div class="back-to-home rounded d-none d-sm-block">
+            <a href="index.php" class="btn btn-icon btn-primary"><i class="bi bi-house-door-fill"></i></a>
         </div>
 
         <!-- ======= Main Starts ======= -->
-        <div class="container">
-            <h2> Login</h2>
-            <form action="" method="POST" >
-                <div class="input-bx">
-                    <input type="email" name="useremail" required>
-                    <span></span>
-                    <label for="useremail">Email</label>
-                    <i class="bi bi-person-fill"></i>
+        <section class="bg-home d-flex bg-light">
+            <div class="row">
+                <div class="col-2 col-lg-4">
+                    <img src="../img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" height="200" class="logo" alt="Logo" />
                 </div>
+            </div>
+            <div class="container">
+                <h2> Login</h2>
+                <form action="" method="POST" >
+                    <div class="input-bx">
+                        <input type="email" name="useremail" required>
+                        <span></span>
+                        <label for="useremail">Email</label>
+                        <i class="bi bi-person-fill"></i>
+                    </div>
 
-                <div class="input-bx">
-                    <input type="password" name="userpassword" required>
-                    <span></span>
-                    <label for="userpassword">Password</label>
-                    <i class="bi bi-lock-fill"></i>
-                </div>
+                    <div class="input-bx">
+                        <input type="password" name="userpassword" required>
+                        <span></span>
+                        <label for="userpassword">Password</label>
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
 
-                <div class="cache-bx">
-                    <a href="forget_password.php">Forget Password</a>
-                </div>
+                    <div class="cache-bx">
+                        <a href="forget_password.php">Forget Password</a>
+                    </div>
 
-                <?php echo $error ?>
+                    <?php echo $error ?>
 
-                <button>Login</button>
-                <p>Don't have an account? <a href="signup.php">Register</a></p>
-            </form>
-        </div>
-
-        <span class="back-icon">
-            <a href="index.php" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-house-door-fill"></i></a>
-        </span>
-        <!-- ======= Main Ends ======= -->   
+                    <button>Login</button>
+                    <p>Don't have an account? <a href="signup.php">Register</a></p>
+                </form>
+            </div>
+            <!-- ======= Main Ends ======= -->
+        </section>   
     </body>
 </html>

@@ -50,9 +50,16 @@ if($_POST){
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <!--Title-->
-        <title>Sign Up</title>
-        <meta content="" name="description">
-        <meta content="" name="keywords">
+        <title>Dr. Online Appointment System | Sign Up</title>
+
+        <!--Favicons-->
+        <link rel="apple-touch-icon" sizes="180x180" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="shortcut icon" type="image/x-icon" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="manifest" href="js/manifest.json">
+        <meta name="msapplication-TileImage" content="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <meta name="theme-color" content="#ffffff">
 
         <!---google fonts link---->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,6 +70,10 @@ if($_POST){
         <link rel="stylesheet" href="css/index.css">
     </head>
     <body>
+
+        <div class="back-to-home rounded d-none d-sm-block">
+            <a href="index.php" class="btn btn-icon btn-primary"><i class="bi bi-house-door-fill"></i></a>
+        </div>
 
         <div class="col-2 col-lg-4">
             <img src="img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" alt="logo">
@@ -96,7 +107,7 @@ if($_POST){
                 <div class="input-bx">
                     <input type="date" name="dob" required>
                     <span></span>
-                    <label for="">Date of Birth</label>
+                    <label for=""></label>
                     <i class="bi bi-calendar-heart-fill"></i>
                 </div>
 
@@ -133,9 +144,5 @@ if($_POST){
             </form>
         </div>
         <!-- ======= Main Ends ======= -->
-
-        <span class="back-icon">
-            <a href="index.php" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-house-door-fill"></i></a>
-        </span>
     </body>
 </html>

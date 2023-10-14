@@ -107,8 +107,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
         <link href="../css/admin_dashboard.css" rel="stylesheet" />
         <link href="../css/simplebar.css" rel="stylesheet" />
         <link href="../css/select2.min.css" rel="stylesheet" />
-
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
+        <link rel="stylesheet" href="../css/fullcalendar.min.css" />
 
 
     </head>
@@ -364,15 +363,17 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                         </div>
                     </div>
                     
-                    <div class="col-lg-4">
+                    <div class="col-xl-9 col-lg-8 col-md-7 mt-4 pt-2 mt-sm-0 pt-sm-0">
                         <div class="card member-panel">
                             <div class="card-header bg-white">
                                 <h4 class="card-title">Doctor Schedule
                                     <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
                                 </h4>
                             </div>
-                            <div class="card-body">
-                                
+                            <div class="col-xl-10 col-lg-8 col-12 mt-4">
+                                <div class="card rounded border-0 shadow p-4" id="calendar-container">
+                                    <div id="calendar"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -398,9 +399,9 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
         <script src="../js/select2.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-        
+        <script src="../js/fullcalendar.init.js"></script>
+        <script src="../js/fullcalendar.main.js"></script>
+               
 
     </body>
 </html>

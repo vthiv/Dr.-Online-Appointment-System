@@ -64,6 +64,17 @@ if(isset($_POST['forgetPassword'])){
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <!--Title-->
+        <title>Dr. Online Appointment System | Forget Password</title>
+
+        <!--Favicons-->
+        <link rel="apple-touch-icon" sizes="180x180" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="shortcut icon" type="image/x-icon" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="manifest" href="js/manifest.json">
+        <meta name="msapplication-TileImage" content="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <meta name="theme-color" content="#ffffff">
 
         <!---google fonts link---->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,36 +86,40 @@ if(isset($_POST['forgetPassword'])){
     </head>
     <body>
 
-        <div class="col-2 col-lg-4">
-            <img src="img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" alt="logo">
+        <div class="back-to-home rounded d-none d-sm-block">
+            <a href="index.php" class="btn btn-icon btn-primary"><i class="bi bi-house-door-fill"></i></a>
         </div>
-        
+
         <!-- ======= Main Starts ======= -->
-        <div class="container">
-            <h2> Reset New Password</h2>
-            <form action="forget_password.php" method="post">
-                <div class="input-bx">
-                    <input type="email" name="useremail" required>
-                    <span></span>
-                    <label for="useremail">Email</label>
-                    <i class="bi bi-person-fill"></i>
+        <section class="bg-home d-flex bg-light">
+            <div class="row">
+                <div class="col-2 col-lg-4">
+                    <img src="../img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" height="200" class="logo" alt="Logo" />
                 </div>
+            </div>
+            <div class="container">
+                <h2> Reset New Password</h2>
+                <form action="forget_password.php" method="post">
+                    <div class="input-bx">
+                        <input type="email" name="useremail" required>
+                        <span></span>
+                        <label for="useremail">Email</label>
+                        <i class="bi bi-person-fill"></i>
+                    </div>
 
-                <div class="input-bx">
-                    <input type="password" name="newPassword" required>
-                    <span></span>
-                    <label for="">Password</label>
-                    <i class="bi bi-lock-fill"></i>
-                </div>
+                    <div class="input-bx">
+                        <input type="password" name="newPassword" required>
+                        <span></span>
+                        <label for="">Password</label>
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
 
-                <button name="forgetPassword">Submit</button>
-                <p><a href="login.php">Sign in back</a></p>
-            </form>
-        </div>
+                    <button name="forgetPassword">Submit</button>
+                    <p><a href="login.php">Sign in back</a></p>
+                </form>
+            </div>
+        </section>
+        
         <!-- ======= Main Ends ======= -->
-
-        <span class="back-icon">
-            <a href="index.php" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-house-door-fill"></i></a>
-        </span>
     </body>
 </html>

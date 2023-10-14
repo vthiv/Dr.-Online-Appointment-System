@@ -1083,3 +1083,30 @@ a.text-dark:hover, a.text-dark:focus {
   border-color: #f0735a !important;
   color: #ffffff !important;
 }
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto 1fr;
+  grid-gap: 1px;
+  border-collapse: collapse;
+}
+
+.calendar th,
+.calendar td {
+  padding: 5px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.calendar th {
+  background-color: #f2f2f2;
+}
+
+.calendar .event {
+  background-color: #007bff;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  cursor: pointer;
+}
