@@ -75,6 +75,24 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
 }
 
 
+// Fetch all doctors' schedules
+$scheduleQuery = "SELECT * FROM `schedule`";
+$resultSchedule = mysqli_query($connection, $scheduleQuery);
+
+$events = []; // Initialize an array to store events
+
+if ($resultSchedule && mysqli_num_rows($resultSchedule) > 0) {
+    while ($row = mysqli_fetch_assoc($resultSchedule)) {
+        $event = [
+            'title' => $row['Schedule_Title'],
+            'start' => $row['Schedule_Date'] . 'T' . $row['Schedule_StartTime'],
+            'end' => $row['Schedule_Date'] . 'T' . $row['Schedule_EndTime'],
+        ];
+        $events[] = $event; // Add the event to the events array
+    }
+}
+
+
 ?>
 
 
@@ -363,14 +381,14 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                         </div>
                     </div>
                     
-                    <div class="col-xl-9 col-lg-8 col-md-7 mt-4 pt-2 mt-sm-0 pt-sm-0">
+                    <div class="col-xl-12 col-lg-8 col-md-7 mt-4 pt-2 mt-sm-0 pt-sm-0">
                         <div class="card member-panel">
                             <div class="card-header bg-white">
                                 <h4 class="card-title">Doctor Schedule
                                     <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
                                 </h4>
                             </div>
-                            <div class="col-xl-10 col-lg-8 col-12 mt-4">
+                            <div class="col-xl-11 col-lg-8 col-12 mt-4">
                                 <div class="card rounded border-0 shadow p-4" id="calendar-container">
                                     <div id="calendar"></div>
                                 </div>
@@ -397,10 +415,38 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
         <script src="../js/simplebar.min.js"></script>
         <script src="../js/bootstrap.bundle.min.js"></script>
         <script src="../js/select2.min.js"></script>
+        <script src="../js/jquery.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
         <script src="../js/fullcalendar.init.js"></script>
         <script src="../js/fullcalendar.main.js"></script>
+        <script>
+ 
+        $(document).ready(function () {
+            var calendar = $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,basicWeek,basicDay'
+                },
+                navLinks: true, // can click day/week names to navigate views
+                editable: true,
+                eventLimit: true,
+                events: "../functions.php",
+                displayEventTime: false,
+                eventRender: function (event, element, view) {
+                    if (event.allDay === 'true') {
+                        event.allDay = true;
+                    } else {
+                        event.allDay = false;
+                    }
+                }
+        
+            });
+        });
+        
+        
+        </script>
                
 
     </body>
