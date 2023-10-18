@@ -74,25 +74,6 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
     }
 }
 
-
-// Fetch all doctors' schedules
-$scheduleQuery = "SELECT * FROM `schedule`";
-$resultSchedule = mysqli_query($connection, $scheduleQuery);
-
-$events = []; // Initialize an array to store events
-
-if ($resultSchedule && mysqli_num_rows($resultSchedule) > 0) {
-    while ($row = mysqli_fetch_assoc($resultSchedule)) {
-        $event = [
-            'title' => $row['Schedule_Title'],
-            'start' => $row['Schedule_Date'] . 'T' . $row['Schedule_StartTime'],
-            'end' => $row['Schedule_Date'] . 'T' . $row['Schedule_EndTime'],
-        ];
-        $events[] = $event; // Add the event to the events array
-    }
-}
-
-
 ?>
 
 
@@ -345,23 +326,65 @@ if ($resultSchedule && mysqli_num_rows($resultSchedule) > 0) {
                                 </div>
                             </div>
                             <!--Appointment Table Ends -->
+
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">
+                                            Doctor Schedule
+                                            <a href="schedule_doctor.php" style="float: right;"><i class="bi bi-grid"></i></a>
+                                        </h4>
+                                    </div>
+                                    <div class="card-block">
+                                        <div class="table-responsive">
+                                            <table class="table mb-0 schedule-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Days</th>
+                                                        <th>Start Time</th>
+                                                        <th>End Time</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                <?php
+                                                    // Fetch data from the schedule table
+                                                    $scheduleQuery = "SELECT Schedule_Day, Schedule_StartTime, Schedule_EndTime FROM schedule";
+                                                    $resultSchedule = $connection->query($scheduleQuery);
+
+                                                    // Check if there are any rows in the result
+                                                    if ($resultSchedule->num_rows > 0) {
+                                                        // Output data of each row
+                                                        while($row = $resultSchedule->fetch_assoc()) {
+                                                            echo "<tr><td>" . $row["Schedule_Day"] . "</td><td>" . $row["Schedule_StartTime"] . "</td><td>" . $row["Schedule_EndTime"] . "</td></tr>";
+                                                        }
+                                                    } else {
+                                                        echo "0 results";
+                                                    }
+                                                ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- End Left side columns -->
 
                     <!-- Right side columns -->
                     <div class="col-lg-4">
-                        <div class="card member-panel">
-                            <div class="card-header bg-white">
-                                <h4 class="card-title">Doctors
-                                    <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
-                                </h4>
-                            </div>
-                            <div class="card-body">
-                                <ul class="contact-list">
-                                <?php
-                                foreach ($doctorsByDept as $deptName => $doctors) {
-                                    foreach ($doctors as $doctor) {
+                        <div class="col-12">
+                            <div class="card member-panel">
+                                <div class="card-header bg-white">
+                                    <h4 class="card-title">Doctors
+                                        <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="contact-list">
+                                    <?php
+                                    foreach ($doctorsByDept as $deptName => $doctors) {
+                                        foreach ($doctors as $doctor) {
                                         echo '<li>
                                                 <div class="contact-cont d-flex align-items-center">
                                                     <div class="float-left user-img m-r-10" style="margin-right: 5px;">
@@ -373,24 +396,47 @@ if ($resultSchedule && mysqli_num_rows($resultSchedule) > 0) {
                                                     </div>
                                                 </div>
                                             </li>';
+                                        }
                                     }
-                                }
-                                ?>
-                                </ul>
+                                    ?>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="col-xl-12 col-lg-8 col-md-7 mt-4 pt-2 mt-sm-0 pt-sm-0">
-                        <div class="card member-panel">
-                            <div class="card-header bg-white">
-                                <h4 class="card-title">Doctor Schedule
-                                    <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
-                                </h4>
-                            </div>
-                            <div class="col-xl-11 col-lg-8 col-12 mt-4">
-                                <div class="card rounded border-0 shadow p-4" id="calendar-container">
-                                    <div id="calendar"></div>
+                            
+                        <div class="col-12">
+                            <div class="card member-panel">
+                                <div class="card-header bg-white">
+                                    <h4 class="card-title">Patients
+                                        <a href="patients_doctor.php" style="float: right;"><i class="bi bi-grid"></i></a>
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="contact-list">
+                                    <?php
+                                    // Fetch data from the patient table
+                                    $patientQuery = "SELECT Pat_Firstname, Pat_Lastname, Pat_Email, Pat_PhoneNo FROM patient";
+                                    $resultPatient = $connection->query($patientQuery);
+
+                                    // Check if there are any rows in the result
+                                    if ($resultPatient->num_rows > 0) {
+                                        // Output data of each row
+                                        while($row = $resultPatient->fetch_assoc()) {
+                                        echo '<li>
+                                                <div class="contact-cont d-flex align-items-center">
+                                                    <div class="contact-info">
+                                                        <span class="patient-name text-ellipsis">'.$row["Pat_Firstname"].' '.$row["Pat_Lastname"].'</span>
+                                                        <span class="patient-email text-ellipsis">'.$row["Pat_Email"].'</span>
+                                                        <span class="contact-number">'.$row["Pat_PhoneNo"].'</span>
+                                                    </div>
+                                                </div>
+                                            </li>';
+                                        }
+                                    } else {
+                                        echo "0 results";
+                                    }
+                                    ?>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -419,9 +465,6 @@ if ($resultSchedule && mysqli_num_rows($resultSchedule) > 0) {
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script src="../js/fullcalendar.init.js"></script>
-        <script src="../js/fullcalendar.main.js"></script>
-               
-
+        
     </body>
 </html>

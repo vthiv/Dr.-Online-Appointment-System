@@ -231,13 +231,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             <label class="form-label">Available Days <span class="text-danger">*</span></label><br>
                                             <select class="select" multiple name="days[]" required>
                                                 <option value="">Select Days</option>
-                                                <option value="Sunday">Sunday</option>
-                                                <option value="Monday">Monday</option>
-                                                <option value="Tuesday">Tuesday</option>
-                                                <option value="Wednesday">Wednesday</option>
-                                                <option value="Thursday">Thursday</option>
-                                                <option value="Friday">Friday</option>
-                                                <option value="Saturday">Saturday</option>
+                                                <option>Sunday</option>
+                                                <option>Monday</option>
+                                                <option>Tuesday</option>
+                                                <option>Wednesday</option>
+                                                <option>Thursday</option>
+                                                <option>Friday</option>
+                                                <option>Saturday</option>
                                             </select>
                                         </div>
                                     </div>
