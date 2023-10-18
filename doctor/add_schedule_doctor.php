@@ -36,6 +36,31 @@ if ($result && mysqli_num_rows($result) > 0) {
     $departmentName = "Unknown Department"; // Default department if not found
     $profileImage = "default.jpg"; // Default image if not found
 }
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get data from the form
+    $doctorID = $_POST["doctor_id"];
+    $departmentID = $_POST["dept_id"];
+    $availableDays = implode(", ", $_POST["days"]);
+    $startTime = $_POST["start_time"];
+    $endTime = $_POST["end_time"];
+    $message = $_POST["message"];
+    $status = $_POST["status"];
+    // ... (other form data)
+
+    // Insert data into the schedule table
+    $insertQuery = mysqli_query($connection, "INSERT INTO `schedule` SET Doctor_ID='$doctorID', Dept_ID='$departmentID', Schedule_Title='$message', Schedule_Day='$availableDays', Schedule_Date=NOW(), Schedule_StartTime='$startTime', Schedule_EndTime='$endTime', Schedule_Status='$status'") ;
+
+    if ($insertQuery > 0) {
+        // Data inserted successfully
+       $msg = "Schedule data added successfully!";
+    } else {
+        // Error occurred
+        $msg = "Error: " . mysqli_error($connection);
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +71,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title> Doctor| Schedule</title>
+        <title>Doctor | Add Schedule</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -69,7 +94,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         <link href="../css/admin_dashboard.css" rel="stylesheet" />
         <link href="../css/simplebar.css" rel="stylesheet" />
         <link href="../css/select2.min.css" rel="stylesheet" />
-        <link href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css" rel="stylesheet">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
 
@@ -161,78 +185,111 @@ if ($result && mysqli_num_rows($result) > 0) {
         <!-- ======= Main Starts ======= -->
         <main id="main" class="main">
             <section class="section dashboard">
-                <div class="row">
+            <div class="row">
                     <div class="pagetitle">
-                        <h1>Schedule</h1>
+                        <h1>Doctor's Schedule</h1>
                     </div>
 
                     <div class="col-sm-4 col-3">
-                        <h6 class="title">Doctor's Schedule</h6>
+                        <h6 class="title">Add Doctor's Schedule</h6>
                     </div>
                     
                     <div class="col-sm-8 col-9 text-right m-b-20">
-                        <a href="add_schedule_doctor.php" class="btn btn-primary btn-rounded"><i class="bi bi-plus"></i>Add Schedule</a>
+                        <a href="schedule_doctor.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-stripped" id="schedulelist" cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Doctor Name</th>
-                                <th>Department</th>
-                                <th>Added Date</th>    
-                                <th>Schedule Days</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        // Query to fetch schedule data for the logged-in doctor only
-                        $query = "SELECT s.*, d.Doctor_Name, dept.Dept_Name
-                        FROM schedule s
-                        INNER JOIN doctor d ON s.Doctor_ID = d.Doctor_ID
-                        INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
-                        WHERE d.Email = '$doctorEmail'";
+                <div class="row">
+                    <div class="col-lg-8 offset-lg-2">
+                        <div class="p-3 pt-4">
+                            <form action="" method="POST">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
+                                            <input class="form-control" type="text" value="<?php echo $doctorName; ?>" readonly>
+                                        </div>
+                                    </div>
 
-                        $result = mysqli_query($connection, $query);
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Department <span class="text-danger">*</span></label>
+                                            <select class="form-control department-name" name="dept_id" id="dept_id">
+                                                <option value="">Select</option>
+                                                <?php
+                                                $departmentQuery = "SELECT `Dept_ID`, `Dept_Name` FROM `department` WHERE `Dept_Status` = 1";
+                                                $departmentResult = mysqli_query($connection, $departmentQuery);
+                                                
+                                                if ($departmentResult && mysqli_num_rows($departmentResult) > 0) {
+                                                    while ($row = mysqli_fetch_assoc($departmentResult)) {
+                                                        echo '<option value="' . $row['Dept_ID'] . '">' . $row['Dept_Name'] . '</option>';
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                        // Check if the query was successful
-                        if ($result && mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                // Extract schedule data
-                                $doctorName = $row['Doctor_Name'];
-                                $deptName = $row['Dept_Name'];
-                                $addedDate = date('d M Y', strtotime($row['Schedule_Date']));
-                                $availableDays = explode(",", $row['Schedule_Day']); // Convert available days to an array
-                                $startTime = $row["Schedule_StartTime"];
-                                $endTime = $row["Schedule_EndTime"];
-                                $status = $row['Schedule_Status']; // Assuming you have a 'Schedule_Status' column
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Available Days <span class="text-danger">*</span></label><br>
+                                            <select class="select" multiple name="days[]" required>
+                                                <option value="">Select Days</option>
+                                                <option>Sunday</option>
+                                                <option>Monday</option>
+                                                <option>Tuesday</option>
+                                                <option>Wednesday</option>
+                                                <option>Thursday</option>
+                                                <option>Friday</option>
+                                                <option>Saturday</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                                // Create HTML table row for each schedule entry
-                                echo '<tr>';
-                                echo '<td>' . $doctorName . '</td>';
-                                echo '<td>' . $deptName . '</td>';
-                                echo '<td>' . $addedDate . '</td>';
-                                echo '<td>' . implode(", ", $availableDays) . '</td>'; // Convert array back to a comma-separated string
-                                echo '<td>' . $startTime . '</td>';
-                                echo '<td>' . $endTime . '</td>';
-                                echo '<td>' . ($status == 1 ? 'Active' : 'Inactive') . '</td>'; // Assuming 1 is for Active and 0 for Inactive
-                                echo '<td>
-                                        <form action = "edit_schedule.php" method = "POST">
-                                            <input type="hidden" name="editschedule_id" value="'. $row['Schedule_ID'].'" >
-                                            <button type="submit" name="edit_schedule_btn" class="btn btn-info"><i class="bi bi-pencil-square"></i></button>
-                                        </form>
-                                    </td>'; // Replace 'Actions' with buttons or links for editing/deleting if needed
-                                echo '</tr>';
-                            }
-                        }
-                        ?>
-                        </tbody>
-                    </table>
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label>Start Time <span class="text-danger">*</span></label>
+                                            <input name="start_time" id="start_time" type="time" class="form-control timepicker" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label>End Time <span class="text-danger">*</span></label>
+                                            <input name="end_time" id="end_time" type="time" class="form-control timepicker" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Message <span class="text-danger">*</span></label>
+                                            <textarea name="message" id="message" cols="30" rows="4" class="form-control" placeholder="Your Message :"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label class="display-block">Schedule Status <span class="text-danger">*</span></label><br>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="product_active" value="1" checked />
+                                                <label class="form-check-label" for="product_active">Active</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="status" id="product_inactive" value="0">
+                                                <label class="form-check-label" for="product_inactive">Inactive</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-outline-primary">Add Schedule</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -249,32 +306,23 @@ if ($result && mysqli_num_rows($result) > 0) {
         </footer>
         <!-- ======= Footer Ends ======= -->
 
-        
         <script src="../js/simplebar.min.js"></script>
         <script src="../js/bootstrap.bundle.min.js"></script>
-        <script src="../js/jquery.min.js"></script>
         <script src="../js/select2.min.js"></script>
-        <script src="../js/select2.init.js"></script>
-        <script src="../js/tagsinput.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-        <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('#schedulelist').DataTable();
-                $('.dataTables_length').addClass('bs-select');
-            });
-        </script>
-        <script>
-            require( 'datatables.net-bs5' );
-            require( 'datatables.net-buttons-bs5' );
-            require( 'datatables.net-buttons/js/buttons.html5.js' );
-            require( 'datatables.net-buttons/js/buttons.print.js' );
-            require( 'datatables.net-scroller-bs5' );
-            require( 'datatables.net-searchpanes-bs5' );
+
+        <script type="text/javascript">
+            <?php
+                if(isset($msg)) {
+                    echo 'swal("' . $msg . '").then(function() {
+                        window.location.href = "schedule_doctor.php";
+                    });';
+                }
+            ?>
         </script>
         
     </body>
