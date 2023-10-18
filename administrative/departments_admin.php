@@ -159,11 +159,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                     
                     <div class="row row-cols-50 justify-content-end  mb-2">
                         <div class="col">
-                            <form action="">
-                                <button type="submit" name="delete_multiple_data" class="btn btn-danger">Delete Multiple Data</button>
-                            </form>
-                        </div>
-                        <div class="col">
                             <a href="add_department.php" class="btn btn-primary btn-rounded"><i class="bi bi-plus"></i>Add Department</a>
                         </div>
                     </div>
