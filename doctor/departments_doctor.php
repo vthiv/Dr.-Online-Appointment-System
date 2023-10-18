@@ -131,43 +131,43 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                     </div>
                 </div>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="index_admin.php">
+                    <a class="nav-link collapsed" href="index_doctor.php">
                         <i class="bi bi-cast"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="departments_admin.php">
+                    <a class="nav-link" href="departments_doctor.php">
                         <i class="bi bi-diagram-2"></i>
                         <span>Department</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="schedule_admin.php">
+                    <a class="nav-link collapsed" href="schedule_doctor.php">
                         <i class="bi bi-calendar3"></i>
                         <span>Schedule</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="appointment_admin.php">
+                    <a class="nav-link collapsed" href="appointment_doctor.php">
                         <i class="bi bi-calendar-check-fill"></i>
                         <span>Appointment</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="doctors_admin.php">
+                    <a class="nav-link collapsed" href="doctors.php">
                         <i class="bi bi-heart-pulse"></i>
                         <span>Doctors</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="patients_admin.php">
+                    <a class="nav-link collapsed" href="patients_doctor.php">
                         <i class="bi bi-people"></i>
                         <span>Patients</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="profile_admin.php">
+                    <a class="nav-link collapsed" href="profile_doctor.php">
                         <i class="bi bi-person-circle"></i>
                         <span>Profile</span>
                     </a>
