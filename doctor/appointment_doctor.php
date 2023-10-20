@@ -195,50 +195,49 @@ if ($result && mysqli_num_rows($result) > 0) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php 
-                            // SQL query to retrieve all appointment details
-                            $sql = "SELECT 
-                            A.Apt_ID AS appointment_ID,
-                            CONCAT(P.Pat_Firstname, ' ', P.Pat_Lastname) AS patient_name,
-                            D.Doctor_Name AS doctor_name,
-                            Dept.Dept_Name AS department_name,
-                            A.App_Date AS appointment_date,
-                            A.App_Time AS appointment_time,
-                            CASE
-                                WHEN A.App_Status = 1 THEN 'Active'
-                                ELSE 'Inactive'
-                            END AS appointment_status
-                            FROM appointment A
-                            INNER JOIN patient P ON A.Pat_ID = P.Pat_ID
-                            INNER JOIN doctor D ON A.Doctor_ID = D.Doctor_ID
-                            INNER JOIN department Dept ON A.Dept_ID = Dept.Dept_ID
-                            WHERE A.DoctorID = '$doctorID'";
+                        <?php 
+                        // SQL query to retrieve all appointment details
+                        $query = "SELECT 
+                                    A.Apt_ID AS appointment_ID,
+                                    CONCAT(P.Pat_Firstname, ' ', P.Pat_Lastname) AS patient_name,
+                                    D.Doctor_Name AS doctor_name,
+                                    Dept.Dept_Name AS department_name,
+                                    A.App_Date AS appointment_date,
+                                    A.App_Time AS appointment_time,
+                                    CASE
+                                        WHEN A.App_Status = 1 THEN 'Active'
+                                        ELSE 'Inactive'
+                                    END AS appointment_status
+                                    FROM appointment A
+                                    INNER JOIN patient P ON A.Pat_ID = P.Pat_ID
+                                    INNER JOIN doctor D ON A.Doctor_ID = D.Doctor_ID
+                                    INNER JOIN department Dept ON A.Dept_ID = Dept.Dept_ID
+                                    WHERE A.Doctor_ID = '$doctorID'";
 
-                            $result = $connection->query($sql);
+                        $result = mysqli_query($connection, $query);
 
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<tr>
-                                            <td>" . $row["App_ID"] . "</td>
-                                            <td>" . $row["Patient_Name"] . "</td>
-                                            <td>" . $row["Doctor_Name"] . "</td>
-                                            <td>" . $row["Dept_Name"] . "</td>
-                                            <td>" . $row["App_Date"] . "</td>
-                                            <td>" . $row["App_Time"] . "</td>
-                                            <td><span class='custom-badge status-" . ($row["App_Status"] ? "green'>Active" : "red'>Inactive") . "</span></td>
-                                            <td>
-                                                <form  action='edit_appointment_doctor.php' method='POST'>
-                                                    <input type='hidden' name='editappointment_id' value='" . $row["App_ID"] . "' />
-                                                    <button type='submit' name='edit_app_btn' class='btn btn-info'><i class='bi bi-pencil-square'></i></button>
-                                                </form>
-                                            </td>
-                                        </tr>";
-                                }
-                            } else {
-                                echo "0 results";
+                        if ($result && mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<tr>
+                                        <td>" . $row["appointment_ID"] . "</td>
+                                        <td>" . $row["patient_name"] . "</td>
+                                        <td>" . $row["doctor_name"] . "</td>
+                                        <td>" . $row["department_name"] . "</td>
+                                        <td>" . $row["appointment_date"] . "</td>
+                                        <td>" . $row["appointment_time"] . "</td>
+                                        <td><span class='custom-badge status-" . ($row["appointment_status"] ? "green'>Active" : "red'>Inactive") . "</span></td>
+                                        <td>
+                                            <form  action='edit_appointment_doctor.php' method='POST'>
+                                                <input type='hidden' name='editappointment_id' value='" . $row["appointment_ID"] . "' />
+                                                <button type='submit' name='edit_app_btn' class='btn btn-info'><i class='bi bi-pencil-square'></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>";
                             }
-
-                            ?>
+                        } else {
+                            echo "0 results";
+                        }
+                        ?>
                         </tbody>
                     </table>
                 </div>
