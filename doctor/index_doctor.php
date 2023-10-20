@@ -33,11 +33,12 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
 
 //Retrieve the doctor's name
 $doctorEmail = $_SESSION["user"]; //Assuming store the doctor's email in the session
-$query = "SELECT `Doctor_Name`, `Dept_ID`, `Profile_Image` FROM `doctor` WHERE `Email` = '$doctorEmail'";
+$query = "SELECT `Doctor_ID`, `Doctor_Name`, `Dept_ID`, `Profile_Image` FROM `doctor` WHERE `Email` = '$doctorEmail'";
 $result = mysqli_query($connection, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
     $doctorData = mysqli_fetch_assoc($result);
+    $doctorID = $doctorData['Doctor_ID'];
     $doctorName = $doctorData['Doctor_Name'];
     $deptID = $doctorData['Dept_ID'];
     $profileImage = $doctorData['Profile_Image'];
@@ -276,7 +277,6 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                     <tr>
                                                         <th>Appointment ID</th>
                                                         <th>Patient Name</th>
-                                                        <th>Doctor Name</th>
                                                         <th>Appointment Date</th>
                                                         <th>Appointment Time</th>
                                                         <th>Appointment Status</th>
@@ -284,41 +284,41 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 </thead>
                                                 <tbody>
                                                 <?php
-                                                    // Execute SQL query to get appointment data
-                                                    $queryAppointmentsData = "SELECT
-                                                        appointment.App_ID,
-                                                        CONCAT(patient.Pat_Firstname, ' ', patient.Pat_Lastname) AS patient_name,
-                                                        doctor.Doctor_Name,
-                                                        appointment.App_Date,
-                                                        appointment.App_Time,
-                                                        appointment.App_Status
-                                                    FROM
-                                                        appointment
-                                                    INNER JOIN
-                                                        patient ON appointment.Pat_ID = patient.Pat_ID
-                                                    INNER JOIN
-                                                        doctor ON appointment.Doctor_ID = doctor.Doctor_ID
-                                                    WHERE
-                                                        appointment.App_Status = 1"; // Assuming 1 is for active appointments
+                                                $queryAppointmentsData = "SELECT 
+                                                                        A.App_ID AS appointment_ID,
+                                                                        CONCAT(P.Pat_Firstname, ' ', P.Pat_Lastname) AS patient_name,
+                                                                        D.Doctor_Name AS doctor_name,
+                                                                        Dept.Dept_Name AS department_name,
+                                                                        A.App_Date AS appointment_date,
+                                                                        A.App_Time AS appointment_time,
+                                                                        CASE
+                                                                            WHEN A.App_Status = 1 THEN 'Active'
+                                                                            ELSE 'Inactive'
+                                                                        END AS appointment_status
+                                                                        FROM appointment A
+                                                                        INNER JOIN patient P ON A.Pat_ID = P.Pat_ID
+                                                                        INNER JOIN doctor D ON A.Doctor_ID = D.Doctor_ID
+                                                                        INNER JOIN department Dept ON A.Dept_ID = Dept.Dept_ID
+                                                                        WHERE A.Doctor_ID = '$doctorID'"; // Assuming 1 is for active appointments
 
-                                                    $resultAppointmentsData = mysqli_query($connection, $queryAppointmentsData);
+                                                $resultAppointmentsData = mysqli_query($connection, $queryAppointmentsData);
 
-                                                    if ($resultAppointmentsData && mysqli_num_rows($resultAppointmentsData) > 0) {
-                                                        // Loop through the appointment data and display it in the table
-                                                        while ($row = mysqli_fetch_assoc($resultAppointmentsData)) {
-                                                            echo '<tr>';
-                                                            echo '<td>' . $row['App_ID'] . '</td>';
-                                                            echo '<td>' . $row['patient_name'] . '</td>';
-                                                            echo '<td>' . $row['Doctor_Name'] . '</td>';
-                                                            echo '<td>' . $row['App_Date'] . '</td>';
-                                                            echo '<td>' . $row['App_Time'] . '</td>';
-                                                            echo '<td>' . ($row['App_Status'] == 1 ? 'Active' : 'Inactive') . '</td>';
-                                                            echo '</tr>';
-                                                        }
-                                                    } else {
-                                                        echo '<tr><td colspan="6">No appointments found.</td></tr>';
-                                                    } 
-                                                    ?>
+                                                if ($resultAppointmentsData && mysqli_num_rows($resultAppointmentsData) > 0) {
+                                                    // Loop through the appointment data and display it in the table
+                                                    while ($row = mysqli_fetch_assoc($resultAppointmentsData)) {
+                                                        echo "<tr>
+                                                                <td>" . $row['appointment_ID'] . "</td>
+                                                        <td>" . $row['patient_name'] . "</td>
+                                                        <td>" . $row['appointment_date'] . "</td>
+                                                        <td>" . $row['appointment_time'] . "</td>
+                                                        <td><span class='custom-badge status-" . ($row["appointment_status"] ? "green'>Active" : "red'>Inactive") . "</span></td>
+                                                        </tr>";
+                                                    }
+                                                } else {
+                                                    echo '<tr><td colspan="6">No appointments found.</td>
+                                                    </tr>';
+                                                } 
+                                                ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -340,6 +340,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                             <table class="table mb-0 schedule-table">
                                                 <thead>
                                                     <tr>
+                                                        <th>Added Date</th>
                                                         <th>Days</th>
                                                         <th>Start Time</th>
                                                         <th>End Time</th>
@@ -348,14 +349,18 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 <tbody>
                                                 <?php
                                                     // Fetch data from the schedule table
-                                                    $scheduleQuery = "SELECT Schedule_Day, Schedule_StartTime, Schedule_EndTime FROM schedule";
+                                                    $scheduleQuery = "SELECT Schedule_Date, Schedule_Day, Schedule_StartTime, Schedule_EndTime FROM schedule WHERE Doctor_ID = '$doctorID'";
                                                     $resultSchedule = $connection->query($scheduleQuery);
 
                                                     // Check if there are any rows in the result
                                                     if ($resultSchedule->num_rows > 0) {
                                                         // Output data of each row
                                                         while($row = $resultSchedule->fetch_assoc()) {
-                                                            echo "<tr><td>" . $row["Schedule_Day"] . "</td><td>" . $row["Schedule_StartTime"] . "</td><td>" . $row["Schedule_EndTime"] . "</td></tr>";
+                                                            echo "<tr>
+                                                                <td>" . $row["Schedule_Date"] . "</td>
+                                                                <td>" . $row["Schedule_Day"] . "</td>
+                                                                <td>" . $row["Schedule_StartTime"] . "</td>
+                                                                <td>" . $row["Schedule_EndTime"] . "</td></tr>";
                                                         }
                                                     } else {
                                                         echo "0 results";
