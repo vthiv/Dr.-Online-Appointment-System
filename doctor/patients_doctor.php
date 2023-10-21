@@ -138,13 +138,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="doctors.php">
+                    <a class="nav-link collapsed" href="doctors.php">
                         <i class="bi bi-heart-pulse"></i>
                         <span>Doctors</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="patients_doctor.php">
+                    <a class="nav-link" href="patients_doctor.php">
                         <i class="bi bi-people"></i>
                         <span>Patients</span>
                     </a>
@@ -199,7 +199,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <td>' . $patientData['Pat_PhoneNo'] . '</td>
                                         <td>' . $patientData['Pat_DOB'] . '</td>
                                         <td>
-                                            <a href="edit_patient.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-info"><i class="bi bi-pencil-square" ></i></a>
+                                            <a href="#" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#patientdetailsModal" onclick="displayPatientDetails(' . htmlspecialchars(json_encode($patientData)) . ')"><i class="bi bi-eye" ></i></a>
                                         </td>
                                     </tr>';
                                 }
@@ -214,6 +214,30 @@ if ($result && mysqli_num_rows($result) > 0) {
             </section>
         </main>
         <!-- ======= Main Ends ======= -->
+
+        <!-- Modal Start -->
+        <div class="modal fade" id="patientdetailsModal" tabindex="-1" aria-labelledby="patientdetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="patientdetailsModalLabel">Patient Details</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>First Name: </strong><span id="patientfirstName"></span></p>
+                    <p><strong>Last Name: </strong><span id="patientlastName"></span></p>
+                    <p><strong>Email: </strong><span id="patientEmail"></span></p>
+                    <p><strong>Phone: </strong><span id="patientPhone"></span></p>
+                    <p><strong>Date of Birth: </strong><span id="patientDOB"></span></p>
+                    <p><strong>Address: </strong><span id="patientAddress"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal End -->
 
         <!-- ======= Footer ======= -->
         <footer id="footer" class="footer">
@@ -249,6 +273,17 @@ if ($result && mysqli_num_rows($result) > 0) {
             require( 'datatables.net-buttons/js/buttons.print.js' );
             require( 'datatables.net-scroller-bs5' );
             require( 'datatables.net-searchpanes-bs5' );
+        </script>
+
+        <script>
+            function displayPatientDetails(patientData) {
+                document.getElementById('patientfirstName').innerText = patientData.Pat_Firstname;
+                document.getElementById('patientlastName').innerText = patientData.Pat_Lastname;
+                document.getElementById('patientEmail').innerText = patientData.Pat_Email;
+                document.getElementById('patientPhone').innerText = patientData.Pat_PhoneNo;
+                document.getElementById('patientDOB').innerText = patientData.Pat_DOB;
+                document.getElementById('patientAddress').innerText = patientData.Pat_Address;
+            }
         </script>
         
     </body>
