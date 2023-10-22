@@ -69,6 +69,40 @@ if (isset($_POST['submit_doctor_details'])) {
     }
 }
 
+// Handling form submission for changing the password
+if (isset($_POST['submit_new_password'])) {
+    $doctorEmail = $_POST['doctorEmail'];
+    $currentPassword = $_POST['currentpassword'];
+    $newPassword = $_POST['newpassword'];
+    $reEnteredPassword = $_POST['renewpassword'];
+
+    // Check if the new password and re-entered password match
+    if($newPassword !== $reEnteredPassword) {
+        echo '<script>alert("The new password and re-entered password do not match.")</script>';
+    } else {
+        // Check if the current password is correct
+        $passwordCheckQuery = "SELECT `Password` FROM `doctor` WHERE `Email` = '$doctorEmail'";
+        $passwordCheckResult = mysqli_query($connection, $passwordCheckQuery);
+
+        if ($passwordCheckResult && mysqli_num_rows($passwordCheckResult) > 0) {
+            $data = mysqli_fetch_assoc($passwordCheckResult);
+            $currentDBPassword = $data['Password'];
+
+            if ($currentDBPassword === $currentPassword) {
+                // Update the password in the database
+                $updatePasswordQuery = "UPDATE `doctor` SET `Password`='$newPassword' WHERE `Email`='$doctorEmail'";
+                if (mysqli_query($connection, $updatePasswordQuery)) {
+                    $message = "Password changed successfully!";
+                } else {
+                    $message = "Error: " . mysqli_error($connection);
+                }
+            } else {
+                echo '<script>alert("Current password is incorrect.")</script>';
+            }
+        }
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -380,18 +414,6 @@ if (isset($_POST['submit_doctor_details'])) {
                                                     <input name="renewpassword" type="password" class="form-control" id="renewPassword">
                                                 </div>
                                             </div>
-
-                                            <?php
-                                            if (isset($_POST['submit_new_password'])) {
-
-                                                $userNewPassword = $_POST["newpassword"];
-                                                $userRenewPassword = $_POST["renewpassword"];
-
-                                                if($userNewPassword != $userRenewPassword) {
-                                                    echo '<script>alert("*The new password and renew password does not match.")</script>';
-                                                }
-                                            }
-                                            ?>
 
                                             <div class="text-center">
                                                 <button type="submit" name="submit_new_password" class="btn btn-primary">Change Password</button>
