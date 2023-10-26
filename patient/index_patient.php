@@ -138,7 +138,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="doctors_patient.php">
+                    <a class="nav-link collapsed" href="doctors_patient.php">
                         <i class="bi bi-heart-pulse"></i>
                         <span>Doctors</span>
                     </a>
