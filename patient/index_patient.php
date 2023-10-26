@@ -12,15 +12,42 @@ if(isset($_SESSION["user"])){
 
 //Retrieve the doctor's name
 $patientEmail = $_SESSION["user"]; // Assuming store the patient's email in the session
-$query = "SELECT `Pat_Firstname` FROM `patient` WHERE `Pat_Email` = '$patientEmail'";
+$query = "SELECT CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name, Pat_ID FROM `patient` WHERE `Pat_Email` = '$patientEmail'";
 $result = mysqli_query($connection, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
     $patientData = mysqli_fetch_assoc($result);
-    $patientName = $patientData['Pat_Firstname'];
+    $patientID = $patientData['Pat_ID'];
+    $patientName = $patientData['patient_name'];
 }
 else {
     $patientName = "Patient" ; // Default name if not found
+}
+
+$queryTotalDoctors = "SELECT COUNT(*) AS totalDoctors FROM doctor";
+$queryTotalAppointments = "SELECT COUNT(*) AS totalAppointments FROM appointment WHERE Pat_ID = $patientID";
+$today = date('Y-m-d');
+$queryTodayAppointments = "SELECT COUNT(*) AS todayApp FROM appointment a INNER JOIN doctor d ON a.Doctor_ID = d.Doctor_ID WHERE Pat_ID = $patientID AND App_Date = '$today'";
+
+$resultTotalDoctors = mysqli_query($connection, $queryTotalDoctors);
+$resultTotalAppointments = mysqli_query($connection, $queryTotalAppointments);
+$resultTodayAppointments = mysqli_query($connection, $queryTodayAppointments);
+
+if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments) {
+
+    $dataTotalDoctors = mysqli_fetch_assoc($resultTotalDoctors);
+    $dataTotalAppointments = mysqli_fetch_assoc($resultTotalAppointments);
+    $dataTodayAppointments = mysqli_fetch_assoc($resultTodayAppointments);
+
+    $totalDoctors = $dataTotalDoctors['totalDoctors'];
+    $totalAppointments = $dataTotalAppointments['totalAppointments'];
+    $todaysAppointment = $dataTodayAppointments['todayApp'];
+
+} else {
+    // Handle database query errors here
+    $totalDoctors = 0;
+    $totalAppointments = 0;
+    $todaysAppointment = "<p style='font-size: small;'>No appointments for today</p>";
 }
 
 ?>
@@ -93,8 +120,9 @@ else {
             <ul class="sidebar-nav" id="sidebar-nav">
                 <div class="avatar-profile">
                     <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-2 border-0">
-                        <img src=" " class="rounded-circle shadow-md avatar avatar-md-md" />
                         <h5 class="mt-3 mb-1"><?php echo $patientName; ?></h5>
+                        <p class="text-muted mb-0"><?php echo $patientEmail; ?></p>
+                        <p class="text-muted mb-0">Patient</p>
                     </div>
                 </div>
                 <li class="nav-item">
@@ -107,12 +135,6 @@ else {
                     <a class="nav-link collapsed" href="departments_patient.php">
                         <i class="bi bi-diagram-2"></i>
                         <span>Department</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="schedule_patient.php">
-                        <i class="bi bi-calendar3"></i>
-                        <span>Schedule</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -159,7 +181,7 @@ else {
                                                 <i class="bi bi-heart-pulse"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0">Data</h5>
+                                                <h5 class="mb-0"><?php echo $totalDoctors; ?></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -171,13 +193,13 @@ else {
                             <div class="col-xxl-4 col-md-6">
                                 <div class="card info-card patient-card">
                                     <div class="card-body">
-                                        <h5 class="card-title">New Appointment </h5>
+                                        <h5 class="card-title">Total Appointment </h5>
                                         <div class="d-flex align-items-center">
                                             <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                                 <i class="bi bi-calendar-plus-fill"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0">Data</h5>
+                                                <h5 class="mb-0"><?php echo $totalAppointments; ?></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -195,7 +217,7 @@ else {
                                                 <i class="bi bi-calendar-check-fill"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0">Data</h5>
+                                                <h5 class="mb-0"><?php echo $todaysAppointment; ?></h5>
                                             </div>
                                         </div>
                                     </div>
@@ -218,7 +240,6 @@ else {
                                                 <thead>
                                                     <tr>
                                                         <th>Appointment ID</th>
-                                                        <th>Patient Name</th>
                                                         <th>Doctor Name</th>
                                                         <th>Appointment Date</th>
                                                         <th>Appointment Time</th>
@@ -226,14 +247,35 @@ else {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>Appointment ID</td>
-                                                        <td>Patient Name</td>
-                                                        <td>Doctor Name</td>
-                                                        <td>Appointment Date</td>
-                                                        <td>Appointment Time</td>
-                                                        <td>Appointment Status</td>
-                                                    </tr>
+                                                    <?php
+                                                    $queryAppointments = "SELECT a.App_ID, a.Apt_ID, 
+                                                                        d.Doctor_Name, a.App_Date, a.App_Time,
+                                                                        CASE 
+                                                                            WHEN a.App_Status = 1 THEN 'Active'
+                                                                            ELSE 'Inactive'
+                                                                        END AS appointment_status 
+                                                                        FROM appointment a
+                                                                        INNER JOIN patient p ON a.Pat_ID = p.Pat_ID 
+                                                                        INNER JOIN doctor d ON a.Doctor_ID = d.Doctor_ID 
+                                                                        WHERE a.Pat_ID = $patientID";
+                                                
+                                                    $resultAppointments = mysqli_query($connection, $queryAppointments);
+
+                                                    if ($resultAppointments && mysqli_num_rows($resultAppointments) > 0) {
+                                                        while ($row = mysqli_fetch_assoc($resultAppointments)) {
+                                                            echo "
+                                                                <tr>
+                                                                    <td>" . $row['Apt_ID'] . "</td>
+                                                                    <td>" . $row['Doctor_Name'] . "</td>
+                                                                    <td>" . $row['App_Date'] . "</td>
+                                                                    <td>" . $row['App_Time'] . "</td>
+                                                                    <td><span class='custom-badge status-" . ($row["appointment_status"] ? "green'>Active" : "red'>Inactive") . "</span></td>
+                                                                </tr>";
+                                                        }
+                                                    } else {
+                                                        $appointmentTable = "<tr><td colspan='6'>No appointments found</td></tr>";
+                                                    }
+                                                    ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -247,28 +289,47 @@ else {
 
                     <!-- Right side columns -->
                     <div class="col-lg-4">
-                            <div class="card member-panel">
-                                <div class="card-header bg-white">
-                                    <h4 class="card-title">Today Schedule
-                                        <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
-                                    </h4>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="contact-list">
-                                        <li>
-                                            <div class="contact-cont">
-                                                <div class="float-left user-img m-r-10">
-                                                    <a href="#"><img src="#" class="w-40 rounded-circle"/></a>
-                                                </div>
-                                                <div class="contact-info">
-                                                    <span class="contact-name text-ellipsis">Date</span>
-                                                    <span class="contact-date">Time</span>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
+                        <div class="card member-panel">
+                            <div class="card-header bg-white">
+                                <h4 class="card-title">Today Schedule
+                                    <a href="doctors_patient.php" style="float: right;"><i class="bi bi-grid"></i></a>
+                                </h4>
                             </div>
+                            <div class="card-body">
+                                <ul class="contact-list">
+                                    <?php
+                                    $today = date('Y-m-d');
+                                    $todayAppointmentquery = "SELECT * 
+                                                                FROM appointment a  
+                                                                INNER JOIN doctor d 
+                                                                ON a.Doctor_ID = d.Doctor_ID 
+                                                                INNER JOIN department dept 
+                                                                ON a.Dept_ID = dept.Dept_ID
+                                                                WHERE Pat_ID = $patientID 
+                                                                AND App_Date = '$today'";
+                                    $resulttodayAppointment = mysqli_query($connection, $todayAppointmentquery);
+                                    if ($resulttodayAppointment && mysqli_num_rows($resulttodayAppointment) > 0) {
+                                        while ($row = mysqli_fetch_assoc($resulttodayAppointment)) {
+                                            echo 
+                                                '<li>
+                                                        <div class="contact-info">
+                                                        <span class="contact-dept text-ellipsis">Department: ' . $row["Dept_Name"] . '</span>
+                                                            <span class="contact-doctorname text-ellipsis">Doctor Name: ' . $row["Doctor_Name"] . '</span>
+                                                            <span class="contact-date text-ellipsis">Date: ' . $row["App_Date"] . '</span>
+                                                            <span class="contact-time text-ellipsis">Time: ' . $row["App_Time"] . '</span>
+                                                        </div>
+                                                </li>';
+                                        }
+                                    } else {
+                                        echo '
+                                        <div class="card-body">
+                                            <p>No appointments for today</p>
+                                        </div>';
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <!-- End Right side columns -->
                 </div>

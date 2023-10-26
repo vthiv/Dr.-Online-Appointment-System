@@ -610,11 +610,11 @@ a.status-grey {
 	position: relative;
 }
 .contact-info {
-	padding: 0 30px 0 50px;
+	padding: 0 10px 0 50px;
 }
-.contact-date {
-	color: #888;
-	font-size: 12px;
+.contact-date, .contact-time, .contact-doctorname, .contact-dept {
+	color: #545252;
+	font-size: 14px;
 }
 
 .text-ellipsis {
