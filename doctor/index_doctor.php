@@ -10,26 +10,6 @@ if(isset($_SESSION["user"])){
     header('Location:../index.php');  // Redirecting To Home Page
 }
 
-// Execute SQL queries to get the data
-$queryAppointments = "SELECT COUNT(*) AS totalAppointments FROM appointment WHERE App_Status = 1";
-$queryNewPatients = "SELECT COUNT(*) AS totalNewPatients FROM patient WHERE Created_At >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
-$queryTotalDoctors = "SELECT COUNT(*) AS totalDoctors FROM doctor";
-
-$resultAppointments = mysqli_query($connection, $queryAppointments);
-$resultNewPatients = mysqli_query($connection, $queryNewPatients);
-$resultTotalDoctors = mysqli_query($connection, $queryTotalDoctors);
-
-if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
-    $dataAppointments = mysqli_fetch_assoc($resultAppointments);
-    $dataNewPatients = mysqli_fetch_assoc($resultNewPatients);
-    $dataTotalDoctors = mysqli_fetch_assoc($resultTotalDoctors);
-
-    $totalAppointments = $dataAppointments['totalAppointments'];
-    $totalNewPatients = $dataNewPatients['totalNewPatients'];
-    $totalDoctors = $dataTotalDoctors['totalDoctors'];
-} else {
-    // Handle database query errors here
-}
 
 //Retrieve the doctor's name
 $doctorEmail = $_SESSION["user"]; //Assuming store the doctor's email in the session
@@ -57,6 +37,28 @@ if ($result && mysqli_num_rows($result) > 0) {
     $doctorName = "Doctor"; // Default name if not found
     $departmentName = "Unknown Department"; // Default department if not found
     $profileImage = "default.jpg"; // Default image if not found
+}
+
+
+// Execute SQL queries to get the data
+$queryAppointments = "SELECT COUNT(*) AS totalAppointments FROM appointment WHERE App_Status = 1 AND Doctor_ID = $doctorID";
+$queryNewPatients = "SELECT COUNT(*) AS totalNewPatients FROM patient WHERE Created_At >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+$queryTotalDoctors = "SELECT COUNT(*) AS totalDoctors FROM doctor";
+
+$resultAppointments = mysqli_query($connection, $queryAppointments);
+$resultNewPatients = mysqli_query($connection, $queryNewPatients);
+$resultTotalDoctors = mysqli_query($connection, $queryTotalDoctors);
+
+if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
+    $dataAppointments = mysqli_fetch_assoc($resultAppointments);
+    $dataNewPatients = mysqli_fetch_assoc($resultNewPatients);
+    $dataTotalDoctors = mysqli_fetch_assoc($resultTotalDoctors);
+
+    $totalAppointments = $dataAppointments['totalAppointments'];
+    $totalNewPatients = $dataNewPatients['totalNewPatients'];
+    $totalDoctors = $dataTotalDoctors['totalDoctors'];
+} else {
+    // Handle database query errors here
 }
 
 

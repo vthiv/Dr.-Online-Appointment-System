@@ -140,19 +140,13 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="departments_patient.php">
-                        <i class="bi bi-diagram-2"></i>
-                        <span>Department</span>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link collapsed" href="appointment_patient.php">
                         <i class="bi bi-calendar-check-fill"></i>
                         <span>Appointment</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="doctors_patient.php">
+                    <a class="nav-link" href="doctors_patient.php">
                         <i class="bi bi-heart-pulse"></i>
                         <span>Doctors</span>
                     </a>
