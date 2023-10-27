@@ -225,7 +225,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <input type="hidden" name="editappointment_id" value="<?php echo $row['appointment_ID'] ?>" />
                                         <button type="submit" name="edit_app_btn" class="btn btn-info"><i class="bi bi-pencil-square"></i></button>
                                     </form>
-                                    <a href="view_prescription.php?App_ID=<?php $row['appointment_ID'];?>" class="btn btn-light"><i class="bi bi-prescription2"></i></a>
+                                    
                                 </td>
                             </tr>
                             <?php }
