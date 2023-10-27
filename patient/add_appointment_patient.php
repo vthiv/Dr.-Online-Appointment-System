@@ -49,7 +49,6 @@ if(isset($_REQUEST['add_appointment'])) {
     $patientID = $_REQUEST['pat_id'];
     $doctorID = $_REQUEST['doc_id'];
     $departmentID = $_REQUEST['dept_id'];
-    $adminID = $_SESSION['admin_id'];
     $app_date = $_REQUEST['app_date'];
     $app_time = $_REQUEST['app_time'];
     $app_message = $_REQUEST['app_message'];
@@ -59,7 +58,7 @@ if(isset($_REQUEST['add_appointment'])) {
 
 
     if ($insert_query > 0) {
-        $msg = "Schedule data added successfully!";
+        $msg = "Appointment added successfully!";
     } else {
         $msg = "Error: " . mysqli_error($connection);
     }
@@ -201,7 +200,7 @@ if(isset($_REQUEST['add_appointment'])) {
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label class="form-label">Patient Name <span class="text-danger">*</span></label>
-                                            <input class="form-control" type="text" name="patientname" id="patientname" value="<?php echo $patientName; ?>">
+                                            <input class="form-control" type="text" name="pat_id" id="pat_id" value="<?php echo $patientName; ?>">
                                         </div>
                                     </div>
 
