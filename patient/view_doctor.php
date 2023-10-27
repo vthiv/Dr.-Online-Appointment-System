@@ -24,50 +24,41 @@ else {
     $patientName = "Patient" ; // Default name if not found
 }
 
-//Retrieve the doctor's name
-$query = "SELECT `Doctor_ID`, `Doctor_Name`, `Dept_ID`, `Profile_Image` FROM `doctor` WHERE `Email` = '$doctorEmail'";
-$result = mysqli_query($connection, $query);
-
-if ($result && mysqli_num_rows($result) > 0) {
-    $doctorData = mysqli_fetch_assoc($result);
-    $doctorID = $doctorData['Doctor_ID'];
-    $doctorName = $doctorData['Doctor_Name'];
-    $deptID = $doctorData['Dept_ID'];
-    $profileImage = $doctorData['Profile_Image'];
-
-    // Fetch the department name based on the department ID
-    $deptQuery = "SELECT `Dept_Name` FROM `department` WHERE `Dept_ID` = $deptID";
-    $deptResult = mysqli_query($connection, $deptQuery);
-
-    if ($deptResult && mysqli_num_rows($deptResult) > 0) {
-        $deptData = mysqli_fetch_assoc($deptResult);
-        $departmentName = $deptData['Dept_Name'];
-    } else {
-        $departmentName = "Unknown Department"; // Default if department not found
-    }
-} else {
-    $doctorName = "Doctor"; // Default name if not found
-    $departmentName = "Unknown Department"; // Default department if not found
-    $profileImage = "default.jpg"; // Default image if not found
-}
-
-// Check if the Doctor_ID is provided in the URL
+// Retrieve the doctor's information based on the selected doctor ID or email
 if (isset($_GET['doctor_id'])) {
-    $selectedDoctorID = $_GET['doctor_id'];
-    // Retrieve the details of the selected doctor
-    $doctorQuery = "SELECT d.*, dept.Dept_Name FROM doctor d
-                    INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
-                    WHERE d.Doctor_ID = $selectedDoctorID";
+    $doctorId = $_GET['doctor_id'];
+    $query = "SELECT * FROM `doctor` WHERE `Doctor_ID` = '$doctorId'";
+    $result = mysqli_query($connection, $query);
 
-    $doctorResult = mysqli_query($connection, $doctorQuery);
-    $doctorData = mysqli_fetch_assoc($doctorResult);
+    if ($result && mysqli_num_rows($result) > 0) {
+        $doctorData = mysqli_fetch_assoc($result);
+        $doctorID = $doctorData['Doctor_ID'];
+        $doctorName = $doctorData['Doctor_Name'];
+        $doctorEmail = $doctorData['Email'];
+        $deptID = $doctorData['Dept_ID'];
+        $doctorBio = $doctorData['Doctor_Bio'];
+        $profileImage = $doctorData['Profile_Image'];
 
-    if ($doctorData) {
-        $departmentName = $doctorData['Dept_Name'];
+        // Fetch the department name based on the department ID
+        $deptQuery = "SELECT `Dept_Name` FROM `department` WHERE `Dept_ID` = $deptID";
+        $deptResult = mysqli_query($connection, $deptQuery);
+
+        if ($deptResult && mysqli_num_rows($deptResult) > 0) {
+            $deptData = mysqli_fetch_assoc($deptResult);
+            $departmentName = $deptData['Dept_Name'];
+        } else {
+            $departmentName = "Unknown Department"; // Default if department not found
+        }
     } else {
+        $doctorName = "Doctor"; // Default name if not found
         $departmentName = "Unknown Department"; // Default department if not found
+        $profileImage = "default.jpg"; // Default image if not found
     }
 }
+
+// Retrieve doctors with department details using INNER JOIN
+$doctorsQuery = "SELECT d.*, dept.Dept_Name FROM doctor d INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID";
+$doctorsResult = mysqli_query($connection, $doctorsQuery);
 ?>
 
 <!DOCTYPE html>
@@ -196,7 +187,7 @@ if (isset($_GET['doctor_id'])) {
                                 <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" class="rounded-circle shadow-md avatar avatar-medium" />
                                 <div class="mt-4 ms-3 pt-3">
                                     <h5 class="mt-3 mb-1"><?php echo $doctorData['Doctor_Name']; ?></h5>
-                                    <p class="text-muted mb-0"><?php echo $doctorData['Dept_Name']; ?></p>
+                                    <p class="text-muted mb-0"><?php echo $deptData['Dept_Name']; ?></p>
                                 </div>
                             </div>
                         </div>
@@ -250,6 +241,7 @@ if (isset($_GET['doctor_id'])) {
                                                 <div class="col mt-4">
                                                     <?php
                                                     // Retrieve team members from the same department
+                                                    $selectedDoctorID = $doctorID;
                                                     $teamQuery = "SELECT * FROM doctor WHERE Dept_ID = {$doctorData['Dept_ID']} AND Doctor_ID != $selectedDoctorID";
                                                     $teamResult = mysqli_query($connection, $teamQuery);
 

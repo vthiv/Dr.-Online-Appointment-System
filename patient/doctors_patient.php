@@ -24,36 +24,38 @@ else {
     $patientName = "Patient" ; // Default name if not found
 }
 
-//Retrieve the doctor's name
-$query = "SELECT `Doctor_ID`, `Doctor_Name`, `Dept_ID`, `Profile_Image` FROM `doctor` WHERE `Email` = '$doctorEmail'";
-$result = mysqli_query($connection, $query);
+// Retrieve the doctor's information based on the selected doctor ID or email
+if (isset($_GET['doctor_id'])) {
+    $doctorId = $_GET['doctor_id'];
+    $query = "SELECT `Doctor_ID`, `Doctor_Name`, `Dept_ID`, `Profile_Image` FROM `doctor` WHERE `Doctor_ID` = '$doctorId'";
+    $result = mysqli_query($connection, $query);
 
-if ($result && mysqli_num_rows($result) > 0) {
-    $doctorData = mysqli_fetch_assoc($result);
-    $doctorID = $doctorData['Doctor_ID'];
-    $doctorName = $doctorData['Doctor_Name'];
-    $deptID = $doctorData['Dept_ID'];
-    $profileImage = $doctorData['Profile_Image'];
+    if ($result && mysqli_num_rows($result) > 0) {
+        $doctorData = mysqli_fetch_assoc($result);
+        $doctorID = $doctorData['Doctor_ID'];
+        $doctorName = $doctorData['Doctor_Name'];
+        $deptID = $doctorData['Dept_ID'];
+        $profileImage = $doctorData['Profile_Image'];
 
-    // Fetch the department name based on the department ID
-    $deptQuery = "SELECT `Dept_Name` FROM `department` WHERE `Dept_ID` = $deptID";
-    $deptResult = mysqli_query($connection, $deptQuery);
+        // Fetch the department name based on the department ID
+        $deptQuery = "SELECT `Dept_Name` FROM `department` WHERE `Dept_ID` = $deptID";
+        $deptResult = mysqli_query($connection, $deptQuery);
 
-    if ($deptResult && mysqli_num_rows($deptResult) > 0) {
-        $deptData = mysqli_fetch_assoc($deptResult);
-        $departmentName = $deptData['Dept_Name'];
+        if ($deptResult && mysqli_num_rows($deptResult) > 0) {
+            $deptData = mysqli_fetch_assoc($deptResult);
+            $departmentName = $deptData['Dept_Name'];
+        } else {
+            $departmentName = "Unknown Department"; // Default if department not found
+        }
     } else {
-        $departmentName = "Unknown Department"; // Default if department not found
+        $doctorName = "Doctor"; // Default name if not found
+        $departmentName = "Unknown Department"; // Default department if not found
+        $profileImage = "default.jpg"; // Default image if not found
     }
-} else {
-    $doctorName = "Doctor"; // Default name if not found
-    $departmentName = "Unknown Department"; // Default department if not found
-    $profileImage = "default.jpg"; // Default image if not found
 }
 
 // Retrieve doctors with department details using INNER JOIN
-$doctorsQuery = "SELECT d.*, dept.Dept_Name FROM doctor d
-                 INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID";
+$doctorsQuery = "SELECT d.*, dept.Dept_Name FROM doctor d INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID";
 $doctorsResult = mysqli_query($connection, $doctorsQuery);
 
 

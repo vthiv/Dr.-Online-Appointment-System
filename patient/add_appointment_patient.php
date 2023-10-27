@@ -3,11 +3,25 @@ session_start();
 require("../connection.php");
 
 if(isset($_SESSION["user"])){
-    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
+    if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='3'){
         header("location: ../index.php");
     }
 } else {
     header('Location:../index.php');  // Redirecting To Home Page
+}
+
+//Retrieve the doctor's name
+$patientEmail = $_SESSION["user"]; // Assuming store the patient's email in the session
+$query = "SELECT CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name, Pat_ID FROM `patient` WHERE `Pat_Email` = '$patientEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $patientData = mysqli_fetch_assoc($result);
+    $patientID = $patientData['Pat_ID'];
+    $patientName = $patientData['patient_name'];
+}
+else {
+    $patientName = "Patient" ; // Default name if not found
 }
 
 $fetch_query = mysqli_query($connection, "SELECT MAX(App_ID) AS App_ID FROM appointment");
@@ -51,18 +65,6 @@ if(isset($_REQUEST['add_appointment'])) {
     }
 }
 
-// Retrieve the admin's name
-$adminEmail = $_SESSION["user"];
-$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
-$result = mysqli_query($connection, $query);
-
-if ($result && mysqli_num_rows($result) > 0) {
-    $adminData = mysqli_fetch_assoc($result);
-    $adminName = $adminData['Admin_Name'];
-} else {
-    $adminName = "Admin"; // Default name if not found
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -73,9 +75,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Admin | Add Appointment</title>
-        <meta content="" name="description">
-        <meta content="" name="keywords">
+        <title>Patient | Add Appointment</title>
 
         <!--Favicons-->
         <link rel="apple-touch-icon" sizes="180x180" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
@@ -96,7 +96,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         <link href="../css/admin_dashboard.css" rel="stylesheet" />
         <link href="../css/simplebar.css" rel="stylesheet" />
         <link href="../css/select2.min.css" rel="stylesheet" />
-        <link href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css" rel="stylesheet">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
 
@@ -135,49 +134,32 @@ if ($result && mysqli_num_rows($result) > 0) {
             <ul class="sidebar-nav" id="sidebar-nav">
                 <div class="avatar-profile">
                     <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-2 border-0">
-                        <img src="../img/admin.jpg" class="rounded-circle shadow-md avatar avatar-md-md" />
-                        <h5 class="mt-3 mb-1"><?php echo $adminName; ?></h5>
-                        <p class="text-muted mb-0">Administrator</p>
+                        <h5 class="mt-3 mb-1"><?php echo $patientName; ?></h5>
+                        <p class="text-muted mb-0"><?php echo $patientEmail; ?></p>
+                        <p class="text-muted mb-0">Patient</p>
                     </div>
                 </div>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="index_admin.php">
+                    <a class="nav-link collapsed" href="index_patient.php">
                         <i class="bi bi-cast"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="departments_admin.php">
-                        <i class="bi bi-diagram-2"></i>
-                        <span>Department</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="schedule_admin.php">
-                        <i class="bi bi-calendar3"></i>
-                        <span>Schedule</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="appointment_admin.php">
+                    <a class="nav-link" href="appointment_patient.php">
                         <i class="bi bi-calendar-check-fill"></i>
                         <span>Appointment</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="doctors_admin.php">
+                    <a class="nav-link collapsed
+                    " href="doctors_patient.php">
                         <i class="bi bi-heart-pulse"></i>
                         <span>Doctors</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="patients_admin.php">
-                        <i class="bi bi-people"></i>
-                        <span>Patients</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link collapsed" href="profile_admin.php">
+                    <a class="nav-link collapsed" href="profile_patient.php">
                         <i class="bi bi-person-circle"></i>
                         <span>Profile</span>
                     </a>
@@ -200,7 +182,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     </div>
                     
                     <div class="col-sm-8 col-9 text-right m-b-20">
-                        <a href="appointment_admin.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
+                        <a href="appointment_patient.php" class="btn btn-primary btn-rounded float-right"><i class="bi bi-arrow-left"></i> Back</a>
                     </div>
                 </div>
 
@@ -216,27 +198,25 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>Admin Name <span class="text-danger">*</span></label>
-                                            <input name="admin_id" id="admin_id" type="text" class="form-control" placeholder="Admin Name:" value="<?php echo $adminName; ?>" readonly /> 
-                                        </div>
-                                    </div>
-
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label class="form-label">Patient Name <span class="text-danger">*</span></label>
-                                            <select class="form-control patient-name" name="pat_id" id="pat_id">
-                                                <option value="">Select Patient</option>
-                                                <?php 
-                                                // Fetch and display a list of patients from the database
-                                                $patientQuery = "SELECT `Pat_ID`, `Pat_Firstname`, `Pat_Lastname` FROM `patient`";
-                                                $patientResult = mysqli_query($connection, $patientQuery);
+                                            <input class="form-control" type="text" name="patientname" id="patientname" value="<?php echo $patientName; ?>">
+                                        </div>
+                                    </div>
 
-                                                if ($patientResult && mysqli_num_rows($patientResult) > 0) {
-                                                    while ($row = mysqli_fetch_assoc($patientResult)) {
-                                                        $patientFullName = $row['Pat_Firstname'] . ' ' . $row['Pat_Lastname'];
-                                                        echo '<option value="' . $row['Pat_ID'] . '">' . $patientFullName . '</option>';
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
+                                            <select class="form-control doctor-name select2input" name="doc_id" id="doc_id" onchange="fetchDepartments(this.value)">
+                                                <option value="">Select</option>
+                                                <?php
+                                                $doctorQuery = "SELECT `Doctor_ID`, `Doctor_Name` FROM `doctor`";
+                                                $doctorResult = mysqli_query($connection, $doctorQuery);
+                                                    
+                                                if ($doctorResult && mysqli_num_rows($doctorResult) > 0) {
+                                                    while ($row = mysqli_fetch_assoc($doctorResult)) {
+                                                        echo '<option value="' . $row['Doctor_ID'] . '">' . $row['Doctor_Name'] . '</option>';
                                                     }
                                                 }
                                                 ?>
@@ -249,35 +229,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             <label class="form-label">Department <span class="text-danger">*</span></label>
                                             <select class="form-control department-name" name="dept_id" id="dept_id">
                                                 <option value="">Select</option>
-                                                <?php
-                                                $departmentQuery = "SELECT `Dept_ID`, `Dept_Name` FROM `department` WHERE `Dept_Status` = 1";
-                                                $departmentResult = mysqli_query($connection, $departmentQuery);
-                                                    
-                                                if ($departmentResult && mysqli_num_rows($departmentResult) > 0) {
-                                                    while ($row = mysqli_fetch_assoc($departmentResult)) {
-                                                        echo '<option value="' . $row['Dept_ID'] . '">' . $row['Dept_Name'] . '</option>';
-                                                    }
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
-                                            <select class="form-control doctor-name select2input" name="doc_id" id="doc_id">
-                                                <option value="">Select</option>
-                                                <?php
-                                                $doctorQuery = "SELECT `Doctor_ID`, `Doctor_Name` FROM `doctor`";
-                                                $doctorResult = mysqli_query($connection, $doctorQuery);
-                                                    
-                                                if ($doctorResult && mysqli_num_rows($doctorResult) > 0) {
-                                                    while ($row = mysqli_fetch_assoc($doctorResult)) {
-                                                        echo '<option value="' . $row['Doctor_ID'] . '">' . $row['Doctor_Name'] . '</option>';
-                                                    }
-                                                }
-                                                ?>
                                             </select>
                                         </div>
                                     </div>
@@ -356,15 +307,6 @@ if ($result && mysqli_num_rows($result) > 0) {
         </footer>
         <!-- ======= Footer Ends ======= -->
 
-        <!--Modal Start-->
-        <!--Add Appointment form Starts-->
-        
-        <!--Add Appointment form Ends-->
-        <!--Modal End-->
-
-
-
-        
         <script src="../js/simplebar.min.js"></script>
         <script src="../js/bootstrap.bundle.min.js"></script>
         <script src="../js/jquery.min.js"></script>
@@ -373,17 +315,32 @@ if ($result && mysqli_num_rows($result) > 0) {
         <script src="../js/main.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
-        <script src="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script type="text/javascript">
             <?php
                 if(isset($msg)) {
                     echo 'swal("' . $msg . '").then(function() {
-                        window.location.href = "appointment_admin.php";
+                        window.location.href = "appointment_patient.php";
                     });';
                 }
             ?>
         </script>
-        
+
+        <script>
+        function fetchDepartments(doctorId) {
+            if (doctorId !== '') {
+                $.ajax({
+                    type: 'POST',
+                    url: 'fetch_departments.php', // You need to create a PHP file named fetch_departments.php to fetch departments based on the selected doctor ID
+                    data: { doctorId: doctorId },
+                    success: function(response) {
+                        $("#dept_id").html(response);
+                    }
+                });
+            } else {
+                $("#dept_id").html('<option value="">Select</option>');
+            }
+        }
+        </script>
     </body>
 </html>
