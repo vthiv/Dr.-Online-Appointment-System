@@ -25,7 +25,6 @@ else {
 }
 
 //Retrieve the doctor's name
-$doctorEmail = $_SESSION["user"]; //Assuming store the doctor's email in the session
 $query = "SELECT `Doctor_ID`, `Doctor_Name`, `Dept_ID`, `Profile_Image` FROM `doctor` WHERE `Email` = '$doctorEmail'";
 $result = mysqli_query($connection, $query);
 
