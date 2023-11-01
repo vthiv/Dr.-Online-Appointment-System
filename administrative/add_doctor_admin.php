@@ -371,16 +371,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </div>
 
                             <ul class="list-unstyled mb-0 p-4" data-simplebar style="height: 664px;">
-                                <li class="d-md-flex align-items-center text-center text-md-start">
-                                    <img src="../img/doctors/Calvin_Carlo.jpg" class="avatar avatar-medium rounded-md shadow" />
+                            <?php
+                            $doctorsQuery = "SELECT * FROM doctor d JOIN department dep ON d.Dept_ID = dep.Dept_ID";
+                            $doctorsResult = mysqli_query($connection, $doctorsQuery);
 
-                                    <div class="ms-md-3 mt-4 mt-sm-0">
-                                        <a href="#" class="text-dark h6">Dr. Calvin Carlo</a>
-                                        <p class="text-muted my-1">Cardiologist</p>
-                                        <p class="text-muted mb-0">3 Years Experienced</p>
-                                    </div>
-                                </li>
+                            // Check if there are any rows returned
+                            if ($doctorsResult && mysqli_num_rows($doctorsResult) > 0) {
+                                // Display each doctor's details in the provided <div>
+                                while ($row = mysqli_fetch_assoc($doctorsResult)) {
+                                echo '<li class="d-md-flex align-items-center text-center text-md-start">';
+                                    echo '<img src="../img/doctors/' . $row["Profile_Image"] . '" class="avatar avatar-medium rounded-md shadow" />';
 
+                                    echo '<div class="ms-md-3 mt-4 mt-sm-0">';
+                                        echo '<a href="#" class="text-dark h6">' . $row["Doctor_Name"] . '</a>';
+                                        echo '<p class="text-muted my-1">' . $row["Dept_Name"] . '</p>';
+                                        echo '<p class="text-muted mb-0">' . $row["Doctor_Bio"] . '</p>';
+                                    echo '</div>';
+                                echo '</li>';
+                                }
+                            } else {
+                                echo "No doctors found.";
+                            }
+                            ?>
                                 <li class="mt-4">
                                     <a href="doctors_admin.php" class="btn btn-primary">View More</a>
                                 </li>

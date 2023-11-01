@@ -2,13 +2,32 @@
 session_start();
 require("../connection.php");
 
+$edit_id = ""; // Initialize the $edit_id variable
+
 if(isset($_SESSION["user"])){
     if(($_SESSION["user"]) == "" or $_SESSION['usertype']!='1'){
         header("location: ../index.php");
+        exit();
     }
 } else {
     header('Location:../index.php');  // Redirecting To Home Page
+    exit();
 }
+
+// Retrieve the admin's name
+$adminEmail = $_SESSION["user"];
+$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
+$result = mysqli_query($connection, $query);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $adminData = mysqli_fetch_assoc($result);
+    $adminName = $adminData['Admin_Name'];
+} else {
+    $adminName = "Admin"; // Default name if not found
+}
+
+$department = [];
+$message = "";
 
 // Check if the edit_dept_btn is clicked and an edit_id is provided
 if(isset($_POST["edit_dept_btn"]) && isset($_POST["edit_id"])){
@@ -18,7 +37,7 @@ if(isset($_POST["edit_dept_btn"]) && isset($_POST["edit_id"])){
     $query = "SELECT * FROM department WHERE Dept_ID = '$edit_id'";
     $result = mysqli_query($connection, $query);
 
-    if($result){
+    if($result && mysqli_num_rows($result) > 0){
         $department = mysqli_fetch_assoc($result);
     } else {
         // Handle the case where the department is not found
@@ -28,7 +47,6 @@ if(isset($_POST["edit_dept_btn"]) && isset($_POST["edit_id"])){
 
 // Handle form submission to update department details
 if(isset($_POST["update_department"])){
-
     $newDeptName = $_POST["new_dept_name"];
     $newDeptDescription = $_POST["new_dept_description"];
     $newDeptStatus = $_POST["new_dept_status"];
@@ -43,25 +61,13 @@ if(isset($_POST["update_department"])){
     $update_result = mysqli_query($connection, $update_query);
 
     if($update_result){
-        // Redirect back to the departments_admin.php page after successful update
-        header("location: departments_admin.php");
+        $message = "Update department details successfully.";
     } else {
         // Handle the case where the update fails
-        $message = "Failed to update department details.";
+        $message = "Failed to update department details: " . mysqli_error($connection);
     }
 }
 
-// Retrieve the admin's name
-$adminEmail = $_SESSION["user"];
-$query = "SELECT `Admin_Name` FROM `admin` WHERE `Admin_Email` = '$adminEmail'";
-$result = mysqli_query($connection, $query);
-
-if ($result && mysqli_num_rows($result) > 0) {
-    $adminData = mysqli_fetch_assoc($result);
-    $adminName = $adminData['Admin_Name'];
-} else {
-    $adminName = "Admin"; // Default name if not found
-}
 ?>
 
 
@@ -208,17 +214,17 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
                             <div class="form-group">
                                 <label for="new_dept_name">Department Name</label>
-                                <input type="text" class="form-control" name="new_dept_name" value="<?php echo $department['Dept_Name']; ?>" required>
+                                <input type="text" class="form-control" name="new_dept_name" value="<?php echo $department['Dept_Name'] ?? ''; ?>" required>
                             </div>
                             <div class="form-group">
                                 <label for="new_dept_description">Description</label>
-                                <textarea class="form-control" rows="4" name="new_dept_description"><?php echo $department['Dept_Description']; ?></textarea>
+                                <textarea class="form-control" rows="4" name="new_dept_description"><?php echo $department['Dept_Description'] ?? ''; ?></textarea>
                             </div>
                             <div class="form-group">
                                 <label for="new_dept_status" class="display-block">Department Status</label>
                                 <select class="form-control" name="new_dept_status">
-                                    <option value="1" <?php if($department['Dept_Status'] == 1) echo 'selected'; ?>>Active</option>
-                                    <option value="0" <?php if($department['Dept_Status'] == 0) echo 'selected'; ?>>Inactive</option>
+                                    <option value="1" <?php if(isset($department['Dept_Status']) && $department['Dept_Status'] == 1) echo 'selected'; ?>>Active</option>
+                                    <option value="0" <?php if(isset($department['Dept_Status']) && $department['Dept_Status'] == 0) echo 'selected'; ?>>Inactive</option>
                                 </select>
                             </div>
                             <div class="m-t-20 text-center">
@@ -266,11 +272,14 @@ if ($result && mysqli_num_rows($result) > 0) {
             require( 'datatables.net-searchpanes-bs5' );
         </script>
 
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script type="text/javascript">
             <?php
-                if(isset($message)) {
-                    echo 'swal("' . $message . '");';
-                } 
+                if(isset($msg)) {
+                    echo 'swal("' . $msg . '").then(function() {
+                        window.location.href = "departments_admin.php";
+                    });';
+                }
             ?>
         </script>
         

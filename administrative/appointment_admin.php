@@ -198,7 +198,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <th>Appointment Date</th>
                                 <th>Appointment Time</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -220,13 +219,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <?php } else{ ?>
                                     <td><span class="custom-badge status-red">Inactive</span></td>
                                 <?php  }?>
-                                <td>
-                                    <form  action="edit_appointment.php" method="POST">
-                                        <input type="hidden" name="editappointment_id" value="<?php echo $row['appointment_ID'] ?>" />
-                                        <button type="submit" name="edit_app_btn" class="btn btn-info"><i class="bi bi-pencil-square"></i></button>
-                                    </form>
-                                    
-                                </td>
                             </tr>
                             <?php }
                             ?>
