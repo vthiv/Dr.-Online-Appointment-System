@@ -35,18 +35,6 @@ else {
 if(isset($_REQUEST['add_appointment'])) {
 
     $appointment_id = 'APT-'.$apt_id;
-
-    // Check if pat_id is set and not empty
-    if (isset($_REQUEST['pat_id']) && !empty($_REQUEST['pat_id'])) {
-        $patientID = intval($_REQUEST['pat_id']); // Ensure it's a valid integer
-    } else {
-        // Handle the case when pat_id is missing or invalid
-        echo "Patient ID is missing or invalid.";
-        // You can also redirect or display an error message here
-        exit(); // Exit the script
-    }
-
-    $patientID = $_REQUEST['pat_id'];
     $doctorID = $_REQUEST['doc_id'];
     $departmentID = $_REQUEST['dept_id'];
     $app_date = $_REQUEST['app_date'];

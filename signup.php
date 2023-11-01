@@ -23,7 +23,7 @@ if($_POST){
         if($result ->num_rows == 1) {
             $error = '<label for="promter" class="form-label" style="color:rgb(255, 62, 62);text-align:center;">Already have an account for this Email address.</label>';
         } else {
-            $connection ->query("INSERT INTO patient (Pat_Firstname, Pat_Lastname, Pat_Email, Pat_Password, Pat_PhoneNo, Pat_DOB, Pat_Address) VALUES ('$firstname', '$lastname', '$email', '$newpassword', '$phone', '$dob', '$address')");
+            $connection ->query("INSERT INTO patient (Pat_Firstname, Pat_Lastname, Pat_Email, Pat_Password, Pat_PhoneNo, Pat_DOB, Pat_Address, Pat_Status) VALUES ('$firstname', '$lastname', '$email', '$newpassword', '$phone', '$dob', '$address', 1 )");
             $connection ->query("INSERT INTO webuser (email, usertype) VALUES ('$email', '3')");
 
             $_SESSION["user"]=$email;
