@@ -285,9 +285,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                     <div class="col-lg-4">
                         <div class="card member-panel">
                             <div class="card-header bg-white">
-                                <h4 class="card-title">Today Schedule
-                                    <a href="doctors_patient.php" style="float: right;"><i class="bi bi-grid"></i></a>
-                                </h4>
+                                <h4 class="card-title">Today Schedule</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="contact-list">
