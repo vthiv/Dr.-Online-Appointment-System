@@ -169,10 +169,6 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <div class="col-sm-4 col-3">
                         <h6 class="title">Doctor's Schedule</h6>
                     </div>
-                    
-                    <div class="col-sm-8 col-9 text-right m-b-20">
-                        <a href="add_schedule_doctor.php" class="btn btn-primary btn-rounded"><i class="bi bi-plus"></i>Add Schedule</a>
-                    </div>
                 </div>
 
                 <div class="table-responsive">

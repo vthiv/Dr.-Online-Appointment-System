@@ -92,7 +92,9 @@ if (isset($_POST['submit_new_password'])) {
                 // Update the password in the database
                 $updatePasswordQuery = "UPDATE `doctor` SET `Password`='$newPassword' WHERE `Email`='$doctorEmail'";
                 if (mysqli_query($connection, $updatePasswordQuery)) {
+                    
                     $message = "Password changed successfully!";
+                    header("Location: ../index.php");
                 } else {
                     $message = "Error: " . mysqli_error($connection);
                 }
