@@ -45,7 +45,7 @@ if(isset($_REQUEST['add_appointment'])) {
 
 
     if ($insert_query > 0) {
-        $msg = "Schedule data added successfully!";
+        $msg = "Appointment added successfully!";
     } else {
         $msg = "Error: " . mysqli_error($connection);
     }

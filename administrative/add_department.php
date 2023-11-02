@@ -302,9 +302,11 @@ if ($result && mysqli_num_rows($result) > 0) {
 
         <script type="text/javascript">
             <?php
-                if(isset($message)){
-                    echo 'swal("'.$message.'")';
-                } 
+                if(isset($message)) {
+                    echo 'swal("' . $message . '").then(function() {
+                        window.location.href = "departments_admin.php";
+                    });';
+                }
             ?>
         </script>
         
