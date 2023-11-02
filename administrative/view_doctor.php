@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <ul class="sidebar-nav" id="sidebar-nav">
                 <div class="avatar-profile">
                     <div class="text-center avatar-profile margin-nagative mt-n5 position-relative pb-2 border-0">
-                        <img src="../img/admin.jpg" class="rounded-circle shadow-md avatar avatar-md-md" />
+                        <img src="../img/admin.png" class="rounded-circle shadow-md avatar avatar-md-md" />
                         <h5 class="mt-3 mb-1"><?php echo $adminName; ?></h5>
                         <p class="text-muted mb-0">Administrator</p>
                     </div>
