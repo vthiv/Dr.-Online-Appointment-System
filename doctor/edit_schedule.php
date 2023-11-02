@@ -48,7 +48,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title>Doctor | Schedule</title>
+        <title>Doctor | Edit Schedule</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -193,29 +193,22 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                                 if ($result && mysqli_num_rows($result) > 0) {
                                     $scheduleData = mysqli_fetch_assoc($result);
-                                    // You can then use the data retrieved to pre-fill the form fields for editing.
-                                    $scheduleTitle = $scheduleData['Schedule_Title'];
-                                    $scheduleDay = $scheduleData['Schedule_Day'];
-                                    $scheduleDate = $scheduleData['Schedule_Date'];
-                                    $startTime = $scheduleData['Schedule_StartTime'];
-                                    $endTime = $scheduleData['Schedule_EndTime'];
-                                    $scheduleStatus = $scheduleData['Schedule_Status'];
 
                                     // Form for editing the schedule
-                                    echo '<form method="POST" action="update_schedule.php">
-                                    <input type="hidden" name="schedule_id" value="'.$scheduleID.'">
+                                    echo '<form method="POST" action="">
+                                        <input type="hidden" name="schedule_id" value="<?php echo $scheduleID; ?>">
                                         <div class="row">
                                             <div class="col-lg-4 col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
-                                                    <input name="doctor_name" id="doctor_name" class="form-control type="text" value="'.$doctorName.'" readonly/>
+                                                    <input name="doctor_name" id="doctor_name" class="form-control type="text" value="'.$scheduleData['Doctor_Name'].'" readonly/>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-4 col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Department Name<span class="text-danger">*</span></label>
-                                                    <input name="dept_name" id="dept_name" class="form-control type="text" value="'.$departmentName.'" readonly/>
+                                                    <input name="dept_name" id="dept_name" class="form-control type="text" value="'.$scheduleData['Dept_Name'].'" readonly/>
                                                 </div>
                                             </div>
 
@@ -224,13 +217,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                     <label class="form-label">Schedule Days <span class="text-danger">*</span></label><br>
                                                     <select class="select" multiple name="days[]" required>
                                                         <option value="">Select Days</option>
-                                                        <option value="Sunday" '.(strpos($scheduleDay, 'Sunday') !== false ? 'selected' : '').'>Sunday</option>
-                                                        <option value="Monday" '.(strpos($scheduleDay, 'Monday') !== false ? 'selected' : '').'>Monday</option>
-                                                        <option value="Tuesday" '.(strpos($scheduleDay, 'Tuesday') !== false ? 'selected' : '').'>Tuesday</option>
-                                                        <option value="Wednesday" '.(strpos($scheduleDay, 'Wednesday') !== false ? 'selected' : '').'>Wednesday</option>
-                                                        <option value="Thursday" '.(strpos($scheduleDay, 'Thursday') !== false ? 'selected' : '').'>Thursday</option>
-                                                        <option value="Friday" '.(strpos($scheduleDay, 'Friday') !== false ? 'selected' : '').'>Friday</option>
-                                                        <option value="Saturday" '.(strpos($scheduleDay, 'Saturday') !== false ? 'selected' : '').'>Saturday</option>
+                                                        <option value="Sunday" '.(strpos($scheduleData['Schedule_Day'], 'Sunday') !== false ? 'selected' : '').'>Sunday</option>
+                                                        <option value="Monday" '.(strpos($scheduleData['Schedule_Day'], 'Monday') !== false ? 'selected' : '').'>Monday</option>
+                                                        <option value="Tuesday" '.(strpos($scheduleData['Schedule_Day'], 'Tuesday') !== false ? 'selected' : '').'>Tuesday</option>
+                                                        <option value="Wednesday" '.(strpos($scheduleData['Schedule_Day'], 'Wednesday') !== false ? 'selected' : '').'>Wednesday</option>
+                                                        <option value="Thursday" '.(strpos($scheduleData['Schedule_Day'], 'Thursday') !== false ? 'selected' : '').'>Thursday</option>
+                                                        <option value="Friday" '.(strpos($scheduleData['Schedule_Day'], 'Friday') !== false ? 'selected' : '').'>Friday</option>
+                                                        <option value="Saturday" '.(strpos($scheduleData['Schedule_Day'], 'Saturday') !== false ? 'selected' : '').'>Saturday</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -238,21 +231,21 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             <div class="col-lg-4 col-md-6">
                                                 <div class="mb-3">
                                                     <label>Start Time <span class="text-danger">*</span></label>
-                                                    <input name="start_time" id="start_time" type="time" class="form-control timepicker" value="'.$startTime.'" required />
+                                                    <input name="start_time" id="start_time" type="time" class="form-control timepicker" value="'.$scheduleData['Schedule_StartTime'].'" required />
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-4 col-md-6">
                                                 <div class="mb-3">
                                                     <label>End Time <span class="text-danger">*</span></label>
-                                                    <input name="end_time" id="end_time" type="time" class="form-control timepicker" value="'.$endTime.'" required />
+                                                    <input name="end_time" id="end_time" type="time" class="form-control timepicker" value="'.$scheduleData['Schedule_EndTime'].'" required />
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Message <span class="text-danger">*</span></label>
-                                                    <textarea name="schedule_title" id="message" cols="30" rows="4" class="form-control">'.$scheduleTitle.'</textarea>
+                                                    <textarea name="schedule_title" id="schedule_title" cols="30" rows="4" class="form-control">'.$scheduleData['Schedule_Title'].'</textarea>
                                                 </div>
                                             </div>
 
@@ -260,22 +253,41 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                 <div class="mb-3">
                                                     <label for="status" class="display-block">Schedule Status</label>
                                                     <select class="form-control" id="schedule_status" name="schedule_status">
-                                                        <option value="1" '.($scheduleStatus == 1 ? 'selected' : '').'>Active</option>
-                                                        <option value="0" '.($scheduleStatus == 0 ? 'selected' : '').'>Inactive</option>
+                                                        <option value="1" '.($scheduleData['Schedule_Status'] == 1 ? 'selected' : '').'>Active</option>
+                                                        <option value="0" '.($scheduleData['Schedule_Status'] == 0 ? 'selected' : '').'>Inactive</option>
                                                     </select>
                                                 </div>
                                             </div>
 
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
+                                                    <button type="submit" name="update_schedule" class="btn btn-primary submit-btn">UPDATE SCHEDULE</button>
                                                     <a href="schedule_doctor.php" class="btn btn-soft-primary">CANCEL</a>
-                                                    <button class="btn btn-primary submit-btn" type="submit" name="update_schedule_btn">UPDATE SCHEDULE</button>
+                                                    
                                                 </div>
                                             </div>
                                         </div>
                                     </form>';
+
+                                    if (isset($_POST['update_schedule'])) {
+                                        $updatedDays = implode(',', $_POST['days']);
+                                        $updatedStartTime = $_POST['start_time'];
+                                        $updatedEndTime = $_POST['end_time'];
+                                        $updatedTitle = $_POST['schedule_title'];
+                                        $updatedStatus = $_POST['schedule_status'];
+
+                                        // Update the schedule in the database
+                                        $updateQuery = "UPDATE schedule SET Schedule_Title = '$updatedTitle', Schedule_StartTime = '$updatedStartTime', Schedule_EndTime = '$updatedEndTime', Schedule_Day = '$updatedDays', Schedule_Status = '$updatedStatus' WHERE Schedule_ID = $scheduleID";
+                                        $updateResult = mysqli_query($connection, $updateQuery);
+
+                                        if ($updateResult) {
+                                            $message = "Schedule updated successfully!";
+                                        } else {
+                                            $message = "Error updating appointment: " . mysqli_error($connection);
+                                        }
+                                    }
                                 } else {
-                                    echo "No schedule found with the provided ID.";
+                                    $message = "No schedule found with the provided ID.";
                                 }
                             }
                             ?>
@@ -302,13 +314,15 @@ if ($result && mysqli_num_rows($result) > 0) {
         <script src="../js/select2.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>                                    
         <script type="text/javascript">
             <?php
-                if(isset($msg)) {
-                    echo 'swal("' . $msg . '");';
+                if(isset($message)) {
+                    echo 'swal("' . $message . '").then(function() {
+                        window.location.href = "schedule_doctor.php";
+                    });';
                 }
             ?>
         </script>

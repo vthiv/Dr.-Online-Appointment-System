@@ -384,7 +384,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                             <div class="card member-panel">
                                 <div class="card-header bg-white">
                                     <h4 class="card-title">Doctors
-                                        <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
+                                        <a href="doctors.php" style="float: right;"><i class="bi bi-grid"></i></a>
                                     </h4>
                                 </div>
                                 <div class="card-body">
@@ -395,7 +395,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                         echo '<li>
                                                 <div class="contact-cont d-flex align-items-center">
                                                     <div class="float-left user-img m-r-10" style="margin-right: 5px;">
-                                                        <a href="#"><img src="../img/doctors/' . $doctor['profileImage'] . '" class="w-40 rounded-circle" style="max-width: 40px; max-height: 40px;"/></a>
+                                                        <img src="../img/doctors/' . $doctor['profileImage'] . '" class="w-40 rounded-circle" style="max-width: 40px; max-height: 40px;"/>
                                                     </div>
                                                     <div class="contact-info">
                                                         <span class="contact-name text-ellipsis">' . $doctor['name'] . '</span>
