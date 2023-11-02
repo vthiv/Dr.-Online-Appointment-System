@@ -166,6 +166,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Date of Birth</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -177,16 +178,17 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                             if ($patientResult && mysqli_num_rows($patientResult) > 0) {
                                 while ($patientData = mysqli_fetch_assoc($patientResult)) {
-                                    echo '<tr>
-                                        <td>' . $patientData['Pat_Firstname'] . ' ' . $patientData['Pat_Lastname'] . '</td>
-                                        <td>' . $patientData['Pat_Address'] . '</td>
-                                        <td>' . $patientData['Pat_Email'] . '</td>
-                                        <td>' . $patientData['Pat_PhoneNo'] . '</td>
-                                        <td>' . $patientData['Pat_DOB'] . '</td>
+                                    echo "<tr>
+                                        <td>" . $patientData['Pat_Firstname'] . ' ' . $patientData['Pat_Lastname'] . "</td>
+                                        <td>" . $patientData['Pat_Address'] . "</td>
+                                        <td>" . $patientData['Pat_Email'] . "</td>
+                                        <td>" . $patientData['Pat_PhoneNo'] . "</td>
+                                        <td>" . $patientData['Pat_DOB'] . "</td>
+                                        <td><span class='custom-badge status-" . ($patientData["Pat_Status"] ? "green'>Active" : "red'>Inactive") . "</span></td>
                                         <td>
-                                            <a href="edit_patient.php?Pat_ID=' . $patientData['Pat_ID'] . '" class="btn btn-info"><i class="bi bi-pencil-square" ></i></a>
+                                            <a href='edit_patient.php?Pat_ID=" . $patientData["Pat_ID"] . "' class='btn btn-info'><i class='bi bi-pencil-square'></i></a>
                                         </td>
-                                    </tr>';
+                                    </tr>";
                                 }
                             } else {
                                 echo "No Patient records found.";

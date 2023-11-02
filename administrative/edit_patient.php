@@ -22,56 +22,36 @@ if ($result && mysqli_num_rows($result) > 0) {
     $adminName = "Admin"; // Default name if not found
 }
 
-// Assume you have a patient's ID that you want to display
-if(isset($_GET["pat_id"])){
-    $patientId = $_GET["pat_id"];
-
-    // Fetch the selected patient's details from the database
-    $fetch_query = mysqli_query($connection, "SELECT * FROM `patient` WHERE `Pat_ID` = '$patientId'");
-    if($fetch_query && mysqli_num_rows($fetch_query) > 0){
-        $patientData = mysqli_fetch_assoc($fetch_query);
-    } else {
-        // Set default values or handle the error as per your requirement
-        $patientData = array(
-            'Pat_Firstname' => '',
-            'Pat_Lastname' => '',
-            'Pat_Email' => '',
-            'Pat_DOB' => '',
-            'Pat_PhoneNo' => '',
-            'Pat_Address' => '',
-            'Pat_Status' => '',
-        );
-    }
-} else {
-    // Set default values or handle the error as per your requirement
-    $patientId = "";
-    $patientData = array(
-        'Pat_Firstname' => '',
-        'Pat_Lastname' => '',
-        'Pat_Email' => '',
-        'Pat_DOB' => '',
-        'Pat_PhoneNo' => '',
-        'Pat_Address' => '',
-        'Pat_Status' => '',
-    );
-}
-
-if(isset($_POST['update-patient'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update-patient'])) {
+    $patientID = $_POST['pat_id'];
     $status = $_POST['status'];
 
-    $update_query = mysqli_query($connection, "UPDATE patient SET Pat_Status='$status' WHERE Pat_ID='$patientId'");
-    
-    if ($update_query) {
+    $updateQuery = "UPDATE `patient` SET 
+    `Pat_Status` = '$status'
+    WHERE `Pat_ID` = $patientID";
 
-        $message = "Patient status updated successfully";
-        $patientData['Pat_Status'] = $status;
-
+    if (mysqli_query($connection, $updateQuery)) {
+        $message = "Patient status updated successfully.";
     } else {
-
-        $message = "Failed to update patient status";
+        $message = "Error updating patient status: " . mysqli_error($connection);
     }
 }
 
+if (isset($_GET['Pat_ID'])) {
+    $patientID = $_GET['Pat_ID'];
+    $query = "SELECT * FROM `patient` WHERE `Pat_ID` = $patientID";
+    $result = mysqli_query($connection, $query);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+
+        $patientData = mysqli_fetch_assoc($result);
+
+    } else {
+        $message = "Patient not found.";
+    }
+} else {
+    $message = "Invalid patient ID.";
+}
 ?>
 
 <!DOCTYPE html>
@@ -214,7 +194,7 @@ if(isset($_POST['update-patient'])) {
                     <div class="col-lg-8 offset-lg-2">
                         <div class="card border-0 p-2 rounded shadow">
                             <form action="" method="POST">
-                            <input type="hidden" name="pat_id" value="<?php echo $patientId; ?>" >
+                            <input type="hidden" name="pat_id" value="<?php echo $patientData['Pat_ID']; ?>" >
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
@@ -253,26 +233,10 @@ if(isset($_POST['update-patient'])) {
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-6">
-                                        <div class="form-group gender-select">
-                                            <label class="gender-label">Gender :</label><br>
-                                            <div class="form-check-inline">
-                                                <label class="form-check-label">
-                                                    <input type="radio" name="gender" class="form-check-input" value="Male"> Male
-                                                </label>
-                                            </div>
-                                            <div class="form-check-inline">
-                                                <label class="form-check-label">
-                                                    <input type="radio" name="gender" class="form-check-input" value="Female"> Female
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Address</label>
-                                            <textarea name="address" id="address" rows="4" class="form-control" value="<?php echo $patientData['Pat_Address']; ?>" readonly></textarea>
+                                            <textarea name="address" id="address" rows="4" class="form-control" readonly><?php echo $patientData['Pat_Address']; ?></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -323,7 +287,9 @@ if(isset($_POST['update-patient'])) {
         <script type="text/javascript">
             <?php
                 if(isset($message)) {
-                    echo 'swal("' . $message . '");';
+                    echo 'swal("' . $message . '").then(function() {
+                        window.location.href = "patients_admin.php";
+                    });';
                 }
             ?>
         </script>
