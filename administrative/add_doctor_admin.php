@@ -23,10 +23,18 @@ if ($result && mysqli_num_rows($result) > 0) {
     $adminName = "Admin"; // Default name if not found
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$fetch_query = mysqli_query($connection, "SELECT MAX(Doctor_ID) AS Doctor_ID FROM doctor");
+$row = mysqli_fetch_row($fetch_query);
+if($row[0] == 0) {
+    $employee_id = 1;
+}
+else {
+    $employee_id = $row[0] + 1;
+}
+if (isset($_POST['add-doctor'])) {
     // Retrieve other form data
-    $employee_id = $_POST['employee_id'];
-    $name = $_POST['name'];
+    $emp_id = 'DR-N'.$employee_id;
+    $fullname = $_POST['fullname'];
     $email = $_POST['email'];
     $password = $_POST['pwd'];
     $dob = $_POST['dob'];
@@ -38,17 +46,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $bio = $_POST['comments'];
     $status = $_POST['status'];
 
+    $maxFileSize = 2 * 1024 * 1024;
     // Handle file upload
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = "../img/doctors/";
-        $profileImage = $_FILES['profile_image']['name']; // Get the uploaded file name
-        //$targetFilePath = $uploadDir . $profileImage;
-        $fileType = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
+        if ($_FILES['profile_image']['size'] > $maxFileSize) {
+            $message = "File size exceeds the maximum allowed limit (2MB). Please upload a smaller file.";
+        }
+        else {
+            $uploadDir = "../img/doctors/";
+            $profileImage = $_FILES['profile_image']['name']; // Get the uploaded file name
+            //$targetFilePath = $uploadDir . $profileImage;
+            $fileType = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
 
-        // Generate a unique filename based on the doctor's full name
-        $uniqueFilename = $name . '_' . uniqid() . '.' . $fileType;
-        $targetFilePath = $uploadDir . $uniqueFilename;
-
+            // Generate a unique filename based on the doctor's full name
+            $uniqueFilename = $fullname . '_' . uniqid() . '.' . $fileType;
+            $targetFilePath = $uploadDir . $uniqueFilename;
+        }
+        
         // Create the directory if it doesn't exist
         if (!file_exists($uploadDir)) {
             mkdir($uploadDir, 0777, true); // Create the directory with full permissions (you can adjust permissions as needed)
@@ -66,29 +80,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $webuser_id = mysqli_insert_id($connection);
 
                     // Insert data into 'DOCTOR' table
-                    $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Doctor_Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$employee_id', '$department_id', '$name', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$uniqueFilename', '$status')";
+                    $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Doctor_Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$emp_id', '$department_id', '$fullname', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$uniqueFilename', '$status')";
                     if (mysqli_query($connection, $sql_doctor)) {
-                        echo "Doctor registration successful!";
+                        $message = "Doctor registration successful!";
                     } else {
-                        echo "Error inserting data into DOCTOR table: " . mysqli_error($connection);
+                        $message = "Error inserting data into DOCTOR table: " . mysqli_error($connection);
                     }
                 } else {
-                    echo "Error inserting data into WEBUSER table: " . mysqli_error($connection);
+                    $message = "Error inserting data into WEBUSER table: " . mysqli_error($connection);
                 }
             } else {
-                echo "Error uploading image.";
+                $message = "Error uploading image.";
             }
         } else {
-            echo "Invalid file format. Allowed formats are jpg, png, and jpeg.";
+            $message = "Invalid file format. Allowed formats are jpg, png, and jpeg.";
         }
     } else {
-        echo "Profile image is required.";
+        $message = "Profile image is required.";
     }
 
     // Close the database connection
     mysqli_close($connection);
 } else {
-    echo "Invalid request.";
+    $message = "Invalid request.";
 }
 ?>
 
@@ -232,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="row">
                     <div class="col-lg-8 mt-4">
                         <div class="card border-0 p-4 rounded shadow">
-                            <form class="mt-4" method="POST" enctype="multipart/form-data">
+                            <form class="mt-4" method="POST" action="" enctype="multipart/form-data">
                                 <div class="row align-items-center">
                                     <div class="col-lg-2 col-md-4">
                                         <img src=" " id="preview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
@@ -254,14 +268,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Employee ID </label>
-                                            <input class="form-control" type="text" name="employee_id" placeholder="Employee ID :" required>
+                                            <input class="form-control" type="text" name="employee_id" value="<?php if(!empty($employee_id)) { echo 'DR-N'.$employee_id; } else { echo "DR-N1"; } ?>" disabled>
                                         </div>
                                     </div>
 
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label class="form-label">Full Name</label>
-                                            <input name="name" id="name" type="text" class="form-control" placeholder="Full Name :" required />
+                                            <input name="fullname" id="fullname" type="text" class="form-control" placeholder="Full Name :" required />
                                         </div>
                                     </div>
 
@@ -423,7 +437,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <script src="../js/feather.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
-        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
 
         <script>
@@ -441,6 +454,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $('#profile_image').val('');
                 $('#preview').attr('src', '');
             }
+        </script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script type="text/javascript">
+            <?php
+                if(isset($message)) {
+                    echo 'swal("' . $message . '").then(function() {
+                        window.location.href = "doctors_admin.php";
+                    });';
+                }
+            ?>
         </script>
         
     </body>
