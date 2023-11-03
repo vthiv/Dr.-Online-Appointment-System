@@ -65,7 +65,8 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
 // Fetch all doctors grouped by department
 $doctorsByDept = [];
 $doctorsQuery = "SELECT d.Doctor_Name, d.Profile_Image, d.Dept_ID, dp.Dept_Name FROM doctor d 
-                INNER JOIN department dp ON d.Dept_ID = dp.Dept_ID";
+                INNER JOIN department dp ON d.Dept_ID = dp.Dept_ID
+                WHERE d.Email != '$doctorEmail'";
 $resultDoctors = mysqli_query($connection, $doctorsQuery);
 
 if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {

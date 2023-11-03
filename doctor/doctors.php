@@ -40,8 +40,14 @@ if ($result && mysqli_num_rows($result) > 0) {
 
 // Retrieve doctors with department details using INNER JOIN
 $doctorsQuery = "SELECT d.*, dept.Dept_Name FROM doctor d
-                 INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID";
+                 INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
+                 WHERE d.Email != '$doctorEmail'";
 $doctorsResult = mysqli_query($connection, $doctorsQuery);
+
+if (!$doctorsResult) {
+    printf("Error: %s\n", mysqli_error($connection));
+    exit();
+}
 
 ?>
 
