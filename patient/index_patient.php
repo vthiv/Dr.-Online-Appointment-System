@@ -175,7 +175,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                                 <i class="bi bi-heart-pulse"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0"><?php echo $totalDoctors; ?></h5>
+                                                <h2 class="mb-0"><?php echo $totalDoctors; ?></h2>
                                             </div>
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                                 <i class="bi bi-calendar-plus-fill"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0"><?php echo $totalAppointments; ?></h5>
+                                                <h2 class="mb-0"><?php echo $totalAppointments; ?></h2>
                                             </div>
                                         </div>
                                     </div>
@@ -205,13 +205,13 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                             <div class="col-xxl-4 col-md-6">
                                 <div class="card info-card doctor-card">
                                     <div class="card-body">
-                                        <h5 class="card-title">Today Schedule</h5>
+                                        <h6 class="card-title">Today's Appointment</h6>
                                         <div class="d-flex align-items-center">
                                             <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                                 <i class="bi bi-calendar-check-fill"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0"><?php echo $todaysAppointment; ?></h5>
+                                                <h2 class="mb-0"><?php echo $todaysAppointment; ?></h2>
                                             </div>
                                         </div>
                                     </div>
@@ -285,7 +285,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                     <div class="col-lg-4">
                         <div class="card member-panel">
                             <div class="card-header bg-white">
-                                <h4 class="card-title">Today Schedule</h4>
+                                <h4 class="card-title">Today's Appointment</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="contact-list">
@@ -315,7 +315,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                     } else {
                                         echo '
                                         <div class="card-body">
-                                            <p>No appointments for today</p>
+                                            <p>  No appointments for today</p>
                                         </div>';
                                     }
                                     ?>

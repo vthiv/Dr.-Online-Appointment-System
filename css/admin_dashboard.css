@@ -469,7 +469,7 @@ a.status-grey {
 
 .card-title {
   padding: 20px 0 15px 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   color: #012970;
   font-family: "Poppins", sans-serif;
@@ -494,14 +494,14 @@ a.status-grey {
 }
 
 .dashboard .info-card { 
-  font-size: 28px;
+  font-size: 24px;
   color: #012970;
   margin: 0;
   padding: 0;
 }
 
 .dashboard .card-icon {
-  font-size: 32px;
+  font-size: 30px;
   line-height: 0;
   width: 64px;
   height: 64px;

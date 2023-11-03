@@ -220,7 +220,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 <i class="bi bi-calendar-check-fill"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0"><?php echo $totalAppointments; ?></h5>
+                                                <h2 class="mb-0"><?php echo $totalAppointments; ?></h2>
                                             </div>
                                         </div>
                                     </div>
@@ -238,7 +238,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 <i class="bi bi-people"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0"><?php echo $totalNewPatients; ?></h5>
+                                                <h2 class="mb-0"><?php echo $totalNewPatients; ?></h2>
                                             </div>
                                         </div>
                                     </div>
@@ -256,7 +256,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 <i class="bi bi-heart-pulse"></i>
                                             </div>
                                             <div class="ps-3">
-                                                <h5 class="mb-0"><?php echo $totalDoctors; ?></h5>
+                                                <h2 class="mb-0"><?php echo $totalDoctors; ?></h2>
                                             </div>
                                         </div>
                                     </div>

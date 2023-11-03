@@ -198,7 +198,7 @@
                         <div class="col-xl-3 col-lg-3 col-md-6 mt-4 pt-2">
                             <div class="card team border-0 rounded shadow overflow-hidden">
                                 <div class="team-img position-relative">
-                                    <img src="img/doctors/Calvin_Carlo.jpg" class="img-fluid" />
+                                    <img src="img/doctors/Calvin Carlo_652571971d64a.jpg" class="img-fluid" />
                                     <ul class="list-unstyled team-social mb-0">
                                         <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                         <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -217,7 +217,7 @@
                         <div class="col-xl-3 col-lg-3 col-md-6 mt-4 pt-2">
                             <div class="card team border-0 rounded shadow overflow-hidden">
                                 <div class="team-img position-relative">
-                                    <img src="img/doctors/Cristino_Murphy.jpg" class="img-fluid" />
+                                    <img src="img/doctors/Cristino Murphy_65257284078a1.jpg" class="img-fluid" />
                                     <ul class="list-unstyled team-social mb-0">
                                         <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                         <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
@@ -293,7 +293,7 @@
                         <div class="col-xl-3 col-lg-3 col-md-6 mt-4 pt-2">
                             <div class="card team border-0 rounded shadow overflow-hidden">
                                 <div class="team-img position-relative">
-                                    <img src="img/doctors/Alia_Reddy.jpg" class="img-fluid" />
+                                    <img src="img/doctors/Alia Reddy_6525731ee5326.jpg" class="img-fluid" />
                                     <ul class="list-unstyled team-social mb-0">
                                         <li><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-facebook"></i></a></li>
                                         <li class="mt-2"><a href="javascript:void(0)" class="btn btn-icon btn-pills btn-soft-primary"><i class="bi bi-linkedin"></i></a></li>
