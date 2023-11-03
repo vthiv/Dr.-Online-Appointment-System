@@ -15,18 +15,20 @@ if(isset($_POST['forgetPassword'])){
     $stmt->execute();
     $result = $stmt->get_result();
 
+    $errorAlert = '<label for="promter" class="form-label"></label>';
+
     if($result -> num_rows == 0) {
         $errorEmail = "Incorrect Email";
     } else {
 
         if(strlen($newPassword) < 8) {
-            $errorAlert = "Password must be at least 8 characters long.";
+            $errorAlert = "<label for='promter' class='form-label' style='color:rgb(255, 62, 62);text-align:center;'>Password must be at least 8 characters long.</labe>";
         } elseif (!preg_match('/[a-z]/', $newPassword)) {
-            $errorAlert = "Password must contain at least one lowercase letter.";
+            $errorAlert = "<label for='promter' class='form-label' style='color:rgb(255, 62, 62);text-align:center;'>Password must contain at least one lowercase letter.</labe>";
         } elseif (!preg_match('/^[ -~]+$/', $newPassword)) {
-            $errorAlert = "Password can only contain alphabetical characters.";
+            $errorAlert = "<label for='promter' class='form-label' style='color:rgb(255, 62, 62);text-align:center;'>Password can only contain alphabetical characters.</labe>";
         } elseif (!preg_match('/[!@#$%^&*()_+}{":?><~`\-.,\/\\|]+/', $newPassword)) {
-            $errorAlert = "Password must contain at least one symbol (except single quote and semicolon).";
+            $errorAlert = "<label for='promter' class='form-label' style='color:rgb(255, 62, 62);text-align:center;'>Password must contain at least one symbol (except single quote and semicolon).</labe>";
         } else {
             $userrow = $result->fetch_assoc();
             $userType = $userrow["usertype"];
@@ -42,14 +44,14 @@ if(isset($_POST['forgetPassword'])){
             if (isset($updateQuery)) {
                 $stmt = $connection->prepare($updateQuery);
                 $stmt->bind_param("ss", $newPassword, $user_email);
-
+    
                 if ($stmt->execute()) {
-                    echo "Password updated successfully!";
+                    $message = "Password updated successfully!";
                 } else {
-                    echo "Error updating password: " . $stmt->error;
+                    $message = "Error updating password: " . $stmt->error;
                 }
             } else {
-                echo "Invalid user type";
+                $message = "Invalid user type";
             }
         }
     }
@@ -114,6 +116,14 @@ if(isset($_POST['forgetPassword'])){
                         <i class="bi bi-lock-fill"></i>
                     </div>
 
+                    <!-- Add this PHP block to display $errorAlert if it's not empty -->
+                    <?php if (!empty($errorAlert)): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $errorAlert; ?>
+                        </div>
+                    <?php endif; ?>
+
+
                     <button name="forgetPassword">Submit</button>
                     <p><a href="login.php">Sign in back</a></p>
                 </form>
@@ -121,5 +131,16 @@ if(isset($_POST['forgetPassword'])){
         </section>
         
         <!-- ======= Main Ends ======= -->
+
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script type="text/javascript">
+            <?php
+                if(isset($message)){
+                    echo 'swal("'.$message.'").then(function() {
+                        window.location.href = "login.php";
+                    });';
+                } 
+            ?>
+        </script>
     </body>
 </html>

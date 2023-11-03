@@ -12,7 +12,7 @@
         $email = $_POST['useremail'];
         $password = $_POST['userpassword'];
 
-        $error = '<label for="promter" class="form-label"></labe>';
+        $error = '<label for="promter" class="form-label"></label>';
 
         $result = $connection -> query("SELECT * FROM webuser WHERE email = '$email'");
         if($result -> num_rows == 1) {
