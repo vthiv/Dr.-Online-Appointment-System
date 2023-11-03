@@ -60,6 +60,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Handle the case where the update query fails
         $message = "Error: " . mysqli_error($connection);
     }
+
+    // Handle image upload
+    if ($_FILES['profile_image']['name'] !== "") {
+        $targetDirectory = "../img/doctors/";
+        $targetFile = $targetDirectory . basename($_FILES["profile_image"]["name"]);
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+        
+        // Valid file extensions
+        $extensions_arr = array("jpg", "jpeg", "png");
+
+        if (in_array($imageFileType, $extensions_arr)) {
+            // Upload file
+            if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetFile)) {
+                $imageFileName = basename($_FILES["profile_image"]["name"]);
+                // Update the database with the image path
+                $updateImageQuery = "UPDATE doctor SET Profile_Image = '$imageFileName' WHERE Doctor_ID = $doctorID";
+                mysqli_query($connection, $updateImageQuery);
+                $message .= " and Profile Image updated successfully!";
+            } else {
+                $message .= " but there was an error uploading the file.";
+            }
+        } else {
+            $message .= " but only JPG, JPEG, and PNG files are allowed.";
+        }
+    }
 }
 ?>
 
@@ -361,31 +386,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <div class="row">
                                                 <div class="col-lg-12">
                                                     <div class="rounded shadow mt-4">
-                                                        <div class="p-4 border-bottom">
-                                                            <h6 class="mb-0">Personal Information :</h6>
-                                                        </div>
-
                                                         <div class="p-4">
-                                                            <div class="row align-items-center">
-                                                                <div class="col-lg-2 col-md-4">
-                                                                    <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" id="preview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
-                                                                </div><!--end col-->
-
-                                                                <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
-                                                                    <h6 class="">Upload your picture</h6>
-                                                                    <p class="text-muted mb-0">For best results, use an image at least 256px by 256px in either .jpg or .png format</p>
-                                                                </div><!--end col-->
-
-                                                                <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
-                                                                <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" onchange="previewImage(this);" />
-                                                                <label for="profile_image" class="btn btn-primary" style="margin-left: 10px;">Upload</label>
-                                                                <a href="#" class="btn btn-soft-primary ms-2" onclick="restoreImage(); return false;">Remove</a>
-                                                                </div><!--end col-->
-                                                            </div><!--end row-->
-
-                                                            <form class="mt-4" method="POST">
+                                                            <form class="mt-4" method="POST" enctype="multipart/form-data">
                                                                 <input type="hidden" name="doctor_id" value="<?php echo $selectedDoctorID; ?>">
-                                                                <div class="row">
+
+                                                                <div class="row align-items-center">
+                                                                    <div class="col-lg-2 col-md-4">
+                                                                        <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" id="preview" class="avatar avatar-md-md rounded-pill shadow mx-auto d-block" />
+                                                                    </div><!--end col-->
+
+                                                                    <div class="col-lg-5 col-md-8 text-center text-md-start mt-4 mt-sm-0">
+                                                                        <h6 class="">Upload your picture</h6>
+                                                                        <p class="text-muted mb-0">For best results, use an image at least 256px by 256px in either .jpg or .png format</p>
+                                                                    </div><!--end col-->
+
+                                                                    <div class="col-lg-5 col-md-12 text-lg-end text-center mt-4 mt-lg-0">
+                                                                        <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" onchange="previewImage(this);" />
+                                                                        <label for="profile_image" class="btn btn-primary" style="margin-left: 10px;">Upload</label>
+                                                                        <a href="#" class="btn btn-soft-primary ms-2" onclick="restoreImage(); return false;">Remove</a>
+                                                                    </div><!--end col-->
+                                                                </div><!--end row-->
+
+                                                                <div class="p-4 border-bottom"></div>
+
+                                                                <div class="row ">
                                                                     <div class="col-md-6">
                                                                         <div class="mb-3">
                                                                             <label class="form-label">Employee ID</label>
@@ -525,11 +549,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <script type="text/javascript">
             <?php
-                if(isset($message)){
-                    echo 'swal("'.$message.'").then(function() {
-                        window.location.href = "doctors_admin.php"
-                    });';
-                } 
+            if (isset($message)) {
+                echo 'swal("' . $message . '").then(function() {
+                    window.location.href = "doctors_admin.php"
+                });';
+            }
             ?>
         </script>
     </body>

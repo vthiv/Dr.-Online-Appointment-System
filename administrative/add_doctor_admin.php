@@ -53,14 +53,12 @@ if (isset($_POST['add-doctor'])) {
             $message = "File size exceeds the maximum allowed limit (2MB). Please upload a smaller file.";
         }
         else {
-            $uploadDir = "../img/doctors/";
-            $profileImage = $_FILES['profile_image']['name']; // Get the uploaded file name
-            //$targetFilePath = $uploadDir . $profileImage;
-            $fileType = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
+            $targetDirectory = "../img/doctors/";
+            $targetFile = $targetDirectory . basename($_FILES["profile_image"]["name"]);
+            $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
-            // Generate a unique filename based on the doctor's full name
-            $uniqueFilename = $fullname . '_' . uniqid() . '.' . $fileType;
-            $targetFilePath = $uploadDir . $uniqueFilename;
+            $imageFileName = basename($_FILES["profile_image"]["name"]);
+
         }
         
         // Create the directory if it doesn't exist
@@ -80,7 +78,7 @@ if (isset($_POST['add-doctor'])) {
                     $webuser_id = mysqli_insert_id($connection);
 
                     // Insert data into 'DOCTOR' table
-                    $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Doctor_Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$emp_id', '$department_id', '$fullname', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$uniqueFilename', '$status')";
+                    $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Doctor_Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$emp_id', '$department_id', '$fullname', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$imageFileName', '$status')";
                     if (mysqli_query($connection, $sql_doctor)) {
                         $message = "Doctor registration successful!";
                     } else {
