@@ -288,7 +288,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 <tbody>
                                                 <?php
                                                 $queryAppointmentsData = "SELECT 
-                                                                        A.App_ID AS appointment_ID,
+                                                                        A.Apt_ID AS appointment_ID,
                                                                         CONCAT(P.Pat_Firstname, ' ', P.Pat_Lastname) AS patient_name,
                                                                         D.Doctor_Name AS doctor_name,
                                                                         Dept.Dept_Name AS department_name,
