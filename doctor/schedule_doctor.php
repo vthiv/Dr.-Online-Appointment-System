@@ -46,7 +46,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <!--Title-->
-        <title> Doctor| Schedule</title>
+        <title> Doctor | Schedule</title>
         <meta content="" name="description">
         <meta content="" name="keywords">
 
@@ -192,7 +192,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                         FROM schedule s
                         INNER JOIN doctor d ON s.Doctor_ID = d.Doctor_ID
                         INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
-                        WHERE d.Email = '$doctorEmail'";
+                        WHERE d.Email = '$doctorEmail'
+                        ORDER BY s.Schedule_Date DESC";
 
                         $result = mysqli_query($connection, $query);
 
@@ -207,7 +208,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 $startTime = $row["Schedule_StartTime"];
                                 $endTime = $row["Schedule_EndTime"];
                                 $status = $row['Schedule_Status']; // Assuming you have a 'Schedule_Status' column
-                                
+
                                 $badgeClass = ($status == 1) ? 'status-green' : 'status-red';
 
                                 // Create HTML table row for each schedule entry
