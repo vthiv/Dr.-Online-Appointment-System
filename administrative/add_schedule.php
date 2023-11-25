@@ -13,7 +13,13 @@ if(isset($_SESSION["user"])){
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get data from the form
-    $doctorID = $_POST["doctor_id"];
+    $doctorID = isset($_POST["doc_id"]) ? $_POST["doc_id"] : null;
+
+    // Check if $doctorID is not empty before proceeding
+    if (empty($doctorID)) {
+        // Handle the case where $doctorID is empty (e.g., display an error message)
+        $msg = "Error: Doctor ID is required!";
+    } else {
     $departmentID = $_POST["dept_id"];
     $availableDays = implode(", ", $_POST["days"]);
     $startTime = $_POST["start_time"];
@@ -32,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Error occurred
         $msg = "Error: " . mysqli_error($connection);
     }
+}
 }
 
 // Retrieve the admin's name
@@ -266,11 +273,11 @@ if ($result && mysqli_num_rows($result) > 0) {
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div class="col-lg-12">
-                                        <div class="d-grid">
-                                            <button type="submit" class="btn btn-outline-primary">Add Schedule</button>
-                                        </div>
+                                <div class="col-lg-6">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-outline-primary">Add Schedule</button>
                                     </div>
                                 </div>
                             </form>
