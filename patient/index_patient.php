@@ -316,7 +316,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                     } else {
                                         echo '
                                         <div class="card-body">
-                                            <p>  No appointments for today</p>
+                                            <img src="../img/no-data-found.png" class="rounded-circle" style="height: 275px; width: 275px;" />
                                         </div>';
                                     }
                                     ?>
@@ -355,7 +355,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                         echo '</div>';
                                         echo '</li>';
                                     } else {
-                                        echo '<p>No appointments found</p>';
+                                        echo '<img src="../img/no-data-found.png" class="rounded-circle" style="height: 300px; width: 300px;" />';
                                     }
                                 ?>
                                 </ul>
