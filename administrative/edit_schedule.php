@@ -11,78 +11,48 @@ if(isset($_SESSION["user"])){
 }
 
 
-// Initialize $schedule as an empty array
-$schedule = array(
-    'Doctor_ID' => '',
-    'Dept_ID' => '',
-    'Dept_Name' => '',
-    'Schedule_Title' => '',
-    'Schedule_Day' => '',
-    'Schedule_StartTime' => '',
-    'Schedule_EndTime' => '',
-    'Schedule_Status' => ''
-);
+if(isset($_POST['editschedule_id'])){
+    $schedule_id = $_POST['editschedule_id'];
 
-$editschedule_id = null;
-
-// Check if the form is submitted for editing
-if (isset($_POST["edit_schedule_btn"]) && isset($_POST["editschedule_id"])) {
-    $editschedule_id = $_POST["editschedule_id"];
-
-    // Add these debugging statements in your code
-    echo "Debug: Schedule ID: " . $editschedule_id . "<br>";
-    echo "Debug: POST Data: " . json_encode($_POST) . "<br>";
-
-    // Retrieve the schedule data based on the scheduleID from the database
     $query = "SELECT s.*, d.Doctor_Name, dept.Dept_Name
-              FROM schedule s
-              INNER JOIN doctor d ON s.Doctor_ID = d.Doctor_ID
-              INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
-              WHERE s.Schedule_ID = '$editschedule_id'";
+    FROM schedule s
+    INNER JOIN doctor d ON s.Doctor_ID = d.Doctor_ID
+    INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
+    WHERE s.Schedule_ID = $schedule_id";
 
     $result = mysqli_query($connection, $query);
 
-    if ($result) {
-        $schedule = mysqli_fetch_assoc($result);
-    } else {
-        $msg = "Schedule unable to found.";
-    }  
+    if ($result && mysqli_num_rows($result) > 0) {
+        $scheduleData = mysqli_fetch_assoc($result);
+        $doctor_id = $scheduleData['Doctor_Name'];
+        $dept_id = $scheduleData['Dept_Name'];
+        $schedule_title = $scheduleData['Schedule_Title'];
+        $schedule_days = $scheduleData['Schedule_Day'];
+        $start_time = $scheduleData['Schedule_StartTime'];
+        $end_time = $scheduleData['Schedule_EndTime'];
+        $schedule_status = $scheduleData['Schedule_Status'];
+    }
 }
 
-// Handle form submission to update schedule details
-if(isset($_POST["update_schedule"])) {
+if (isset($_POST['update_schedule'])) {
+    // Retrieve and sanitize form data
+    $updatedDays = implode(",", $_POST['days']);
+    $updatedStartTime = $_POST['start_time'];
+    $updatedEndTime = $_POST['end_time'];
+    $updatedTitle = $_POST['schedule_title'];
+    $updatedStatus = $_POST['schedule_status'];
 
-    echo "Form submitted!";
+    // Retrieve schedule ID from the form
+    $schedule_id = $_POST['schedule_id'];
 
-    $doctorID = $_POST["doctor_id"];
-    $departmentID = $_POST["dept_id"];
-    $availableDays = implode(", ", $_POST["days"]);
-    $startTime = $_POST["start_time"];
-    $endTime = $_POST["end_time"];
-    $message = $_POST["message"];
-    $status = $_POST["status"];
+    // Update the schedule in the database
+    $updateQuery = "UPDATE schedule SET Schedule_Title = '$updatedTitle', Schedule_StartTime = '$updatedStartTime', Schedule_EndTime = '$updatedEndTime', Schedule_Day = '$updatedDays', Schedule_Status = '$updatedStatus' WHERE Schedule_ID = $schedule_id";
+    $updateResult = mysqli_query($connection, $updateQuery);
 
-    // Update the schedule data in the database
-    $updateQuery = "UPDATE `schedule` SET 
-    `Doctor_ID` = '$doctorID',
-    `Dept_ID` = '$departmentID',
-    `Schedule_Title` = '$message',
-    `Schedule_Day` = '$availableDays',
-    `Schedule_StartTime` = '$startTime',
-    `Schedule_EndTime` = '$endTime',
-    `Schedule_Status` = '$status'
-    WHERE `Schedule_ID` = '$editschedule_id'";
-
-    //Update in db
-    $update_result = mysqli_query($connection, $updateQuery);
-
-    if ($update_result) {
-        // Redirect back to the schedule_admin.php page after successful update
-        header("location: schedule_admin.php");
+    if ($updateResult) {
+        $message = "Schedule updated successfully!";
     } else {
-        // Handle the case where the update fails
-        $msg = "Failed to update schedule details: " . mysqli_error($connection);
-        echo $msg; // Add this line for debugging
+        $message = "Error updating schedule";
     }
 }
 
@@ -238,47 +208,34 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
                         <div class="card border-0 p-4 rounded shadow">
-                            <form action="" method="POST">
-                                <input type="hidden" name="editschedule_id" value="<?php echo $editschedule_id; ?>" >
+                            <form method="POST" action="">
+                                <input type="hidden" name="schedule_id" value="<?php echo $schedule_id; ?>">
                                 <div class="row">
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
-                                            <select class="form-control doctor-name select2input" name="doctor_id" id="doctor_id">
-                                                <option value="">Select</option>
-                                                <?php
-                                                $fetch_query = mysqli_query($connection, "SELECT `Doctor_ID`, `Doctor_Name` FROM `doctor`");
-                                                while ($doctor = mysqli_fetch_array($fetch_query)) {
-                                                    $selected = ($doctor['Doctor_ID'] == $schedule['Doctor_ID']) ? 'selected="selected"' : '';
-                                                    echo '<option ' . $selected . ' value="' . $doctor['Doctor_ID'] . '">' . $doctor['Doctor_Name'] . '</option>';
-                                                }
-                                                ?>
-                                            </select>
+                                            <input name="doctor_name" id="doctor_name" class="form-control" type="text" value="<?php echo $doctor_id; ?>" readonly/>
                                         </div>
                                     </div>
-
+                                    
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Department Name<span class="text-danger">*</span></label>
-                                            <select class="form-control department-name" name="dept_id" id="dept_id" readonly>
-                                                <option value="<?php echo $schedule['Dept_ID']; ?>"><?php echo $schedule['Dept_Name']; ?></option>
-                                            </select>
+                                            <input name="dept_name" id="dept_name" class="form-control" type="text" value="<?php echo $dept_id; ?>" readonly/>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Available Days <span class="text-danger">*</span></label><br>
+                                            <label class="form-label">Schedule Days <span class="text-danger">*</span></label><br>
                                             <select class="select" multiple name="days[]" required>
-                                                <option value="">Select Days</option>
-                                                <?php
-                                                $days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                                                
-                                                foreach ($days as $day) {
-                                                    $selected = in_array($day, explode(", ", $schedule['Schedule_Day'])) ? 'selected="selected"' : '';
-                                                    echo '<option value="' . $day . '" ' . $selected . '>' . $day . '</option>';
-                                                }
-                                                ?>
+                                                <option value="Sunday" <?php echo (strpos($schedule_days, 'Sunday') !== false ? 'selected' : ''); ?>>Sunday</option>
+                                                <option value="Monday" <?php echo (strpos($schedule_days, 'Monday') !== false ? 'selected' : ''); ?>>Monday</option>
+                                                <option value="Tuesday" <?php echo (strpos($schedule_days, 'Tuesday') !== false ? 'selected' : ''); ?>>Tuesday</option>
+                                                <option value="Wednesday" <?php echo (strpos($schedule_days, 'Wednesday') !== false ? 'selected' : ''); ?>>Wednesday</option>
+                                                <option value="Thursday" <?php echo (strpos($schedule_days, 'Thursday') !== false ? 'selected' : ''); ?>>Thursday</option>
+                                                <option value="Friday" <?php echo (strpos($schedule_days, 'Friday') !== false ? 'selected' : ''); ?>>Friday</option>
+                                                <option value="Saturday" <?php echo (strpos($schedule_days, 'Saturday') !== false ? 'selected' : ''); ?>>Saturday</option>
                                             </select>
                                         </div>
                                     </div>
@@ -286,38 +243,38 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label>Start Time <span class="text-danger">*</span></label>
-                                            <input name="start_time" id="start_time" type="time" class="form-control timepicker" value="<?php echo $schedule['Schedule_StartTime']; ?>" required />
+                                            <input name="start_time" id="start_time" type="time" class="form-control timepicker" value="<?php echo $start_time; ?>" required />
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label>End Time <span class="text-danger">*</span></label>
-                                            <input name="end_time" id="end_time" type="time" class="form-control timepicker" value="<?php echo $schedule['Schedule_EndTime']; ?>" required />
+                                            <input name="end_time" id="end_time" type="time" class="form-control timepicker" value="<?php echo $end_time; ?>" required />
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label class="form-label">Message <span class="text-danger">*</span></label>
-                                            <textarea name="message" id="message" cols="30" rows="4" class="form-control" placeholder="Your Message :"><?php echo isset($schedule['Schedule_Title']) ? $schedule['Schedule_Title']: '' ?></textarea>
+                                            <textarea name="schedule_title" id="schedule_title" cols="30" rows="4" class="form-control"><?php echo $schedule_title; ?></textarea>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
-                                        <label for="status" class="display-block">Schedule Status</label>
-                                        <select class="form-control" name="status">
-                                            <option value="1" <?php if(isset($schedule['Schedule_Status']) && $schedule['Schedule_Status'] == 1) echo 'selected'; ?>>Active</option>
-                                            <option value="0" <?php if(isset($schedule['Schedule_Status']) && $schedule['Schedule_Status'] == 0) echo 'selected'; ?>>Inactive</option>
-                                        </select>
+                                            <label for="status" class="display-block">Schedule Status</label>
+                                            <select class="form-control" id="schedule_status" name="schedule_status">
+                                                <option value="1" <?php echo ($schedule_status == 1 ? 'selected' : ''); ?>>Active</option>
+                                                <option value="0" <?php echo ($schedule_status == 0 ? 'selected' : ''); ?>>Inactive</option>
+                                            </select>
                                         </div>
                                     </div>
 
                                     <div class="col-lg-12">
-                                        <div class="d-grid">
-                                            <a href="schedule_admin.php" class="btn btn-soft-primary">CANCEL</a>
-                                            <button class="btn btn-primary submit-btn" type="submit" name="update_schedule">UPDATE SCHEDULE</button>
+                                        <div class="mb-3">
+                                            <button type="submit" name="update_schedule" class="btn btn-primary submit-btn">UPDATE SCHEDULE</button>
+                                            <a href="schedule_admin.php" class="btn btn-soft-primary">CANCEL</a>      
                                         </div>
                                     </div>
                                 </div>
@@ -345,16 +302,17 @@ if ($result && mysqli_num_rows($result) > 0) {
         <script src="../js/select2.min.js"></script>
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>                                    
         <script type="text/javascript">
             <?php
-                if(isset($msg)) {
-                    echo 'swal("' . $msg . '");';
+                if(isset($message)) {
+                    echo 'swal("' . $message . '").then(function() {
+                        window.location.href = "schedule_admin.php";
+                    });';
                 }
             ?>
         </script>
-        
     </body>
 </html>

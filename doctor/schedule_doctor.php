@@ -207,6 +207,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 $startTime = $row["Schedule_StartTime"];
                                 $endTime = $row["Schedule_EndTime"];
                                 $status = $row['Schedule_Status']; // Assuming you have a 'Schedule_Status' column
+                                
+                                $badgeClass = ($status == 1) ? 'status-green' : 'status-red';
 
                                 // Create HTML table row for each schedule entry
                                 echo '<tr>';
@@ -216,7 +218,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 echo '<td>' . implode(", ", $availableDays) . '</td>'; // Convert array back to a comma-separated string
                                 echo '<td>' . $startTime . '</td>';
                                 echo '<td>' . $endTime . '</td>';
-                                echo '<td>' . ($status == 1 ? 'Active' : 'Inactive') . '</td>'; // Assuming 1 is for Active and 0 for Inactive
+                                echo '<td><span class="custom-badge ' . $badgeClass . '">' . ($status == 1 ? 'Active' : 'Inactive') . '</span></td>'; // Assuming 1 is for Active and 0 for Inactive
                                 echo '<td>
                                         <form action = "edit_schedule.php" method = "POST">
                                             <input type="hidden" name="editschedule_id" value="'. $row['Schedule_ID'].'" >

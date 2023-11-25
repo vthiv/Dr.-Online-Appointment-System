@@ -177,7 +177,10 @@ if(isset($_SESSION["user"]) && $_SESSION['usertype'] == '1'){
                             $query = "SELECT s.*, d.Doctor_Name, dept.Dept_Name
                             FROM schedule s
                             INNER JOIN doctor d ON s.Doctor_ID = d.Doctor_ID
-                            INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID";
+                            INNER JOIN department dept ON d.Dept_ID = dept.Dept_ID
+                            WHERE s.Schedule_ID IN (SELECT MAX(Schedule_ID) 
+                                             FROM schedule 
+                                             GROUP BY Doctor_ID)";
 
                             $result = mysqli_query($connection, $query);
 
@@ -192,6 +195,8 @@ if(isset($_SESSION["user"]) && $_SESSION['usertype'] == '1'){
                                 $endTime = $row["Schedule_EndTime"];
                                 $status = $row['Schedule_Status']; // Assuming you have a 'Schedule_Status' column
 
+                                $badgeClass = ($status == 1) ? 'status-green' : 'status-red';
+
                                 // Create HTML table row for each schedule entry
                                 echo '<tr>';
                                 echo '<td>' . $doctorName . '</td>';
@@ -199,7 +204,7 @@ if(isset($_SESSION["user"]) && $_SESSION['usertype'] == '1'){
                                 echo '<td>' . implode(", ", $availableDays) . '</td>'; // Convert array back to a comma-separated string
                                 echo '<td>' . $startTime . '</td>';
                                 echo '<td>' . $endTime . '</td>';
-                                echo '<td>' . ($status == 1 ? 'Active' : 'Inactive') . '</td>'; // Assuming 1 is for Active and 0 for Inactive
+                                echo '<td><span class="custom-badge ' . $badgeClass . '">' . ($status == 1 ? 'Active' : 'Inactive') . '</span></td>'; // Assuming 1 is for Active and 0 for Inactive
                                 echo '<td>
                                         <form action = "edit_schedule.php" method = "POST">
                                             <input type="hidden" name="editschedule_id" value="'. $row['Schedule_ID'].'" >
