@@ -69,7 +69,7 @@ if (isset($_POST['submit_doctor_details'])) {
     }
 
     // Handle image upload
-    if ($_FILES['profile_image']['fullName'] !== "") {
+    if ($_FILES['profile_image']['name'] !== "") {
         $targetDirectory = "../img/doctors/";
         $targetFile = $targetDirectory . basename($_FILES["profile_image"]["fullName"]);
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
@@ -80,14 +80,14 @@ if (isset($_POST['submit_doctor_details'])) {
         if (in_array($imageFileType, $extensions_arr)) {
             // Upload file
             if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetFile)) {
-                $imageFileName = basename($_FILES["profile_image"]["fullName"]);
+                $imageFileName = basename($_FILES["profile_image"]["name"]);
                 // Update the database with the image path
                 $updateImageQuery = "UPDATE doctor SET Profile_Image = '$imageFileName' WHERE Doctor_ID = $doctorID";
                 mysqli_query($connection, $updateImageQuery);
                 
                 $message .= " and Profile Image updated successfully!";
             } else {
-                $message .= " but there was an error uploading the file.";
+                $message .= " but there was an error uploading the file.Error: " . $_FILES["profile_image"]["error"];
             }
         } else {
             $message .= " but only JPG, JPEG, and PNG files are allowed.";
@@ -260,7 +260,7 @@ if (isset($_POST['submit_new_password'])) {
                         <!-- Profile -->
                         <div class="card">
                             <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
-                                <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" alt="Profile" class="rounded-circle" id="preview" />
+                            <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" alt="Profile" class="rounded-circle" id="profilePreview" />
                                 <h2><?php echo $doctorName; ?></h2>
                                 <h3 class="text-muted mb-0">Doctor in <?php echo $departmentName; ?></h3>
                                 <div class="social-links mt-2">
@@ -345,12 +345,11 @@ if (isset($_POST['submit_new_password'])) {
                                             <div class="row mb-3">
                                                 <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
                                                 <div class="col-md-8 col-lg-9">
-                                                    <img src="../img/doctors/<?php echo $doctorData['Profile_Image']; ?>" alt="Profile" id="profilePreview"  />
                                                     <div class="pt-2">
-                                                        <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" onchange="previewImage(this);" />
-                                                        <label for="profile_image" class="btn btn-info" style="margin-left: 10px;"><i class="bi bi-upload"></i></label>
-                                                        <a href="#" class="btn btn-soft-primary ms-2" onclick="restoreImage(); return false;"><i class="bi bi-trash"></i></a>
-                                                    </div>
+                                                    <input type="file" name="profile_image" id="profile_image" accept=".jpg, .png" style="display: none;" onchange="previewImage(this, 'profileEditPreview');" />
+                                                    <label for="profile_image" class="btn btn-info" style="margin-left: 10px;"><i class="bi bi-upload"></i></label>
+                                                    <a href="#" class="btn btn-soft-primary ms-2" onclick="restoreImage('profileEditPreview'); return false;"><i class="bi bi-trash"></i></a>
+                                                </div>
                                                 </div>
                                             </div>
 
@@ -487,6 +486,7 @@ if (isset($_POST['submit_new_password'])) {
         </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script>
             var previousImageSrc = "<?php echo '../img/doctors/'.$doctorData['Profile_Image']; ?>";
 
@@ -494,7 +494,7 @@ if (isset($_POST['submit_new_password'])) {
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();
                     reader.onload = function (e) {
-                        $('#preview').attr('src', e.target.result);
+                        $('#profilePreview').attr('src', e.target.result);
                     };
                     reader.readAsDataURL(input.files[0]);
                 }
@@ -502,8 +502,13 @@ if (isset($_POST['submit_new_password'])) {
 
             function restoreImage() {
                 $('#profile_image').val('');
-                $('#preview').attr('src', previousImageSrc);
+                $('#profilePreview').attr('src', previousImageSrc);
             }
+
+            // Ensure that the change event is triggered when a file is selected
+            $('#profile_image').on('change', function() {
+                previewImage(this);
+            });
         </script>
     </body>
 </html>
