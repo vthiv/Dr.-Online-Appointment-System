@@ -299,6 +299,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                                                 ON a.Dept_ID = dept.Dept_ID
                                                                 WHERE Pat_ID = $patientID 
                                                                 AND App_Date = '$today'";
+
                                     $resulttodayAppointment = mysqli_query($connection, $todayAppointmentquery);
                                     if ($resulttodayAppointment && mysqli_num_rows($resulttodayAppointment) > 0) {
                                         while ($row = mysqli_fetch_assoc($resulttodayAppointment)) {
@@ -320,6 +321,45 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
                                     }
                                     ?>
                                 </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header bg-white">
+                                <h4 class="card-title">Appointment's Prescription</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="contact-list">
+                                <?php
+                                    // Query to fetch appointment details
+                                    $queryAppointmentDetails = "SELECT a.App_ID, a.Apt_ID, a.App_Date, a.App_Time, d.Doctor_Name, dept.Dept_Name, a.Prescription
+                                                                FROM appointment a
+                                                                INNER JOIN doctor d ON a.Doctor_ID = d.Doctor_ID
+                                                                INNER JOIN department dept ON a.Dept_ID = dept.Dept_ID
+                                                                WHERE a.Pat_ID = $patientID
+                                                                ORDER BY a.App_Date DESC, a.App_Time DESC
+                                                                LIMIT 1"; // Assuming you want details for the latest appointment
+
+                                    $resultAppointmentDetails = mysqli_query($connection, $queryAppointmentDetails);
+
+                                    if ($resultAppointmentDetails && mysqli_num_rows($resultAppointmentDetails) > 0) {
+                                        $appointmentDetails = mysqli_fetch_assoc($resultAppointmentDetails);
+                                        echo '<li>';
+                                        echo '<div class="contact-cont d-flex align-items-center">';
+                                        echo '<div class="contact-info">';
+                                        echo '<span class="contact-name text-ellipsis">Doctor Name: ' . $appointmentDetails['Doctor_Name'] . '</span>';
+                                        echo '<span class="contact-name text-ellipsis">Department: ' . $appointmentDetails['Dept_Name'] . '</span>';
+                                        echo '<span class="contact-date">Appointment Date: ' . $appointmentDetails['App_Date'] . '</span><br>';
+                                        echo '<span class="contact-pres">Prescription: ' . $appointmentDetails['Prescription'] . '</span>';
+                                        echo '</div>';
+                                        echo '</div>';
+                                        echo '</li>';
+                                    } else {
+                                        echo '<p>No appointments found</p>';
+                                    }
+                                ?>
+                                </ul>
+                                
                             </div>
                         </div>
                     </div>
