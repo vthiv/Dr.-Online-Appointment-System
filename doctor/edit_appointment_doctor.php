@@ -268,6 +268,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         </div>
                                     </div>
 
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Prescription <span class="text-danger">*</span></label>
+                                            <textarea name="app_prescription" id="app_prescription" rows="4" class="form-control" placeholder="Prescription :" required>'.$appointmentData['Prescription'].'</textarea>
+                                        </div>
+                                    </div>
+
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label for="app_Status" class="display-block">Appointment Status</label>

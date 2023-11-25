@@ -66,8 +66,9 @@ if(isset($_REQUEST['add_appointment'])) {
     $app_time = $_REQUEST['app_time'];
     $app_message = $_REQUEST['app_message'];
     $app_status = $_REQUEST['app_status'];
+    $app_prescription = $_REQUEST['app_prescription'];
 
-    $insert_query = mysqli_query($connection, "INSERT INTO `appointment` (Apt_ID, Pat_ID, Doctor_ID, Dept_ID, App_Date, App_Time, App_Message, App_Status, App_CreatedAt) VALUES ('$appointment_id', '$patientID', '$doctorID', '$departmentID', '$app_date', '$app_time', '$app_message', '$app_status', NOW())");
+    $insert_query = mysqli_query($connection, "INSERT INTO `appointment` (Apt_ID, Pat_ID, Doctor_ID, Dept_ID, App_Date, App_Time, App_Message, Prescription, App_Status, App_CreatedAt) VALUES ('$appointment_id', '$patientID', '$doctorID', '$departmentID', '$app_date', '$app_time', '$app_message', '$app_prescription', '$app_status', NOW())");
 
 
     if ($insert_query > 0) {
@@ -313,6 +314,13 @@ if(isset($_REQUEST['add_appointment'])) {
                                             </div>
                                         </div>
 
+                                        <div class="col-lg-12">
+                                            <div class="mb-3">
+                                                <label class="form-label">Prescription <span class="text-danger">*</span></label>
+                                                <textarea name="app_prescription" id="app_prescription" rows="4" class="form-control" placeholder="Prescription :"></textarea>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="col-lg-4 col-md-6">
                                             <div class="mb-3">
                                                 <label class="display-block">Appointment Status <span class="text-danger">*</span></label><br>
@@ -380,6 +388,42 @@ if(isset($_REQUEST['add_appointment'])) {
                 }
             ?>
         </script>
-        
+        <script>
+            // Function to fetch and populate patient details
+            function fetchPatientDetails() {
+                var selectedPatientId = document.getElementById("pat_id").value;
+
+                // Make an AJAX request to fetch patient details
+                $.ajax({
+                    type: "POST",
+                    url: "fetch_patient_details.php",
+                    data: { pat_id: selectedPatientId },
+                    success: function (response) {
+                        try {
+                            // Parse the JSON response
+                            var patientDetails = JSON.parse(response);
+
+                            // Check for errors
+                            if (patientDetails.error) {
+                                console.error("Error: " + patientDetails.error);
+                                return;
+                            }
+
+                            // Update patient details in the form
+                            document.getElementById("email").value = patientDetails.Pat_Email;
+                            document.getElementById("phone").value = patientDetails.Pat_PhoneNo;
+                        } catch (error) {
+                            console.error("Error parsing JSON response: " + error);
+                        }
+                    },
+                    error: function (error) {
+                        console.error("Error fetching patient details: " + error.responseText);
+                    }
+                });
+            }
+
+            // Attach event listener to pat_id select element
+            document.getElementById("pat_id").addEventListener("change", fetchPatientDetails);
+        </script>
     </body>
 </html>

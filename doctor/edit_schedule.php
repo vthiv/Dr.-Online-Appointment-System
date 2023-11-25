@@ -1,4 +1,8 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require("../connection.php");
 
@@ -277,22 +281,24 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     </form>';
 
                                     if (isset($_POST['update_schedule'])) {
+                                        // Retrieve and sanitize form data
                                         $updatedDays = implode(",", $_POST['days']);
                                         $updatedStartTime = $_POST['start_time'];
                                         $updatedEndTime = $_POST['end_time'];
                                         $updatedTitle = $_POST['schedule_title'];
                                         $updatedStatus = $_POST['schedule_status'];
-
+                                    
+                                        // Retrieve schedule ID from the form
                                         $schedule_id = $_POST['schedule_id'];
-
+                                    
                                         // Update the schedule in the database
-                                        $updateQuery = "UPDATE schedule SET Schedule_Title = '$updatedTitle', Schedule_StartTime = '$updatedStartTime', Schedule_EndTime = '$updatedEndTime', Schedule_Day = '$updatedDays', Schedule_Status = '$updatedStatus' WHERE Schedule_ID = $scheduleID";
+                                        $updateQuery = "UPDATE schedule SET Schedule_Title = '$updatedTitle', Schedule_StartTime = '$updatedStartTime', Schedule_EndTime = '$updatedEndTime', Schedule_Day = '$updatedDays', Schedule_Status = '$updatedStatus' WHERE Schedule_ID = $schedule_id";
                                         $updateResult = mysqli_query($connection, $updateQuery);
-
+                                    
                                         if ($updateResult) {
                                             $message = "Schedule updated successfully!";
                                         } else {
-                                            $message = "Error updating appointment: " . mysqli_error($connection);
+                                            $message = "Error updating schedule";
                                         }
                                     }
                                 } else {

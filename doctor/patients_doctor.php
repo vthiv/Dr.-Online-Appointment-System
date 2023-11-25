@@ -187,7 +187,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <tbody>
                             <?php
                             // Fetch and display patient details
-                            $patientQuery = "SELECT * FROM `patient`";
+                            $patientQuery = "SELECT * FROM `patient` INNER JOIN appointment ON appointment.Pat_ID = patient.Pat_ID";
                             $patientResult = mysqli_query($connection, $patientQuery);
 
                             if ($patientResult && mysqli_num_rows($patientResult) > 0) {
@@ -230,6 +230,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <p><strong>Phone: </strong><span id="patientPhone"></span></p>
                     <p><strong>Date of Birth: </strong><span id="patientDOB"></span></p>
                     <p><strong>Address: </strong><span id="patientAddress"></span></p>
+                    <p><strong>Appointment Date: </strong><span id="AppDate"></span></p>
+                    <p><strong>Prescription: </strong><span id="AppPrescription"></span></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -283,6 +285,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                 document.getElementById('patientPhone').innerText = patientData.Pat_PhoneNo;
                 document.getElementById('patientDOB').innerText = patientData.Pat_DOB;
                 document.getElementById('patientAddress').innerText = patientData.Pat_Address;
+                document.getElementById('AppDate').innerText = patientData.App_Date;
+                document.getElementById('AppPrescription').innerText = patientData.Prescription;
             }
         </script>
         
