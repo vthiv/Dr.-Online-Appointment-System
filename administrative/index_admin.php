@@ -80,6 +80,8 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.css">
 
 
+
+
     </head>
 
     <body>
@@ -233,7 +235,7 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
 
                             <!--Appointment Table -->
                             <div class="col-12">
-                                <div class="card">
+                                <div class="card-appointment">
                                     <div class="card-header">
                                         <h4 class="card-title">
                                             Appointment List
@@ -303,51 +305,87 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
 
                     <!-- Right side columns -->
                     <div class="col-lg-4">
-                            <div class="card member-panel">
-                                <div class="card-header bg-white">
-                                    <h4 class="card-title">Doctors
-                                        <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
-                                    </h4>
-                                </div>
-                                <div class="card-body">
-                                    <ul class="contact-list">
-                                        <?php
-                                            // Execute SQL query to get doctor data (name, department, profile image)
-                                            $queryDoctorsData = "SELECT doctor.Doctor_Name, department.Dept_Name, doctor.Profile_Image FROM doctor
-                                                                INNER JOIN department ON doctor.Dept_ID = department.Dept_ID";
-
-                                            $resultDoctorsData = mysqli_query($connection, $queryDoctorsData);
-
-                                            
-                                            
-
-                                            if ($resultDoctorsData && mysqli_num_rows($resultDoctorsData) > 0) {
-                                                while ($doctorData = mysqli_fetch_assoc($resultDoctorsData)) {
-                                                    $doctorName = $doctorData['Doctor_Name'];
-                                                    $deptName = $doctorData['Dept_Name'];
-                                                    // Generate the image source based on the doctor's name
-                                                    $profileImage = $doctorData['Profile_Image'];
-                                                    
-                                                    // Generate HTML for each doctor
-                                                    echo '<li>';
-                                                    echo '<div class="contact-cont d-flex align-items-center">';
-                                                    echo '<div class="float-left user-img m-r-5" style="margin-right: 5px;">';
-                                                    echo '<a href=""><img src="../img/doctors/' . $profileImage . '" class="w-40 rounded-circle" style="max-width: 40px; max-height: 40px;"/></a>';
-                                                    echo '</div>';
-                                                    echo '<div class="contact-info">';
-                                                    echo '<span class="contact-name text-ellipsis">' . $doctorName . '</span>';
-                                                    echo '<span class="contact-date">' . $deptName . '</span>';
-                                                    echo '</div>';
-                                                    echo '</div>';
-                                                    echo '</li>';
-                                                }
-                                            } else {
-                                                echo '<li>No doctors found.</li>';
-                                            }
-                                        ?>
-                                    </ul>
-                                </div>
+                        <div class="card member-panel">
+                            <div class="card-header bg-white">
+                                <h4 class="card-title">Doctors
+                                    <a href="doctors_admin.php" style="float: right;"><i class="bi bi-grid"></i></a>
+                                </h4>
                             </div>
+                            <div class="card-body">
+                                <ul class="contact-list">
+                                    <?php
+                                        // Execute SQL query to get doctor data (name, department, profile image)
+                                        $queryDoctorsData = "SELECT doctor.Doctor_Name, department.Dept_Name, doctor.Profile_Image FROM doctor
+                                                            INNER JOIN department ON doctor.Dept_ID = department.Dept_ID";
+
+                                        $resultDoctorsData = mysqli_query($connection, $queryDoctorsData);
+
+                                            
+                                        if ($resultDoctorsData && mysqli_num_rows($resultDoctorsData) > 0) {
+                                            while ($doctorData = mysqli_fetch_assoc($resultDoctorsData)) {
+                                                $doctorName = $doctorData['Doctor_Name'];
+                                                $deptName = $doctorData['Dept_Name'];
+                                                // Generate the image source based on the doctor's name
+                                                $profileImage = $doctorData['Profile_Image'];
+                                                    
+                                                // Generate HTML for each doctor
+                                                echo '<li>';
+                                                echo '<div class="contact-cont d-flex align-items-center">';
+                                                echo '<div class="float-left user-img m-r-5" style="margin-right: 5px;">';
+                                                echo '<a href=""><img src="../img/doctors/' . $profileImage . '" class="w-40 rounded-circle" style="max-width: 40px; max-height: 40px;"/></a>';
+                                                echo '</div>';
+                                                echo '<div class="contact-info">';
+                                                echo '<span class="contact-name text-ellipsis">' . $doctorName . '</span>';
+                                                echo '<span class="contact-date">' . $deptName . '</span>';
+                                                echo '</div>';
+                                                echo '</div>';
+                                                echo '</li>';
+                                            }
+                                        } else {
+                                            echo '<li>No doctors found.</li>';
+                                        }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="filter">
+                                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    <li><a href="download_csv.php" onclick="DepartmentdownloadCSV()"> Download CSV</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="card-body pb-0">
+                                <h5 class="card-title">Patients Appointment by Departments</h5>
+
+                                <div id="trafficChart" style="height: 400px;" class="echart"></div>
+
+                                <?php
+                                    // Execute SQL query to get the total number of patient appointments per department
+                                    $queryAppointmentsPerDept = "SELECT department.Dept_Name, COUNT(appointment.App_ID) AS totalAppointments
+                                                                FROM appointment
+                                                                INNER JOIN department ON appointment.Dept_ID = department.Dept_ID
+                                                                GROUP BY department.Dept_Name";
+
+                                    $resultAppointmentsPerDept = mysqli_query($connection, $queryAppointmentsPerDept);
+
+                                    $appointmentsData = array();
+
+                                    if ($resultAppointmentsPerDept && mysqli_num_rows($resultAppointmentsPerDept) > 0) {
+                                        while ($row = mysqli_fetch_assoc($resultAppointmentsPerDept)) {
+                                            $appointmentsData[] = $row;
+                                        }
+                                    }
+                                ?>
+
+                                <script>
+                                // Convert PHP array to JavaScript array
+                                var appointmentsData = <?php echo json_encode($appointmentsData); ?>;
+                                </script>
+                            </div>
+                        </div>
                     </div>
                     <!-- End Right side columns -->
                 </div>
@@ -372,6 +410,75 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
         <script src="../js/app.js"></script>
         <script src="../js/main.js"></script>
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>>
+        
+        <script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+        <script>
+            // Convert PHP array to JavaScript arrays for chart data
+            var deptNames = <?php echo json_encode(array_column($appointmentsData, 'Dept_Name')); ?>;
+            var totalAppointments = <?php echo json_encode(array_column($appointmentsData, 'totalAppointments')); ?>;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                echarts.init(document.querySelector("#trafficChart")).setOption({
+                    tooltip: {
+                      trigger: 'item'
+                    },
+                    legend: {
+                      top: '5%',
+                      left: 'center'
+                    },
+                    series: [{
+                      name: 'Total appointment',
+                      type: 'pie',
+                      radius: ['40%', '70%'],
+                      avoidLabelOverlap: false,
+                      label: {
+                        show: false,
+                        position: 'center'
+                      },
+                      emphasis: {
+                        label: {
+                          show: true,
+                          fontSize: '18',
+                          fontWeight: 'bold'
+                        }
+                      },
+                      labelLine: {
+                        show: false
+                      },
+                      data: (function() {
+                        var chartData = [];
+                        for (var i = 0; i < deptNames.length; i++) {
+                            chartData.push({
+                                value: totalAppointments[i],
+                                name: deptNames[i]
+                            });
+                        }
+                        return chartData;
+                    })()
+                }]
+                });
+            });
+        </script>   
+
+        <script>
+            function downloadCSV() {
+                // Send an AJAX request to the server to generate CSV
+                fetch('download_csv.php')
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // Create a link element to trigger the download
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(new Blob([blob]));
+                        link.download = 'patients_appointments.csv';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    })
+                    .catch(error => {
+                        console.error('Error downloading CSV:', error);
+                    });
+            }
+        </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.min.js"></script>
         
