@@ -266,7 +266,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
 
                             <!--Appointment Table -->
                             <div class="col-12">
-                                <div class="card">
+                                <div class="card-appointment">
                                     <div class="card-header">
                                         <h4 class="card-title">
                                             Appointment List
@@ -331,7 +331,7 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                             <!--Appointment Table Ends -->
 
                             <div class="col-12">
-                                <div class="card">
+                                <div class="card-schedule">
                                     <div class="card-header">
                                         <h4 class="card-title">
                                             Doctor Schedule

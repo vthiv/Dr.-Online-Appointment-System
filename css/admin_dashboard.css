@@ -452,7 +452,7 @@ a.status-grey {
 /*--------------------------------------------------------------
 # Dashboard
 --------------------------------------------------------------*/
-.card-appointment {
+.card-appointment, .card-schedule {
   margin-top: 30px;
   border: none;
   border-radius: 5px;

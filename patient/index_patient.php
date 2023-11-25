@@ -221,7 +221,7 @@ if ($resultTotalDoctors && $resultTotalAppointments && $resultTodayAppointments)
 
                             <!--Appointment Table -->
                             <div class="col-12">
-                                <div class="card">
+                                <div class="card-appointment">
                                     <div class="card-header">
                                         <h4 class="card-title">
                                             Appointment List
