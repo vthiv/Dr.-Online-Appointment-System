@@ -35,13 +35,12 @@ if(isset($_REQUEST['add_appointment'])) {
     $patientID = $_REQUEST['pat_id'];
     $doctorID = $_REQUEST['doc_id'];
     $departmentID = $_REQUEST['dept_id'];
-    $adminID = $_SESSION['admin_id'];
     $app_date = $_REQUEST['app_date'];
     $app_time = $_REQUEST['app_time'];
     $app_message = $_REQUEST['app_message'];
     $app_status = $_REQUEST['app_status'];
 
-    $insert_query = mysqli_query($connection, "INSERT INTO `appointment` (Apt_ID, Pat_ID, Doctor_ID, Dept_ID, App_Date, App_Time, App_Message, App_Status, App_CreatedAt) VALUES ('$appointment_id', '$patientID', '$doctorID', '$departmentID', '$app_date', '$app_time', '$app_message', '$app_status', NOW())");
+    $insert_query = mysqli_query($connection, "INSERT INTO `appointment` (Apt_ID, Pat_ID, Doctor_ID, Dept_ID, App_Date, App_Time, App_Message, Prescription, App_Status, App_CreatedAt) VALUES ('$appointment_id', '$patientID', '$doctorID', '$departmentID', '$app_date', '$app_time', '$app_message', '', '$app_status', NOW())");
 
 
     if ($insert_query > 0) {
@@ -373,6 +372,44 @@ if ($result && mysqli_num_rows($result) > 0) {
                     });';
                 }
             ?>
+        </script>
+
+<script>
+            // Function to fetch and populate patient details
+            function fetchPatientDetails() {
+                var selectedPatientId = document.getElementById("pat_id").value;
+
+                // Make an AJAX request to fetch patient details
+                $.ajax({
+                    type: "POST",
+                    url: "../doctor/fetch_patient_details.php",
+                    data: { pat_id: selectedPatientId },
+                    success: function (response) {
+                        try {
+                            // Parse the JSON response
+                            var patientDetails = JSON.parse(response);
+
+                            // Check for errors
+                            if (patientDetails.error) {
+                                console.error("Error: " + patientDetails.error);
+                                return;
+                            }
+
+                            // Update patient details in the form
+                            document.getElementById("email").value = patientDetails.Pat_Email;
+                            document.getElementById("phone").value = patientDetails.Pat_PhoneNo;
+                        } catch (error) {
+                            console.error("Error parsing JSON response: " + error);
+                        }
+                    },
+                    error: function (error) {
+                        console.error("Error fetching patient details: " + error.responseText);
+                    }
+                });
+            }
+
+            // Attach event listener to pat_id select element
+            document.getElementById("pat_id").addEventListener("change", fetchPatientDetails);
         </script>
 
         <script>
