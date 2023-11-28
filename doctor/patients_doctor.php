@@ -187,7 +187,12 @@ if ($result && mysqli_num_rows($result) > 0) {
                         <tbody>
                             <?php
                             // Fetch and display patient details
-                            $patientQuery = "SELECT * FROM `patient` INNER JOIN appointment ON appointment.Pat_ID = patient.Pat_ID";
+                            $patientQuery = "SELECT DISTINCT patient.*, GROUP_CONCAT(appointment.App_Date) AS App_Dates, GROUP_CONCAT(appointment.Prescription) AS Prescriptions 
+                                             FROM `patient` 
+                                             INNER JOIN appointment 
+                                             ON appointment.Pat_ID = patient.Pat_ID
+                                             GROUP BY patient.Pat_ID";
+
                             $patientResult = mysqli_query($connection, $patientQuery);
 
                             if ($patientResult && mysqli_num_rows($patientResult) > 0) {
@@ -230,8 +235,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                     <p><strong>Phone: </strong><span id="patientPhone"></span></p>
                     <p><strong>Date of Birth: </strong><span id="patientDOB"></span></p>
                     <p><strong>Address: </strong><span id="patientAddress"></span></p>
-                    <p><strong>Appointment Date: </strong><span id="AppDate"></span></p>
-                    <p><strong>Prescription: </strong><span id="AppPrescription"></span></p>
+                    <div id="appointmentDetails"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -285,8 +289,18 @@ if ($result && mysqli_num_rows($result) > 0) {
                 document.getElementById('patientPhone').innerText = patientData.Pat_PhoneNo;
                 document.getElementById('patientDOB').innerText = patientData.Pat_DOB;
                 document.getElementById('patientAddress').innerText = patientData.Pat_Address;
-                document.getElementById('AppDate').innerText = patientData.App_Date;
-                document.getElementById('AppPrescription').innerText = patientData.Prescription;
+
+                const appointmentDates = patientData.App_Dates ? patientData.App_Dates.split(',') : [];
+                const prescriptions = patientData.Prescriptions ? patientData.Prescriptions.split(',') : [];
+
+                let appointmentDetailsHTML = '';
+                for (let i = 0; i < appointmentDates.length; i++) {
+                    appointmentDetailsHTML += '<hr>'; // Add a horizontal line for separation
+                    appointmentDetailsHTML += '<p><strong>Appointment Date ' + (i + 1) + ': </strong>' + appointmentDates[i] + '</p>';
+                    appointmentDetailsHTML += '<p><strong>Prescription: </strong>' + prescriptions[i] + '</p>';
+                }
+
+                document.getElementById('appointmentDetails').innerHTML = appointmentDetailsHTML;
             }
         </script>
         
