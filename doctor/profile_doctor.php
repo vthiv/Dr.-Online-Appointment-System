@@ -71,7 +71,7 @@ if (isset($_POST['submit_doctor_details'])) {
     // Handle image upload
     if ($_FILES['profile_image']['name'] !== "") {
         $targetDirectory = "../img/doctors/";
-        $targetFile = $targetDirectory . basename($_FILES["profile_image"]["fullName"]);
+        $targetFile = $targetDirectory . basename($_FILES["profile_image"]["name"]);
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
         
         // Valid file extensions
@@ -92,6 +92,8 @@ if (isset($_POST['submit_doctor_details'])) {
         } else {
             $message .= " but only JPG, JPEG, and PNG files are allowed.";
         }
+    } else {
+        $message = "Profile data added successfully!";
     }
 }
 

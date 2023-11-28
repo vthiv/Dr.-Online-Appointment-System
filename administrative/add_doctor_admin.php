@@ -46,62 +46,36 @@ if (isset($_POST['add-doctor'])) {
     $bio = $_POST['comments'];
     $status = $_POST['status'];
 
-    $maxFileSize = 2 * 1024 * 1024;
     // Handle file upload
-    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
-        if ($_FILES['profile_image']['size'] > $maxFileSize) {
-            $message = "File size exceeds the maximum allowed limit (2MB). Please upload a smaller file.";
-        }
-        else {
-            $targetDirectory = "../img/doctors/";
-            $targetFile = $targetDirectory . basename($_FILES["profile_image"]["name"]);
-            $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+    if($_FILES['profile_image']['error'] == UPLOAD_ERR_OK) {
+        $temp_name = $_FILES['profile_image']['tmp_name'];
+        $file_name = $_FILES['profile_image']['name'];
+        $file_destination = "../img/doctors/" . $file_name;
 
-            $imageFileName = basename($_FILES["profile_image"]["name"]);
+        if (move_uploaded_file($temp_name, $file_destination)) {
+            $insert_query = mysqli_query($connection, "INSERT INTO doctor SET Employee_ID='$emp_id',Dept_ID='$department_id',Doctor_Name='$fullname',Email='$email',Password='$password',Doctor_DOB='$dob',Doctor_PhoneNo='$phone',Doctor_Address='$address',Doctor_JoiningDate='$joining_date',Doctor_Gender='$gender',Doctor_Bio='$bio', Profile_Image='$file_name',Doctor_Status='$status'");
 
-        }
+            if($insert_query >0){
         
-        // Create the directory if it doesn't exist
-        if (!file_exists($uploadDir)) {
-            mkdir($uploadDir, 0777, true); // Create the directory with full permissions (you can adjust permissions as needed)
-        }
-
-        // Allow certain file formats
-        $allowTypes = array('jpg', 'png', 'jpeg');
-        if (in_array($fileType, $allowTypes)) {
-            // Upload file to server
-            if (move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetFilePath)) {
-                // Insert data into 'WEBUSER' table
-                $sql_webuser = "INSERT INTO webuser (email, usertype) VALUES ('$email', '2')";
-                if (mysqli_query($connection, $sql_webuser)) {
-                    // Get the last inserted ID for the 'webuser' record
-                    $webuser_id = mysqli_insert_id($connection);
-
-                    // Insert data into 'DOCTOR' table
-                    $sql_doctor = "INSERT INTO doctor (Employee_ID, Dept_ID, Doctor_Name, Email, Password, Doctor_DOB, Doctor_PhoneNo, Doctor_Address, Doctor_JoiningDate, Doctor_Gender, Doctor_Bio, Profile_Image, Doctor_Status) VALUES ('$emp_id', '$department_id', '$fullname', '$email', '$password', '$dob', '$phone', '$address', '$joining_date', '$gender', '$bio', '$imageFileName', '$status')";
-                    if (mysqli_query($connection, $sql_doctor)) {
-                        $message = "Doctor registration successful!";
-                    } else {
-                        $message = "Error inserting data into DOCTOR table: " . mysqli_error($connection);
-                    }
+                $insert_webuser_query = mysqli_query($connection, "INSERT INTO webuser (email, usertype) VALUES ('$email', '2')");
+        
+                if($insert_webuser_query) {
+                    $message = "Doctor created successfully";
                 } else {
-                    $message = "Error inserting data into WEBUSER table: " . mysqli_error($connection);
-                }
-            } else {
-                $message = "Error uploading image.";
+                    $message = "Error adding doctor";
+                } 
+            }
+            else {
+                $message = "Error adding doctor";
             }
         } else {
-            $message = "Invalid file format. Allowed formats are jpg, png, and jpeg.";
+            $message = "Error uploading profile image";
         }
     } else {
-        $message = "Profile image is required.";
+        $message = "No profile image uploaded or error occurred";
     }
-
-    // Close the database connection
-    mysqli_close($connection);
-} else {
-    $message = "Invalid request.";
 }
+    
 ?>
 
 
@@ -370,7 +344,9 @@ if (isset($_POST['add-doctor'])) {
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="submit" name="add-doctor" class="btn btn-primary submit-btn">Add Doctor</button>
+                                    <div class="col-md-12">
+                                        <button type="submit" name="add-doctor" class="btn btn-primary submit-btn">Add Doctor</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>

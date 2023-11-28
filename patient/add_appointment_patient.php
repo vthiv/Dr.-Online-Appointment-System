@@ -42,7 +42,7 @@ if(isset($_REQUEST['add_appointment'])) {
     $app_message = $_REQUEST['app_message'];
     $app_status = $_REQUEST['app_status'];
 
-    $insert_query = mysqli_query($connection, "INSERT INTO `appointment` (Apt_ID, Pat_ID, Doctor_ID, Dept_ID, App_Date, App_Time, App_Message, App_Status, App_CreatedAt) VALUES ('$appointment_id', '$patientID', '$doctorID', '$departmentID', '$app_date', '$app_time', '$app_message', '$app_status', NOW())");
+    $insert_query = mysqli_query($connection, "INSERT INTO `appointment` (Apt_ID, Pat_ID, Doctor_ID, Dept_ID, App_Date, App_Time, App_Message, Prescription, App_Status, App_CreatedAt) VALUES ('$appointment_id', '$patientID', '$doctorID', '$departmentID', '$app_date', '$app_time', '$app_message', '', '$app_status', NOW())");
 
 
     if ($insert_query > 0) {
