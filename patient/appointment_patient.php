@@ -195,11 +195,11 @@ if (!$app_result) {
                                 <td><?php echo $row['department_name']; ?></td>
                                 <td><?php echo $row['appointment_date']; ?></td>
                                 <td><?php echo $row['appointment_time']; ?></td>
-                                <?php if($row['appointment_status']){ ?>
+                                <?php if ($row['appointment_status'] == 'Active') { ?>
                                     <td><span class="custom-badge status-green">Active</span></td>
-                                <?php } else{ ?>
+                                <?php } else { ?>
                                     <td><span class="custom-badge status-red">Inactive</span></td>
-                                <?php  }?>
+                                <?php } ?>
                                 <td>
                                     <form  action="edit_appointment_patient.php" method="POST">
                                         <input type="hidden" name="editappointment_id" value="<?php echo $row['appointment_ID'] ?>" />

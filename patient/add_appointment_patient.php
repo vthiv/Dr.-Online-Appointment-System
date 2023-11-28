@@ -12,13 +12,14 @@ if(isset($_SESSION["user"])){
 
 //Retrieve the doctor's name
 $patientEmail = $_SESSION["user"]; // Assuming store the patient's email in the session
-$query = "SELECT CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name, Pat_ID FROM `patient` WHERE `Pat_Email` = '$patientEmail'";
+$query = "SELECT CONCAT(Pat_Firstname, ' ', Pat_Lastname) AS patient_name, Pat_ID, Pat_PhoneNo FROM `patient` WHERE `Pat_Email` = '$patientEmail'";
 $result = mysqli_query($connection, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
     $patientData = mysqli_fetch_assoc($result);
     $patientID = $patientData['Pat_ID'];
     $patientName = $patientData['patient_name'];
+    $patientPhone = $patientData['Pat_PhoneNo'];
 }
 else {
     $patientName = "Patient" ; // Default name if not found
@@ -223,14 +224,14 @@ if(isset($_REQUEST['add_appointment'])) {
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Email <span class="text-danger">*</span></label>
-                                            <input name="email" id="email" type="email" class="form-control" placeholder="Email :" />
+                                            <input name="email" id="email" type="email" class="form-control" value="<?php echo $patientEmail; ?>" />
                                         </div>
                                     </div>
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">Phone Number <span class="text-danger">*</span></label>
-                                            <input name="phone" id="phone" type="tel" class="form-control" placeholder="Phone Number :" />
+                                            <input name="phone" id="phone" type="tel" class="form-control" value="<?php echo $patientPhone; ?>" />
                                         </div>
                                     </div>
 
