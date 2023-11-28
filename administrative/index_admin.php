@@ -247,11 +247,11 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                             <table class="table mb-0 new-patient-table">
                                                 <thead>
                                                     <tr>
-                                                        <th>Appointment ID</th>
-                                                        <th>Patient Name</th>
-                                                        <th>Doctor Name</th>
                                                         <th>Appointment Date</th>
                                                         <th>Appointment Time</th>
+                                                        <th>Patient Name</th>
+                                                        <th>Doctor Name</th>
+                                                        <th>Department Name</th>
                                                         <th>Appointment Status</th>
                                                     </tr>
                                                 </thead>
@@ -260,10 +260,11 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                                     // Execute SQL query to get appointment data
                                                     $queryAppointmentsData = "SELECT
                                                         appointment.App_ID,
-                                                        CONCAT(patient.Pat_Firstname, ' ', patient.Pat_Lastname) AS patient_name,
-                                                        doctor.Doctor_Name,
                                                         appointment.App_Date,
                                                         appointment.App_Time,
+                                                        CONCAT(patient.Pat_Firstname, ' ', patient.Pat_Lastname) AS patient_name,
+                                                        doctor.Doctor_Name,
+                                                        department.Dept_Name,
                                                         appointment.App_Status
                                                     FROM
                                                         appointment
@@ -271,21 +272,28 @@ if ($resultAppointments && $resultNewPatients && $resultTotalDoctors) {
                                                         patient ON appointment.Pat_ID = patient.Pat_ID
                                                     INNER JOIN
                                                         doctor ON appointment.Doctor_ID = doctor.Doctor_ID
+                                                    INNER JOIN 
+                                                        department ON appointment.Dept_ID = department.Dept_ID
                                                     WHERE
-                                                        appointment.App_Status = 1"; // Assuming 1 is for active appointments
+                                                        appointment.App_Status = 1
+                                                    GROUP BY patient_name
+                                                    ORDER BY App_Date DESC"; // Assuming 1 is for active appointments
 
                                                     $resultAppointmentsData = mysqli_query($connection, $queryAppointmentsData);
 
                                                     if ($resultAppointmentsData && mysqli_num_rows($resultAppointmentsData) > 0) {
                                                         // Loop through the appointment data and display it in the table
                                                         while ($row = mysqli_fetch_assoc($resultAppointmentsData)) {
+
+                                                            $badgeClass = ($row['App_Status'] == 1) ? 'status-green' : 'status-red';
+
                                                             echo '<tr>';
-                                                            echo '<td>' . $row['App_ID'] . '</td>';
-                                                            echo '<td>' . $row['patient_name'] . '</td>';
-                                                            echo '<td>' . $row['Doctor_Name'] . '</td>';
                                                             echo '<td>' . $row['App_Date'] . '</td>';
                                                             echo '<td>' . $row['App_Time'] . '</td>';
-                                                            echo '<td>' . ($row['App_Status'] == 1 ? 'Active' : 'Inactive') . '</td>';
+                                                            echo '<td>' . $row['patient_name'] . '</td>';
+                                                            echo '<td>' . $row['Doctor_Name'] . '</td>';
+                                                            echo '<td>' . $row['Dept_Name'] . '</td>';
+                                                            echo '<td><span class="custom-badge ' . $badgeClass . '">' . ($row['App_Status'] == 1 ? 'Active' : 'Inactive') . '</span></td>';
                                                             echo '</tr>';
                                                         }
                                                     } else {
