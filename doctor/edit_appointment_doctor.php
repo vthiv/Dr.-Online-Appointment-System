@@ -301,19 +301,21 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     // Retrieve the updated data from the form
                                     $updatedDate = $_POST['app_date'];
                                     $updatedTime = $_POST['app_time'];
+                                    $updatedPrescription = $_POST['app_prescription'];
+                                    $updatedStatus = $_POST['app_Status'];
 
                                     // Perform query to update the appointment details
-                                    $updateQuery = "UPDATE appointment SET App_Date = '$updatedDate', App_Time = '$updatedTime' WHERE Apt_ID = '$editAppointmentID'";
+                                    $updateQuery = "UPDATE appointment SET App_Date = '$updatedDate', App_Time = '$updatedTime', Prescription = '$updatedPrescription', App_Status = '$updatedStatus'  WHERE Apt_ID = '$editAppointmentID'";
                                     $updateResult = mysqli_query($connection, $updateQuery);
 
                                     if ($updateResult) {
                                         $msg = "Appointment updated successfully!";
                                     } else {
-                                        echo "Error updating appointment: " . mysqli_error($connection);
+                                        $msg = "Error updating appointment: " . mysqli_error($connection);
                                     }
                                 }
                             } else {
-                                echo "No appointment found with the provided ID.";
+                                $msg = "No appointment found with the provided ID.";
                             }
                         }
                             ?>

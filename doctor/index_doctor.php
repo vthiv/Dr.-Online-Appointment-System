@@ -351,8 +351,9 @@ if ($resultDoctors && mysqli_num_rows($resultDoctors) > 0) {
                                                 </thead>
                                                 <tbody>
                                                 <?php
+                                                
                                                     // Fetch data from the schedule table
-                                                    $scheduleQuery = "SELECT Schedule_Date, Schedule_Day, Schedule_StartTime, Schedule_EndTime FROM schedule WHERE Doctor_ID = '$doctorID'";
+                                                    $scheduleQuery = "SELECT Schedule_Date, Schedule_Day, Schedule_StartTime, Schedule_EndTime FROM schedule WHERE Doctor_ID = '$doctorID' ORDER BY Schedule_Date DESC";
                                                     $resultSchedule = $connection->query($scheduleQuery);
 
                                                     // Check if there are any rows in the result

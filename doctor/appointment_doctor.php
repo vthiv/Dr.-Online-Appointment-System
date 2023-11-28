@@ -204,10 +204,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                     Dept.Dept_Name AS department_name,
                                     A.App_Date AS appointment_date,
                                     A.App_Time AS appointment_time,
-                                    CASE
-                                        WHEN A.App_Status = 1 THEN 'Active'
-                                        ELSE 'Inactive'
-                                    END AS appointment_status
+                                    A.App_Status AS appointment_status
                                     FROM appointment A
                                     INNER JOIN patient P ON A.Pat_ID = P.Pat_ID
                                     INNER JOIN doctor D ON A.Doctor_ID = D.Doctor_ID
@@ -218,6 +215,9 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                         if ($result && mysqli_num_rows($result) > 0) {
                             while ($row = mysqli_fetch_assoc($result)) {
+
+                                $badgeClass = ($row["appointment_status"] == 1) ? 'status-green' : 'status-red';
+
                                 echo "<tr>
                                         <td>" . $row["appointment_ID"] . "</td>
                                         <td>" . $row["patient_name"] . "</td>
@@ -225,7 +225,7 @@ if ($result && mysqli_num_rows($result) > 0) {
                                         <td>" . $row["department_name"] . "</td>
                                         <td>" . $row["appointment_date"] . "</td>
                                         <td>" . $row["appointment_time"] . "</td>
-                                        <td><span class='custom-badge status-" . ($row["appointment_status"] ? "green'>Active" : "red'>Inactive") . "</span></td>
+                                        <td><span class='custom-badge " . $badgeClass . "'>" . ($row["appointment_status"] == 1 ? 'Active' : 'Inactive') . "</span></td>
                                         <td>
                                             <form  action='edit_appointment_doctor.php' method='POST'>
                                                 <input type='hidden' name='editappointment_id' value='" . $row["appointment_ID"] . "' />
