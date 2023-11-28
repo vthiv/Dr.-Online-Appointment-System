@@ -295,8 +295,11 @@ if (isset($_GET['doctor_id'])) {
                                                         if (isset($_GET['doctor_id'])) {
                                                             $selectedDoctorID = $_GET['doctor_id'];
 
+                                                            // Calculate the date for 7 days from now
+                                                            $sevenDaysLater = date('Y-m-d', strtotime('+7 days'));
+
                                                             // Retrieve the schedule for the selected doctor
-                                                            $scheduleQuery = "SELECT * FROM schedule WHERE Doctor_ID = $selectedDoctorID ORDER BY Schedule_Day";
+                                                            $scheduleQuery = "SELECT * FROM schedule WHERE Doctor_ID = $selectedDoctorID AND Schedule_Date BETWEEN CURDATE() AND '$sevenDaysLater' ORDER BY Schedule_Day";
 
                                                             $scheduleResult = mysqli_query($connection, $scheduleQuery);
 
@@ -308,7 +311,7 @@ if (isset($_GET['doctor_id'])) {
                                                                     echo '</li>';
                                                                 }
                                                             } else {
-                                                                echo '<li class="text-muted mb-0">No schedule available.</li>';
+                                                                echo '<li class="text-muted mb-0">No schedule available or no new schedules added.</li>';
                                                             }
                                                         }
                                                         ?>
