@@ -246,27 +246,8 @@ if ($result && mysqli_num_rows($result) > 0) {
 
                                     <div class="col-lg-4 col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Department <span class="text-danger">*</span></label>
-                                            <select class="form-control department-name" name="dept_id" id="dept_id">
-                                                <option value="">Select</option>
-                                                <?php
-                                                $departmentQuery = "SELECT `Dept_ID`, `Dept_Name` FROM `department` WHERE `Dept_Status` = 1";
-                                                $departmentResult = mysqli_query($connection, $departmentQuery);
-                                                    
-                                                if ($departmentResult && mysqli_num_rows($departmentResult) > 0) {
-                                                    while ($row = mysqli_fetch_assoc($departmentResult)) {
-                                                        echo '<option value="' . $row['Dept_ID'] . '">' . $row['Dept_Name'] . '</option>';
-                                                    }
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-4 col-md-6">
-                                        <div class="mb-3">
                                             <label class="form-label">Doctor Name <span class="text-danger">*</span></label>
-                                            <select class="form-control doctor-name select2input" name="doc_id" id="doc_id">
+                                            <select class="form-control doctor-name select2input" name="doc_id" id="doc_id" onchange="fetchDepartments(this.value)">
                                                 <option value="">Select</option>
                                                 <?php
                                                 $doctorQuery = "SELECT `Doctor_ID`, `Doctor_Name` FROM `doctor`";
@@ -278,6 +259,15 @@ if ($result && mysqli_num_rows($result) > 0) {
                                                     }
                                                 }
                                                 ?>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Department <span class="text-danger">*</span></label>
+                                            <select class="form-control department-name" name="dept_id" id="dept_id">
+                                                <option value="">Select</option>
                                             </select>
                                         </div>
                                     </div>
@@ -384,6 +374,23 @@ if ($result && mysqli_num_rows($result) > 0) {
                 }
             ?>
         </script>
+
+        <script>
+                function fetchDepartments(doctorId) {
+                    if (doctorId !== '') {
+                        $.ajax({
+                            type: 'POST',
+                            url: '../patient/fetch_departments.php', // You need to create a PHP file named fetch_departments.php to fetch departments based on the selected doctor ID
+                            data: { doctorId: doctorId },
+                            success: function(response) {
+                                $("#dept_id").html(response);
+                            }
+                        });
+                    } else {
+                        $("#dept_id").html('<option value="">Select</option>');
+                    }
+                }
+                </script>
         
     </body>
 </html>

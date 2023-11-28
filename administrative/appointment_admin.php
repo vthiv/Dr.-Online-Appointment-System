@@ -25,7 +25,8 @@ $query = "SELECT
             FROM appointment A
             INNER JOIN patient P ON A.Pat_ID = P.Pat_ID
             INNER JOIN doctor D ON A.Doctor_ID = D.Doctor_ID
-            INNER JOIN department Dept ON A.Dept_ID = Dept.Dept_ID";
+            INNER JOIN department Dept ON A.Dept_ID = Dept.Dept_ID
+            ORDER BY A.App_Date DESC";
 
 // Execute the query
 $app_result = mysqli_query($connection, $query);
