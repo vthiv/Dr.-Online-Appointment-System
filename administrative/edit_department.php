@@ -26,48 +26,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     $adminName = "Admin"; // Default name if not found
 }
 
-$department = [];
-$message = "";
-
-// Check if the edit_dept_btn is clicked and an edit_id is provided
-if(isset($_POST["edit_dept_btn"]) && isset($_POST["edit_id"])){
-    $edit_id = $_POST["edit_id"];
-
-    // Retrieve department information based on the edit_id from the database
-    $query = "SELECT * FROM department WHERE Dept_ID = '$edit_id'";
-    $result = mysqli_query($connection, $query);
-
-    if($result && mysqli_num_rows($result) > 0){
-        $department = mysqli_fetch_assoc($result);
-    } else {
-        // Handle the case where the department is not found
-        $message = "Department not found.";
-    }
-}
-
-// Handle form submission to update department details
-if(isset($_POST["update_department"])){
-    $newDeptName = $_POST["new_dept_name"];
-    $newDeptDescription = $_POST["new_dept_description"];
-    $newDeptStatus = $_POST["new_dept_status"];
-
-    // Update department details in the database
-    $update_query = "UPDATE department SET 
-                     Dept_Name = '$newDeptName', 
-                     Dept_Description = '$newDeptDescription', 
-                     Dept_Status = '$newDeptStatus' 
-                     WHERE Dept_ID = '$edit_id'";
-
-    $update_result = mysqli_query($connection, $update_query);
-
-    if($update_result){
-        $message = "Update department details successfully.";
-    } else {
-        // Handle the case where the update fails
-        $message = "Failed to update department details: " . mysqli_error($connection);
-    }
-}
-
 ?>
 
 
@@ -210,28 +168,67 @@ if(isset($_POST["update_department"])){
 
                 <div class="row">
                     <div class="col-lg-8 offset-lg-2">
-                        <form method="POST" action="">
-                        <input type="hidden" name="edit_id" value="<?php echo $edit_id; ?>">
-                            <div class="form-group">
-                                <label for="new_dept_name">Department Name</label>
-                                <input type="text" class="form-control" name="new_dept_name" value="<?php echo $department['Dept_Name'] ?? ''; ?>" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="new_dept_description">Description</label>
-                                <textarea class="form-control" rows="4" name="new_dept_description"><?php echo $department['Dept_Description'] ?? ''; ?></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="new_dept_status" class="display-block">Department Status</label>
-                                <select class="form-control" name="new_dept_status">
-                                    <option value="1" <?php if(isset($department['Dept_Status']) && $department['Dept_Status'] == 1) echo 'selected'; ?>>Active</option>
-                                    <option value="0" <?php if(isset($department['Dept_Status']) && $department['Dept_Status'] == 0) echo 'selected'; ?>>Inactive</option>
-                                </select>
-                            </div>
-                            <div class="m-t-20 text-center">
-                                <a href="departments_admin.php" class="btn btn-soft-primary">CANCEL</a>
-                                <button class="btn btn-primary submit-btn" type="submit" name="update_department">UPDATE</button>
-                            </div>
-                        </form>
+                        <?php
+                            $edit_id = "";
+                            if(isset($_POST["edit_id"])){
+                                $edit_id = $_POST["edit_id"];
+
+                                $query = "SELECT * FROM department WHERE Dept_ID = '$edit_id'";
+                                $result = mysqli_query($connection, $query);
+
+                                if($result && mysqli_num_rows($result) > 0){
+                                    $department = mysqli_fetch_assoc($result);
+
+                                    echo '<form method="POST" action="">
+                                    <input type="hidden" name="edit_id" value="' . $edit_id . '">
+                                        <div class="form-group">
+                                            <label for="new_dept_name">Department Name</label>
+                                            <input type="text" class="form-control" name="new_dept_name" value="'.$department['Dept_Name'] . '" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new_dept_description">Description</label>
+                                            <textarea class="form-control" rows="4" name="new_dept_description">'.$department['Dept_Description'] . '</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="new_dept_status" class="display-block">Department Status</label>
+                                            <select class="form-control" name="new_dept_status">
+                                                <option value="1"'.($department['Dept_Status'] == 1 ? 'selected' : '').'>Active</option>
+                                                <option value="0"'.($department['Dept_Status'] == 0 ? 'selected' : '').'>Inactive</option>
+                                            </select>
+                                        </div>
+                                        <div class="m-t-20 text-center">
+                                            <a href="departments_admin.php" class="btn btn-soft-primary">CANCEL</a>
+                                            <button class="btn btn-primary submit-btn" type="submit" name="update_department">UPDATE</button>
+                                        </div>
+                                    </form>';
+
+                                    // Handle form submission to update department details
+                                    if(isset($_POST["update_department"])){
+                                        $newDeptName = $_POST["new_dept_name"];
+                                        $newDeptDescription = $_POST["new_dept_description"];
+                                        $newDeptStatus = $_POST["new_dept_status"];
+
+                                        // Update department details in the database
+                                        $update_query = "UPDATE department SET 
+                                                        Dept_Name = '$newDeptName', 
+                                                        Dept_Description = '$newDeptDescription', 
+                                                        Dept_Status = '$newDeptStatus' 
+                                                        WHERE Dept_ID = '$edit_id'";
+
+                                        $update_result = mysqli_query($connection, $update_query);
+
+                                        if($update_result){
+                                            $message = "Update department details successfully.";
+                                        } else {
+                                            // Handle the case where the update fails
+                                            $message = "Failed to update department details: " . mysqli_error($connection);
+                                        }
+                                    }
+                                } else {
+                                    $message = "No department found with the provided ID.";
+                                }
+                            }
+                        ?>
                     </div>
                 </div>
             </section>
@@ -275,8 +272,8 @@ if(isset($_POST["update_department"])){
         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <script type="text/javascript">
             <?php
-                if(isset($msg)) {
-                    echo 'swal("' . $msg . '").then(function() {
+                if(isset($message)) {
+                    echo 'swal("' . $message . '").then(function() {
                         window.location.href = "departments_admin.php";
                     });';
                 }
