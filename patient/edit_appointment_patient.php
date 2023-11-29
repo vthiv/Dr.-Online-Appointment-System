@@ -262,21 +262,32 @@ else {
                                     $updatedTime = $_POST['app_time'];
                                     $updatedStatus = $_POST['app_Status'];
 
-                                    // Perform query to update the appointment details
-                                    $updateQuery = "UPDATE appointment SET App_Date = '$updatedDate', App_Time = '$updatedTime', App_Status = '$updatedStatus' WHERE Apt_ID = '$editAppointmentID'";
-                                    $updateResult = mysqli_query($connection, $updateQuery);
+                                    // Get today's date
+                                    $today = date("Y-m-d");
 
-                                    if ($updateResult) {
-                                        $msg = "Appointment updated successfully!";
+                                    // Calculate the date a week before the appointment
+                                    $rescheduleLimit = date('Y-m-d', strtotime($appointmentData['App_Date'] . ' - 7 days'));
+
+                                    if ($today <= $rescheduleLimit) {
+
+                                        // Perform query to update the appointment details
+                                        $updateQuery = "UPDATE appointment SET App_Date = '$updatedDate', App_Time = '$updatedTime', App_Status = '$updatedStatus' WHERE Apt_ID = '$editAppointmentID'";
+                                        $updateResult = mysqli_query($connection, $updateQuery);
+
+                                        if ($updateResult) {
+                                            $msg = "Appointment updated successfully!";
+                                        } else {
+                                            $msg = "Error updating appointment: " . mysqli_error($connection);
+                                        }
                                     } else {
-                                        $msg = "Error updating appointment: " . mysqli_error($connection);
+                                        $msg = "You can only reschedule the appointment within a week before the appointment date.";
                                     }
                                 }
-                            } else {
-                                $msg = "No appointment found with the provided ID.";
+                                } else {
+                                    $msg = "No appointment found with the provided ID.";
+                                }
                             }
-                        }
-                            ?>
+                        ?>
                         </div>
                     </div>
                 </div>
