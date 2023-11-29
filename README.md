@@ -1,5 +1,8 @@
 # Dr.-Online-Appointment-System
 
+<---- THE DATABASE HAS SETUP WITH PASSWORD ------> 
+        PASSWORD => 123  
+
 INSTALLATION STEPS
 1) Open your XAMPP Control Panel and start Apache and MySQL.
 2) Extract the download source code zip file.
@@ -7,7 +10,8 @@ INSTALLATION STEPS
 4) Browse the PHPMyAdmin in a browser.i.e. https://localhost/phpmyadmin
 5) Create a new database naming as app_booking.
 6) Import the provided SQL file. The file is known as “app_booking.sql” located inside the Database folder.
-7) Browse the Dr. Online Appointment System in a bowser. 
+7) Browse the Dr. Online Appointment System in a bowser (http://localhost/Dr.-Online-Appointment-System-main/Dr.-Online-Appointment-System-main/index.php)
+
 
 ///////////////////ADMIN Login Credentials///////////////////////////
 
