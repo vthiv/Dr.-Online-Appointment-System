@@ -53,12 +53,12 @@ if($_POST){
         <title>Dr. Online Appointment System | Sign Up</title>
 
         <!--Favicons-->
-        <link rel="apple-touch-icon" sizes="180x180" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
-        <link rel="shortcut icon" type="image/x-icon" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="shortcut icon" type="image/x-icon" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
         <link rel="manifest" href="js/manifest.json">
-        <meta name="msapplication-TileImage" content="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <meta name="msapplication-TileImage" content="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
         <meta name="theme-color" content="#ffffff">
 
         <!---google fonts link---->

@@ -94,7 +94,7 @@
         <section class="bg-home d-flex bg-light">
             <div class="row">
                 <div class="col-2 col-lg-4">
-                    <img src="../img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" height="200" class="logo" alt="Logo" />
+                    <img src="img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" height="200" class="logo" alt="Logo" />
                 </div>
             </div>
             <div class="container">
