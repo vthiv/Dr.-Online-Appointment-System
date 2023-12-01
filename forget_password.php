@@ -70,12 +70,12 @@ if(isset($_POST['forgetPassword'])){
         <title>Dr. Online Appointment System | Forget Password</title>
 
         <!--Favicons-->
-        <link rel="apple-touch-icon" sizes="180x180" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
-        <link rel="shortcut icon" type="image/x-icon" href="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <link rel="shortcut icon" type="image/x-icon" href="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
         <link rel="manifest" href="js/manifest.json">
-        <meta name="msapplication-TileImage" content="../img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
+        <meta name="msapplication-TileImage" content="img/DR._ONLINE_APPOINTMENT_SYSTEM_White.png">
         <meta name="theme-color" content="#ffffff">
 
         <!---google fonts link---->
@@ -96,7 +96,7 @@ if(isset($_POST['forgetPassword'])){
         <section class="bg-home d-flex bg-light">
             <div class="row">
                 <div class="col-2 col-lg-4">
-                    <img src="../img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" height="200" class="logo" alt="Logo" />
+                    <img src="img/DR._ONLINE_APPOINTMENT_SYSTEM__LOGO.png" height="200" class="logo" alt="Logo" />
                 </div>
             </div>
             <div class="container">
