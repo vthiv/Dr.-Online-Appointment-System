@@ -172,7 +172,7 @@ INSERT INTO `patient` (`Pat_ID`, `Pat_Firstname`, `Pat_Lastname`, `Pat_Email`, `
 (1, 'Thivyah', 'Vijayan', 'vthiv@gmail.com', '@thiv14', '0123456789', '14/04/1997', 'No 21, Jalan Waxell, Taman Wax Street', 1, '2023-11-02 05:51:37'),
 (2, 'Vijay', 'Kumar', 'vijay27@patient.com', 'Vijay@30', '012-345678', '1988/10/17', 'KL 15 Road, 68100 Bt Cvs', 1, '2023-11-03 08:51:09'),
 (3, 'Jim', 'Carter', 'jimc@gmail.com', '@JC12', '012-3456789', '15/06/1991', '24, Sunway Road', 1, '2023-11-28 07:39:14'),
-(4, 'Mohana', 'Vijay', 'mohana@pat.com', 'Moh24', '012-3214698', '1992-07-16', '15, Jalan Maxwell', 1, '2023-11-03 08:25:02');
+(4, 'Mohana', 'Vijay', 'mohana@pat.com', 'Moh@2404', '012-3214698', '1992-07-16', '15, Jalan Maxwell', 1, '2023-11-03 08:25:02');
 
 -- --------------------------------------------------------
 
