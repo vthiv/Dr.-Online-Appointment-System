@@ -168,13 +168,13 @@ if(isset($_REQUEST['add_appointment'])) {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="schedule_doctor.php">
+                    <a class="nav-link collapsed" href="schedule_doctor.php">
                         <i class="bi bi-calendar3"></i>
                         <span>Schedule</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link collapsed" href="appointment_doctor.php">
+                    <a class="nav-link" href="appointment_doctor.php">
                         <i class="bi bi-calendar-check-fill"></i>
                         <span>Appointment</span>
                     </a>
