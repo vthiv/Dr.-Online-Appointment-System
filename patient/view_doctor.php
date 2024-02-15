@@ -280,7 +280,7 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
 
                                         <div class="tab-pane fade" id="pills-timetable" role="tabpanel" aria-labelledby="timetable-tab">
                                             <div class="row">
-                                                <div class="col-lg-4 col-md-12">
+                                                <div class="col-lg-6 col-md-12">
                                                     <div class="card border-0 p-3 rounded shadow">
                                                         <ul class="list-unstyled mb-0">
                                                         <?php
@@ -295,7 +295,7 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
 
                                                             if ($scheduleResult && mysqli_num_rows($scheduleResult) > 0) {
                                                                 while ($schedule = mysqli_fetch_assoc($scheduleResult)) {
-                                                                    echo '<li class="d-flex justify-content-between">';
+                                                                    echo '<li class="d-flex flex-row justify-content-between">';
                                                                     echo '<p class="text-muted mb-0"><i class="bi bi-clock text-primary align-middle h5 mb-0"></i> ' . $schedule['Schedule_Day'] . '</p>';
                                                                     echo '<p class="text-primary mb-0"><span class="text-dark">Time:</span> ' . $schedule['Schedule_StartTime'] . ' - ' . $schedule['Schedule_EndTime'] . '</p>';
                                                                     echo '</li>';
@@ -309,12 +309,12 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
                                                     </div>
                                                 </div><!--end col-->
 
-                                                <div class="col-lg-4 col-md-6 mt-4 mt-lg-0 pt-2 pt-lg-0">
+                                                <div class="col-lg-3 col-md-3 mt-3 mt-lg-0 pt-2 pt-lg-0">
                                                     <div class="card border-0 text-center features feature-primary">
                                                         <div class="icon text-center mx-auto rounded-md">
                                                             <i class="bi bi-telephone-fill"></i>
                                                         </div>
-                                                        <div class="card-body p-0 mt-4">
+                                                        <div class="card-body p-0 mt-2 pb-2">
                                                             <h5 class="title fw-bold">Phone</h5>
                                                             <p class="text-muted">Immediate Assistance</p>
                                                             <a href="tel:+60123456789" class="link">03-612347896</a>
@@ -322,13 +322,13 @@ $doctorsResult = mysqli_query($connection, $doctorsQuery);
                                                     </div>
                                                 </div><!--end col-->
 
-                                                <div class="col-lg-4 col-md-6 mt-4 mt-lg-0 pt-2 pt-lg-0">
+                                                <div class="col-lg-3 col-md-3 mt-3 mt-lg-0 pt-2 pt-lg-0">
                                                     <div class="card border-0 text-center features feature-primary">
                                                         <div class="icon text-center mx-auto rounded-md">
                                                             <i class="bi bi-envelope-fill"></i>
                                                         </div>
                                 
-                                                        <div class="card-body p-0 mt-4">
+                                                        <div class="card-body p-0 mt-2 pb-2">
                                                             <h5 class="title fw-bold">Email</h5>
                                                             <a href="mailto:contact@example.com" class="link"><?php echo $doctorData['Email']; ?></a>
                                                         </div>
